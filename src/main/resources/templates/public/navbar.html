@@ -1,0 +1,84 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+	<head th:fragment="header">
+	    <meta charset="utf-8"></meta>
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+	    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+	    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	    <!-- Bootstrap & JQuery -->
+		<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"></link>
+		<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css}"></link>
+	    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js" th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
+	    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
+    
+	</head>      
+	<body>
+		<div th:fragment="navbar">
+		    <nav class="navbar navbar-inverse navbar-fixed-top">
+		      <div class="container">
+		        <div class="navbar-header">
+		          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+		            <span class="sr-only">Toggle navigation</span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		          </button>
+		          <a class="navbar-brand" href="/gameserver/user/menu" th:text="#{login.page.appnamne}">Project name</a>
+		        </div>
+		        <div id="navbar" class="navbar-collapse collapse">
+		          <div sec:authorize="hasRole('ROLE_ADMIN')">
+		            <ul class="nav navbar-nav">
+		              <li class="dropdown">
+		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-cog"></i><span class="left-padding-5">Admin</span><span class="caret"></span></a>
+		                <ul class="dropdown-menu" role="menu">
+		                  <li><a href="/admin/getSettings" th:text="#{menu.item.settings}">App Settings</a></li>
+		                  <li><a href="/admin/createRole" th:text="#{menu.item.createRoles}">Create</a></li>
+		                  <li><a href="/admin/deleteRole" th:text="#{menu.item.deleteRoles}">Delete Roles</a></li>
+		                  <li><a href="/admin/getUserData" th:text="#{menu.item.editUsers}">Edit</a></li>
+		                  <li><a href="/admin/seedData" th:text="#{menu.item.seedData}">Seed</a></li>
+		                  <li><a href="/admin/exportCampaign" th:text="#{exportCampaign.title}">Export</a></li>
+		                  <li><a href="/admin/importCampaign" th:text="#{importCampaign.title}">Import</a></li>
+		                </ul>
+		              </li>
+		            </ul>
+		          </div>
+		          <div sec:authorize="hasRole('ROLE_GAMEMASTER')">
+		            <ul class="nav navbar-nav">
+		              <li class="dropdown">
+		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-book"></i><span class="left-padding-5">Gamemaster</span><span class="caret"></span></a>
+		                <ul class="dropdown-menu" role="menu">
+		                  <li><a href="/user/selectCampaign" th:text="#{menu.item.selectCampaign}">Select Camp</a></li>
+		                  <li><a href="#" th:text="#{menu.item.checkNotifications}">Notifications</a></li>
+		                  <li><a href="/gamemaster/createCampaign" th:text="#{menu.item.createCampaign}">Create Camp</a></li>
+		                  <li><a href="/gamemaster/campaignHome" th:text="#{menu.item.campaignHome}">Camp Home</a></li>
+		                  <li th:if="${session.campaignName}"><a href="/gamemaster/editLocation" th:text="#{menu.item.editLocation}">Create T</a></li>
+		                  <li th:if="${session.campaignName}"><a href="/gamemaster/editOrganization" th:text="#{menu.item.editOrganization}">Create T</a></li>
+		                  <li th:if="${session.campaignName}"><a href="/gamemaster/editOrganizationRank" th:text="#{menu.item.editOrganizationRank}">Create T</a></li>
+		                  <li><a th:if="${session.campaignName}" href="/gamemaster/editFolio" th:text="#{menu.item.editFolio}">Create T</a></li>
+		                  <li><a th:if="${session.campaignName}" href="/shared/viewFolio" th:text="#{viewFolio.title}">view</a></li>
+		                </ul>
+		              </li>
+		            </ul>
+		          </div>
+		          <div sec:authorize="hasRole('ROLE_USER')">
+		            <ul class="nav navbar-nav">
+		              <li class="dropdown">
+		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-male"></i><span class="left-padding-5">Player</span><span class="caret"></span></a>
+		                <ul class="dropdown-menu" role="menu">
+		                  <li><a href="/user/selectCampaign" th:text="#{menu.item.selectCampaign}">Select Camp</a></li>
+		                  <li><a href="#">Select Character</a></li>
+		                </ul>
+		              </li>
+		            </ul>
+		          </div>
+		          <div class="navbar-form navbar-right">
+		            <span sec:authorize="isAnonymous()"><a class="login-logout" data-toggle="modal" href="#myModal" >Login</a></span>
+		            <span sec:authorize="isAuthenticated()"><a class="login-logout" th:href="@{/logout}" th:text="#{logout.text}">Log out</a></span>
+		          </div>
+		        </div><!--/.navbar-collapse -->
+		      </div>
+		    </nav>
+		</div>		    
+	</body>    
+</html>

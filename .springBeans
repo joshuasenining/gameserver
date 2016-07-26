@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<version>1</version>
+	<pluginVersion><![CDATA[3.6.2.201410090854-RELEASE]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
+	<enableImports><![CDATA[false]]></enableImports>
+	<configs>
+		<config>java:org.softwarewolf.gameserver.base.config.SecurityConfig</config>
+		<config>java:org.softwarewolf.gameserver.base.config.DatasourceConfig</config>
+		<config>java:org.softwarewolf.gameserver.base.service.LocationTypeService</config>
+	</configs>
+	<autoconfigs>
+		<config>java:org.softwarewolf.gameserver.base.config.ThymeleafConfig</config>
+		<config>java:org.softwarewolf.gameserver.base.config.ClientWebConfig</config>
+	</autoconfigs>
+	<configSets>
+	</configSets>
+</beansProjectDescription>

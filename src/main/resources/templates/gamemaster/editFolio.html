@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:fragment="header">
+    <meta charset="utf-8"></meta>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <link rel="icon" href="/werewolf-512.png"></link>
+   	<link rel="stylesheet" href="/css/style.css" type="text/css" th:href="@{/css/style.css}"></link>	
+	<link rel="stylesheet" href="/css/font-awesome.css" type="text/css" th:href="@{/css/font-awesome.css}"></link>
+    <!-- Bootstrap & JQuery-->
+    <!-- Bootstrap & JQuery -->
+	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"></link>
+	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css}"></link>
+	<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" th:src="@{/webjars/jquery-ui-themes/1.11.4/smoothness/jquery-ui.min.css}"></link>
+    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js" th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
+    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
+	<script type="application/javascript" src="https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js" th:src="@{/webjars/jquery-ui/1.11.4/jquery-ui.min.js}"></script>
+    
+	<script type="application/javascript" src="/ckeditor/ckeditor.js" th:src="@{/webjars/ckeditor/4.5.8/standard/ckeditor.js}"></script>
+	<script src="/ckeditor/gameserver/js/sample.js"></script>
+	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/css/samples.css"></link>
+	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/toolbarconfigurator/lib/codemirror/neo.css"></link>
+
+    <title th:text="#{createCampaign.title}">Title</title>
+    
+	<script th:inline="javascript">
+	$(document).ready(function() {
+		$( window ).load(function() {
+			
+			var value = $("#selectedTags").val();
+			var data = jQuery.parseJSON(value);
+
+			var ul = '<ul class="dropdown-menu"></ul>';
+			$(".tags-dropdown-toggle").after(ul);
+			var string0 = '<li id="0" class="selectTag"><a href="#" onclick="addTag();">Add a tag</a></li>';
+			$(".tags-dropdown-menu").append(string0);
+			var string1 = '<li class="divider"></li>';
+			$(".tags-dropdown-menu").append(string1);
+				
+			var folioId = $("#folioId").val();
+			if (data.length == 0) {
+				alert("0");
+			}
+			$.each(data, function(index, currentTag) {
+				var tagId = currentTag['objectId'];
+				var tagName = currentTag['tagName'];
+				var paramString = "\'"+folioId+"\', \'"+tagId+"\', \'"+tagName+"\'";
+				var current = '<li id="'+tagId+'" class="selectTag"><a href="#" onclick="removeTag('+paramString+');">'+tagName+'</a></li>'; 
+				$(".tags-dropdown-menu").append(current);
+			});
+
+		});	
+
+		$("#removeDialog").dialog({
+  	    	autoOpen: false,
+	  	    modal: true,
+	  	  	position: { my: "left top", at: "right top", of: "#tagsBtn", collision: "flip flip" }
+  		});
+
+		$("#addDialog").dialog({
+  	    	autoOpen: false,
+	  	    modal: true,
+	  	  	position: { my: "left top", at: "right top", of: "#tagsBtn", collision: "flip flip" },
+			"width": 460
+  		});
+		
+		$(function() {
+			$( "#selectable" ).selectable();
+		});
+	});		
+
+
+	</script>   
+
+	<script>
+		function removeTag(folioId, tagId, tagName) {
+			$("#removeDialog").text("Remove the tag " + tagName + "?");
+	
+			$("#removeDialog").dialog({
+				buttons : {
+			    	"Confirm" : function() {
+			    		var action = "/gameserver/gamemaster/removeTagFromFolio/" + folioId + "/" + tagId;
+			    		window.location.href = action;
+			    		$("#removeTagForm").attr("action", action);
+			    		$("#removeTagForm").submit();
+			        },
+			        "Cancel" : function() {
+			        	$(this).dialog("close");
+			        }
+			    }
+			});
+	
+			$("#removeDialog").dialog("open");			
+		}
+		
+		// unselectedTags is an object with nested objects in a parent->children relationship
+		// with the top element being Root (a fake element) and there being only two levels
+		// beneath them
+		function getTags(tags) {
+			var firstTierChildren = tags.children;
+			
+			var liList = ' ';
+			$.each(firstTierChildren, function(index, firstTierTag) {
+				liList += getSecondTierTags(firstTierTag);
+			});
+			
+			return liList;
+		}
+		
+		function getSecondTierTags(firstTierTag) {
+			var liList = ' ';
+			$.each(firstTierTag.children, function(index, secondTierTag) {
+				var secondTierLi = '<li class="ui-widget-content" class-name="'+secondTierTag['name']+'" tag-id="'+secondTierTag['id']+'">'+secondTierTag['displayName']+'</li>'; 
+				liList += secondTierLi;
+			});
+			var firstTierLi = '<li class="ui-widget-content" class-name="'+firstTierTag['name']+'" tag-id="'+firstTierTag['id']+'">'+firstTierTag['displayName']+'</li>';
+			liList = firstTierLi + liList;
+			return liList;
+		}
+		
+		function addTag() {
+			$("#addDialog").empty();
+
+			var unassignedTagsField = $("#unassignedTags");
+			var unassignedTagsText = unassignedTagsField.val();
+			var tags = jQuery.parseJSON(unassignedTagsText);
+			var newText = '<ol id="selectable">' + getTags(tags) + '</ol>';
+			$("#addDialog").append(newText);
+			$("#addDialog").dialog("open").find('ol').selectable({selected: function(event,ui) {
+                  var className = ui.selected.getAttribute("class-name");
+                  var tagId = ui.selected.getAttribute("tag-id");
+                  var addTagForm = $("#addTagToFolioForm");
+                  var folioId = $("#folioId").val();
+                  var action = $("#addTagToFolioForm").attr("action") + folioId + "/" + className + "/" + tagId;
+				  addTagForm[0].setAttribute("action", action);
+				  addTagForm.submit();
+            }});;	
+		}
+		
+		function createAddTagElement(currentTag, unassignedtags, listString) {
+			if (currentTag.children.length > 0) {				
+				$.each(currentTag.children, function(index, childTag) {
+					listString += createAddTagElement(childTag, unassignedtags, listString);
+				});
+			}
+			if (currentTag.id != "Root") {
+				var newBit = '<li class="ui-widget-content" class-name="'+currentTag['name']+'" tag-id="'+currentTag['id']+'">'+currentTag['displayName']+'</li>';
+				listString += newBit;
+			}
+			return listString;
+		}
+		
+		function getFolio(folioId) {
+			var action = $("#getFolioForm").attr("action");
+			action += folioId;
+			document.getElementById("getFolioForm").setAttribute("action", action);
+			document.getElementById("getFolioForm").submit();
+		}
+		
+		function selectFolio() {
+			var action = $("#getFolioForm").attr("action");
+			action = "/gameserver/shared/selectFolio/edit";
+			document.getElementById("getFolioForm").setAttribute("action", action);
+			document.getElementById("getFolioForm").submit();
+		}
+		
+	</script>
+</head>
+<body id="main">
+	<div th:include="/public/navbar :: navbar"></div>
+	
+	<br></br>
+	<br></br>
+	<br></br>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-11">
+			<h1 th:text="#{editFolio.title}">Updated</h1>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<span class="error-message" th:if="${feFeedback.error}" th:text="${feFeedback.error}">Error.</span>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<span class="info-message" th:if="${feFeedback.info}" th:text="${feFeedback.info}">Info.</span>
+		</div>
+	</div>
+
+	<form id="addTagToFolioForm" action="/gameserver/gamemaster/addTagToFolio/" method="get"></form>
+	<form id="getFolioForm" action="/gameserver/gamemaster/getFolio/" method="get"></form>
+	<form id="removeTagForm" action="/gamemaster/removeTagFromFolio" method="get"></form>
+	<form id="createFolioForm" th:object="${folioCreator}" action="#" th:action="@{/gamemaster/editFolio}" method="post">
+		<input id="campaignId" type="hidden" th:field="*{folio.campaignId}"></input>
+		<input id="unassignedTags" type="hidden" th:field="*{unassignedTags}"></input>
+		<input id="selectedTags" type="hidden" th:field="*{selectedTags}"></input>
+		<input id="removeTag" type="hidden" th:field="*{removeTag}"></input>
+		<input id="folioId" type="hidden" th:field="*{folio.id}"></input>
+
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-9">
+				<hr></hr>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="row">
+				<div class="col-md-2"></div>
+				<div class="col-md-9">
+					<button id="folioStatus" type="button" class="input-margin btn btn-info dropdown-toggle" aria-expanded="false" th:text="${feFeedback.userStatus}"></button>
+				</div>
+			</div>
+		</div>
+			
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="input-margin" th:text="#{editFolio.selectFolio}">Select</label>
+			</div>
+			<div class="col-md-8">
+				<div class="btn-group">
+  					<button type="button" class="btn btn-default" th:utext="#{editFolio.selectFolio}" th:onclick="'selectFolio();'">Select Folio</button>
+				</div>				
+			</div>
+		</div>
+<!-- 		
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="input-margin" th:text="#{editFolio.selectFolio}">Select</label>
+			</div>
+			<div class="col-md-8">
+				<div class="btn-group">
+  					<button id="selectFolioBtn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:utext="#{editFolio.selectFolioDown}">
+    					Select Folio <span class="caret"></span>
+  					</button>
+	  				<ul class="dropdown-menu" role="menu">
+	    				<li th:each="folioDescriptor : ${folioCreator.folioDescriptorList}"><a th:id="${folioDescriptor.folioId}" class="selectLocation" th:text="${folioDescriptor.folioTitle}" th:onclick="'getFolio(\'' + ${folioDescriptor.folioId} + '\');'">Title</a></li>
+	  				</ul>
+				</div>				
+			</div>
+		</div>
+ -->
+		<div class="row">
+			<div class="col-md-10">
+				<div id="removeDialog" title="Confirmation Required">
+  					Remove tag from folio?
+				</div>	
+		 	</div>
+		</div>
+		<div class="row">
+			<div class="col-md-10">
+				<div id="addDialog" style="display:none;" title="Add tag"></div>	
+		 	</div>
+		</div>
+
+
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="input-margin" th:text="#{editFolio.pageTitle}">Name</label>
+			</div>
+			<div class="col-md-8">
+				<input id="pageTitle" class="input-margin" th:field="*{folio.title}"></input>
+			</div>
+		</div>
+	
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label th:text="#{editFolio.tags}">Tags</label>
+			</div>
+			<div class="col-md-10">
+				<div class="btn-group input-margin" role="group">
+  					<button id="tagsBtn" class="btn btn-default dropdown-toggle tags-dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    					Tags<span class="caret"></span>
+  					</button>
+	  				<ul class="dropdown-menu tags-dropdown-menu">
+  					</ul>
+				</div>			 
+			</div>
+		</div>		 
+ 
+		<div class="input-margin">
+			<div class="grid-container">
+				<div class="grid-width-100">
+					<textarea id="editor" th:field="*{folio.content}"></textarea>
+				</div>
+			</div>
+		</div>
+	
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-7">
+				<input class="basic-margin" type="submit" value="Submit" />
+			</div>
+		</div>
+
+	</form>
+
+<script>
+<!-- ckeditor js code -->
+	initSample();
+</script>
+
+</body>
+</html>
