@@ -141,7 +141,7 @@ public class FolioController {
 			JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, SimpleTag.class);
 			List<SimpleTag> selectedTagList = null;
 
-			if (selectedTags.isEmpty()) {
+			if (selectedTags.isEmpty() || "{}".equals(selectedTags)) {
 				selectedTagList = new ArrayList<>();
 			} else {
 				try {
