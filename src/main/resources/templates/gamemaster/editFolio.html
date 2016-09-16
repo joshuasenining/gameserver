@@ -161,10 +161,7 @@
 		}
 		
 		function selectFolio() {
-			var action = $("#getFolioForm").attr("action");
-			action = "/gameserver/shared/selectFolio/edit";
-			document.getElementById("getFolioForm").setAttribute("action", action);
-			document.getElementById("getFolioForm").submit();
+			window.location = "/gamemaster/selectFolio?from=edit";
 		}
 		
 	</script>

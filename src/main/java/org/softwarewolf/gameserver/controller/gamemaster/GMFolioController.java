@@ -1,4 +1,4 @@
-package org.softwarewolf.gameserver.controller;
+package org.softwarewolf.gameserver.controller.gamemaster;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,11 +27,12 @@ import org.softwarewolf.gameserver.domain.helper.ViewFolioCreator;
 import org.softwarewolf.gameserver.service.FolioService;
 
 @Controller
-public class FolioController {
+@RequestMapping("/gamemaster")
+public class GMFolioController {
 	@Autowired
 	protected FolioService folioService;
 	
-	@RequestMapping(value = "/gamemaster/editFolio", method = RequestMethod.GET)
+	@RequestMapping(value = "/editFolio", method = RequestMethod.GET)
 	@Secured({"USER"})
 	public String editFolio(HttpSession session, FolioCreator folioCreator, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
@@ -45,7 +47,7 @@ public class FolioController {
 		return ControllerHelper.EDIT_FOLIO;
 	}
 	
-	@RequestMapping(value = "/gamemaster/editFolio/{folioId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/editFolio/{folioId}", method = RequestMethod.GET)
 	@Secured({"USER"})
 	public String editFolioWithId(HttpSession session, FolioCreator folioCreator, 
 			@PathVariable String folioId, final FeFeedback feFeedback) {
@@ -60,7 +62,7 @@ public class FolioController {
 		return ControllerHelper.EDIT_FOLIO;
 	}
 	
-	@RequestMapping(value = "/gamemaster/getFolio/{folioId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/getFolio/{folioId}", method = RequestMethod.GET)
 	@Secured({"USER"})
 	public String getFolio(HttpSession session, @PathVariable String folioId, 
 			FolioCreator folioCreator, final FeFeedback feFeedback) {
@@ -75,7 +77,7 @@ public class FolioController {
 		return ControllerHelper.EDIT_FOLIO;
 	}
 		
-	@RequestMapping(value = "/gamemaster/removeTagFromFolio/{folioId}/{tagId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/removeTagFromFolio/{folioId}/{tagId}", method = RequestMethod.GET)
 	@Secured({"USER"})
 	public String removeTagFromFolio(HttpSession session, FolioCreator folioCreator, 
 			@PathVariable String folioId, @PathVariable String tagId, final FeFeedback feFeedback) {
@@ -90,7 +92,7 @@ public class FolioController {
 		return ControllerHelper.EDIT_FOLIO;
 	}
 
-	@RequestMapping(value = "/gamemaster/addTagToFolio/{folioId}/{tagName}", method = RequestMethod.GET)
+	@RequestMapping(value = "/addTagToFolio/{folioId}/{tagName}", method = RequestMethod.GET)
 	@Secured({"USER"})
 	public String addTagToFolio(HttpSession session, FolioCreator folioCreator, 
 			@PathVariable String folioId, @PathVariable String tagName, final FeFeedback feFeedback) {
@@ -125,7 +127,7 @@ public class FolioController {
 		return ControllerHelper.EDIT_FOLIO;
 	}
 
-	@RequestMapping(value = "/gamemaster/editFolio", method = RequestMethod.POST)
+	@RequestMapping(value = "/editFolio", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER"})
 	public String postEditPage(HttpSession session, FolioCreator folioCreator, 
 			final FeFeedback feFeedback) {
@@ -167,10 +169,10 @@ public class FolioController {
 		return ControllerHelper.EDIT_FOLIO;
 	}	
 	
-	@RequestMapping(value = "/shared/selectFolio/{returnCode}", method = RequestMethod.GET)
-	@Secured({"GAMEMASTER"})
+	@RequestMapping(value = "/selectFolio", method = RequestMethod.GET)
+	@Secured({"USER", "GAMEMASTER"})
 	public String selectFolio(HttpSession session, SelectFolioCreator selectFolioCreator,
-			@PathVariable String returnCode, final FeFeedback feFeedback) {
+			@RequestParam String from, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
@@ -178,9 +180,9 @@ public class FolioController {
 		
 		folioService.initSelectFolioCreator(campaignId, selectFolioCreator);
 		// Need to pick the correct forwarding url, this is just generic
-		if ("edit".equals(returnCode)) {
+		if ("edit".equals(from)) {
 			selectFolioCreator.setForwardingUrl(ControllerHelper.EDIT_FOLIO);
-		} else if ("view".equals(returnCode)) {
+		} else if ("view".equals(from)) {
 			selectFolioCreator.setForwardingUrl(ControllerHelper.VIEW_FOLIO);
 		}
 		return ControllerHelper.SELECT_FOLIO;
@@ -210,7 +212,7 @@ public class FolioController {
 		return ControllerHelper.SELECT_FOLIO;
 	}
 
-	@RequestMapping(value = "/shared/viewFolio", method = RequestMethod.GET)
+	@RequestMapping(value = "/viewFolio", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
 	public String viewFolio(HttpSession session, ViewFolioCreator viewFolioCreator, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
@@ -222,7 +224,7 @@ public class FolioController {
 		return ControllerHelper.VIEW_FOLIO;
 	}
 
-	@RequestMapping(value = "/shared/viewFolio/{folioId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/viewFolio/{folioId}", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
 	public String viewFolioWithId(HttpSession session, ViewFolioCreator viewFolioCreator, 
 			@PathVariable String folioId, final FeFeedback feFeedback) {

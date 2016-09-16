@@ -13,6 +13,7 @@ public class ControllerHelper {
 	public static final String EDIT_ORGANIZATION = "/gamemaster/editOrganization";
 	public static final String EDIT_ORGANIZATION_RANK = "/gamemaster/editOrganizationRank";
 	public static final String EDIT_ORGANIZATION_TYPE = "/gamemaster/editOrganizationType";
-	public static final String SELECT_FOLIO = "/shared/selectFolio";
-	public static final String VIEW_FOLIO = "/shared/viewFolio";
+	public static final String SELECT_FOLIO = "/gamemaster/selectFolio";
+	public static final String VIEW_FOLIO = "/gamemaster/viewFolio";
+	public static final String LOGIN = "/login";
 }
