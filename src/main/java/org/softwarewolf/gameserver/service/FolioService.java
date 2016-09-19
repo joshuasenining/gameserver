@@ -101,7 +101,7 @@ public class FolioService implements Serializable {
 			folioCreator.setSelectedTags("{}");
 		}
 
-		List<SimpleTag> unassignedTags = simpleTagService.getUnassignedTags(campaignId);
+		List<SimpleTag> unassignedTags = simpleTagService.getUnassignedTags(campaignId, folio.getId());
 		String json;
 		try {
 			json = mapper.writeValueAsString(unassignedTags);

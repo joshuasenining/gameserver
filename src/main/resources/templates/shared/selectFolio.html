@@ -102,14 +102,14 @@
 </script>	
 <script th:inline="javascript">
 	function addTag(tagName) {
-		$("#selectFolioForm").attr("action", "/gamemaster/shared/folio/addTagToSearch");
+		$("#selectFolioForm").attr("action", "/shared/folio/addTagToSearch");
 		$("#selectFolioForm").attr("method", "post");
 		$("#addTagName").val(tagName);
 		$("#selectFolioForm").submit();
 	}
 	
 	function removeTag(tagName) {
-		$("#selectFolioForm").attr("action", "/gamemaster/shared/folio/removeTagFromSearch");
+		$("#selectFolioForm").attr("action", "/shared/folio/removeTagFromSearch");
 		$("#selectFolioForm").attr("method", "post");
 		$("#removeTagName").val(tagName);
 		$("#selectFolioForm").submit();

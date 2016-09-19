@@ -34,7 +34,7 @@
 
 	<script th:inline="javascript">
 	function selectFolio() {
-		window.location = "/gamemaster/selectFolio?from=view";
+		window.location = "/shared/selectFolio?from=view";
 	}
 	</script>
 </head>
@@ -49,7 +49,7 @@
 		</div>
 	</div>
 
-	<form id="viewFolioForm" th:object="${viewFolioCreator}" action="#" th:action="@{/viewFolio}" method="get">
+	<form id="viewFolioForm" th:object="${viewFolioCreator}" action="#" th:action="@{/shared/viewFolio}" method="get">
 		
 		<div class="row">
 			<div class="col-md-1"></div>

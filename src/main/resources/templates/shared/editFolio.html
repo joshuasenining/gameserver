@@ -82,7 +82,7 @@
 			$("#removeDialog").dialog({
 				buttons : {
 			    	"Confirm" : function() {
-			    		var action = "/gameserver/gamemaster/removeTagFromFolio/" + folioId + "/" + tagId;
+			    		var action = "/gameserver/shared/removeTagFromFolio/" + folioId + "/" + tagId;
 			    		window.location.href = action;
 			    		$("#removeTagForm").attr("action", action);
 			    		$("#removeTagForm").submit();
@@ -161,7 +161,7 @@
 		}
 		
 		function selectFolio() {
-			window.location = "/gamemaster/selectFolio?from=edit";
+			window.location = "/shared/selectFolio?from=edit";
 		}
 		
 	</script>
@@ -192,10 +192,10 @@
 		</div>
 	</div>
 
-	<form id="addTagToFolioForm" action="/gameserver/gamemaster/addTagToFolio/" method="get"></form>
-	<form id="getFolioForm" action="/gameserver/gamemaster/getFolio/" method="get"></form>
-	<form id="removeTagForm" action="/gamemaster/removeTagFromFolio" method="get"></form>
-	<form id="createFolioForm" th:object="${folioCreator}" action="#" th:action="@{/gamemaster/editFolio}" method="post">
+	<form id="addTagToFolioForm" action="/shared/addTagToFolio/" method="get"></form>
+	<form id="getFolioForm" action="/shared/getFolio/" method="get"></form>
+	<form id="removeTagForm" action="/shared/removeTagFromFolio" method="get"></form>
+	<form id="createFolioForm" th:object="${folioCreator}" action="#" th:action="@{/shared/editFolio}" method="post">
 		<input id="campaignId" type="hidden" th:field="*{folio.campaignId}"></input>
 		<input id="unassignedTags" type="hidden" th:field="*{unassignedTags}"></input>
 		<input id="selectedTags" type="hidden" th:field="*{selectedTags}"></input>

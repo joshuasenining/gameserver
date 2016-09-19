@@ -53,20 +53,20 @@ public class SimpleTagService {
 	 * @param campaignId
 	 * @return
 	 */
-	public List<SimpleTag> getUnassignedTags(String campaignId) {
+	public List<SimpleTag> getUnassignedTags(String campaignId, String folioId) {
 		List<SimpleTag> unassignedTags = new ArrayList<>();
 		List<SimpleTag> allTags = getTagList(campaignId, unassignedTags);
-		Set<SimpleTag> assignedTags = new HashSet<>();
-		List<Folio> allFolios = folioService.findAll();
-		for(Folio currentFolio : allFolios) {
-			List<SimpleTag> tagList = currentFolio.getTags();
-			if (tagList != null) {
-				assignedTags.addAll(tagList);
-			}	
+		Folio folio = null;
+		if (folioId != null) {
+			folio = folioService.findOne(folioId);
 		}
-		for (SimpleTag currentTag : allTags) {
-			if (!assignedTags.contains(currentTag)) {
-				unassignedTags.add(currentTag);
+		if (folio == null) {
+			unassignedTags = allTags;
+		} else {
+			for (SimpleTag currentTag : allTags) {
+				if (!folio.getTags().contains(currentTag)) {
+					unassignedTags.add(currentTag);
+				}
 			}
 		}
 		return unassignedTags;

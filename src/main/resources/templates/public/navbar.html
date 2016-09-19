@@ -24,7 +24,7 @@
 		            <span class="icon-bar"></span>
 		            <span class="icon-bar"></span>
 		          </button>
-		          <a class="navbar-brand" href="/gameserver/user/menu" th:text="#{login.page.appnamne}">Project name</a>
+		          <a class="navbar-brand" href="/user/menu" th:text="#{login.page.appnamne}">Project name</a>
 		        </div>
 		        <div id="navbar" class="navbar-collapse collapse">
 		          <div sec:authorize="hasRole('ROLE_ADMIN')">
@@ -55,8 +55,8 @@
 		                  <li th:if="${session.campaignName}"><a href="/gamemaster/editLocation" th:text="#{menu.item.editLocation}">Create T</a></li>
 		                  <li th:if="${session.campaignName}"><a href="/gamemaster/editOrganization" th:text="#{menu.item.editOrganization}">Create T</a></li>
 		                  <li th:if="${session.campaignName}"><a href="/gamemaster/editOrganizationRank" th:text="#{menu.item.editOrganizationRank}">Create T</a></li>
-		                  <li><a th:if="${session.campaignName}" href="/gamemaster/editFolio" th:text="#{menu.item.editFolio}">Create T</a></li>
-		                  <li><a th:if="${session.campaignName}" href="/gamemaster/viewFolio" th:text="#{viewFolio.title}">view</a></li>
+		                  <li><a th:if="${session.campaignName}" href="/shared/editFolio" th:text="#{menu.item.editFolio}">Create T</a></li>
+		                  <li><a th:if="${session.campaignName}" href="/shared/viewFolio" th:text="#{viewFolio.title}">view</a></li>
 		                </ul>
 		              </li>
 		            </ul>

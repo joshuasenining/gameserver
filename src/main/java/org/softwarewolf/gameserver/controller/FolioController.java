@@ -1,4 +1,4 @@
-package org.softwarewolf.gameserver.controller.gamemaster;
+package org.softwarewolf.gameserver.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,13 +27,13 @@ import org.softwarewolf.gameserver.domain.helper.ViewFolioCreator;
 import org.softwarewolf.gameserver.service.FolioService;
 
 @Controller
-@RequestMapping("/gamemaster")
-public class GMFolioController {
+@RequestMapping("/shared")
+public class FolioController {
 	@Autowired
 	protected FolioService folioService;
 	
 	@RequestMapping(value = "/editFolio", method = RequestMethod.GET)
-	@Secured({"USER"})
+	@Secured({"USER","GAMEMASTER"})
 	public String editFolio(HttpSession session, FolioCreator folioCreator, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
@@ -48,7 +48,7 @@ public class GMFolioController {
 	}
 	
 	@RequestMapping(value = "/editFolio/{folioId}", method = RequestMethod.GET)
-	@Secured({"USER"})
+	@Secured({"USER","GAMEMASTER"})
 	public String editFolioWithId(HttpSession session, FolioCreator folioCreator, 
 			@PathVariable String folioId, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
@@ -63,7 +63,7 @@ public class GMFolioController {
 	}
 	
 	@RequestMapping(value = "/getFolio/{folioId}", method = RequestMethod.GET)
-	@Secured({"USER"})
+	@Secured({"USER","GAMEMASTER"})
 	public String getFolio(HttpSession session, @PathVariable String folioId, 
 			FolioCreator folioCreator, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
@@ -78,7 +78,7 @@ public class GMFolioController {
 	}
 		
 	@RequestMapping(value = "/removeTagFromFolio/{folioId}/{tagId}", method = RequestMethod.GET)
-	@Secured({"USER"})
+	@Secured({"USER","GAMEMASTER"})
 	public String removeTagFromFolio(HttpSession session, FolioCreator folioCreator, 
 			@PathVariable String folioId, @PathVariable String tagId, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
@@ -93,7 +93,7 @@ public class GMFolioController {
 	}
 
 	@RequestMapping(value = "/addTagToFolio/{folioId}/{tagName}", method = RequestMethod.GET)
-	@Secured({"USER"})
+	@Secured({"USER","GAMEMASTER"})
 	public String addTagToFolio(HttpSession session, FolioCreator folioCreator, 
 			@PathVariable String folioId, @PathVariable String tagName, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
@@ -188,8 +188,8 @@ public class GMFolioController {
 		return ControllerHelper.SELECT_FOLIO;
 	}
 
-	@RequestMapping(value = "/shared/folio/addTagToSearch", method = RequestMethod.POST)
-	@Secured({"GAMEMASTER"})
+	@RequestMapping(value = "/folio/addTagToSearch", method = RequestMethod.POST)
+	@Secured({"USER","GAMEMASTER"})
 	public String addTagToSearch(HttpSession session, SelectFolioCreator selectFolioCreator, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
@@ -200,8 +200,8 @@ public class GMFolioController {
 		return ControllerHelper.SELECT_FOLIO;
 	}
 
-	@RequestMapping(value = "/shared/folio/removeTagFromSearch", method = RequestMethod.POST)
-	@Secured({"GAMEMASTER"})
+	@RequestMapping(value = "/folio/removeTagFromSearch", method = RequestMethod.POST)
+	@Secured({"USER","GAMEMASTER"})
 	public String removeTagFromSearch(HttpSession session, SelectFolioCreator selectFolioCreator, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
@@ -213,7 +213,7 @@ public class GMFolioController {
 	}
 
 	@RequestMapping(value = "/viewFolio", method = RequestMethod.GET)
-	@Secured({"GAMEMASTER"})
+	@Secured({"USER","GAMEMASTER"})
 	public String viewFolio(HttpSession session, ViewFolioCreator viewFolioCreator, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
@@ -225,7 +225,7 @@ public class GMFolioController {
 	}
 
 	@RequestMapping(value = "/viewFolio/{folioId}", method = RequestMethod.GET)
-	@Secured({"GAMEMASTER"})
+	@Secured({"USER","GAMEMASTER"})
 	public String viewFolioWithId(HttpSession session, ViewFolioCreator viewFolioCreator, 
 			@PathVariable String folioId, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
