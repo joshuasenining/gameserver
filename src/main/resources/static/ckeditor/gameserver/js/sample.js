@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md or http://ckeditor.com/license
  */
 
@@ -30,7 +30,15 @@ var initSample = ( function() {
 
 		// Depending on the wysiwygare plugin availability initialize classic or inline editor.
 		if ( wysiwygareaAvailable ) {
-			CKEDITOR.replace( 'editor' );
+//			CKEDITOR.replace( 'editor' );
+			UPLOADCARE_PUBLIC_KEY = "demopublickey"; // set public key for Uploadcare
+			CKEDITOR.replace( 'editor', {
+			  extraPlugins: 'uploadcare', // this will enable plugin
+//			  toolbar: [
+//			    // add Uploadcare button to toolbar, e.g.:
+//			    ['Bold', 'Italic', '-', 'NumberedList', 'BulletedList', '-', 'Link', 'Unlink', '-', 'Uploadcare']
+//			  ]
+			});			
 		} else {
 			editorElement.setAttribute( 'contenteditable', 'true' );
 			CKEDITOR.inline( 'editor' );
