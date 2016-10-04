@@ -1,4 +1,4 @@
-package org.softwarewolf.gameserver.domain.helper;
+package org.softwarewolf.gameserver.domain.dto;
 
 public class UserCreator {
 	private String id;

@@ -1,4 +1,4 @@
-package org.softwarewolf.gameserver.domain.helper;
+package org.softwarewolf.gameserver.domain.dto;
 
 import java.io.Serializable;
 import java.util.List;

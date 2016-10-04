@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.User;
-import org.softwarewolf.gameserver.domain.helper.CampaignCreator;
-import org.softwarewolf.gameserver.domain.helper.SelectCampaignHelper;
-import org.softwarewolf.gameserver.domain.helper.UserListItem;
+import org.softwarewolf.gameserver.domain.dto.CampaignDto;
+import org.softwarewolf.gameserver.domain.dto.SelectCampaignHelper;
+import org.softwarewolf.gameserver.domain.dto.UserListItem;
 import org.softwarewolf.gameserver.repository.CampaignPlayerRepository;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
 import org.softwarewolf.gameserver.repository.UserRepository;
@@ -43,7 +43,7 @@ public class CampaignService {
 		return gamemasters;
 	}
 	
-	public void initCampaignCreator(CampaignCreator campaignCreator, User user) {
+	public void initCampaignCreator(CampaignDto campaignCreator, User user) {
 		campaignCreator.setGamemasters(getGamemasters());
 		campaignCreator.setOwnerId(user.getId());
 		campaignCreator.setOwnerName(user.getUsername());

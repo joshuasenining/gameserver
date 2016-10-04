@@ -30,28 +30,6 @@
 	$(document).ready(function() {
 		$( window ).load(function() {
 			
-			var value = $("#selectedTags").val();
-			var data = jQuery.parseJSON(value);
-
-			var ul = '<ul class="dropdown-menu"></ul>';
-			$(".tags-dropdown-toggle").after(ul);
-			var string0 = '<li id="0" class="selectTag"><a href="#" onclick="addTag();">Add a tag</a></li>';
-			$(".tags-dropdown-menu").append(string0);
-			var string1 = '<li class="divider"></li>';
-			$(".tags-dropdown-menu").append(string1);
-				
-			var folioId = $("#folioId").val();
-			if (data.length == 0) {
-				alert("0");
-			}
-			$.each(data, function(index, currentTag) {
-				var tagId = currentTag['objectId'];
-				var tagName = currentTag['tagName'];
-				var paramString = "\'"+folioId+"\', \'"+tagId+"\', \'"+tagName+"\'";
-				var current = '<li id="'+tagId+'" class="selectTag"><a href="#" onclick="removeTag('+paramString+');">'+tagName+'</a></li>'; 
-				$(".tags-dropdown-menu").append(current);
-			});
-
 		});	
 
 		$("#removeDialog").dialog({
@@ -76,16 +54,16 @@
 	</script>   
 
 	<script>
-		function removeTag(folioId, tagId, tagName) {
-			$("#removeDialog").text("Remove the tag " + tagName + "?");
+		function removeFolio(bookId, folioId, folioName) {
+			$("#removeDialog").text("Remove the folio " + folioName + "?");
 	
 			$("#removeDialog").dialog({
 				buttons : {
 			    	"Confirm" : function() {
-			    		var action = "/gameserver/shared/removeTagFromFolio/" + folioId + "/" + tagId;
+			    		var action = "/gameserver/shared/removeFolioFromBook/" + folioId + "/" + bookId;
 			    		window.location.href = action;
-			    		$("#removeTagForm").attr("action", action);
-			    		$("#removeTagForm").submit();
+			    		$("#removeFolioForm").attr("action", action);
+			    		$("#removeFolioForm").submit();
 			        },
 			        "Cancel" : function() {
 			        	$(this).dialog("close");
@@ -96,32 +74,7 @@
 			$("#removeDialog").dialog("open");			
 		}
 		
-		// unselectedTags is an object with nested objects in a parent->children relationship
-		// with the top element being Root (a fake element) and there being only two levels
-		// beneath them
-		function getTags(tags) {
-			var firstTierChildren = tags.children;
-			
-			var liList = ' ';
-			$.each(firstTierChildren, function(index, firstTierTag) {
-				liList += getSecondTierTags(firstTierTag);
-			});
-			
-			return liList;
-		}
-		
-		function getSecondTierTags(firstTierTag) {
-			var liList = ' ';
-			$.each(firstTierTag.children, function(index, secondTierTag) {
-				var secondTierLi = '<li class="ui-widget-content" class-name="'+secondTierTag['name']+'" tag-id="'+secondTierTag['id']+'">'+secondTierTag['displayName']+'</li>'; 
-				liList += secondTierLi;
-			});
-			var firstTierLi = '<li class="ui-widget-content" class-name="'+firstTierTag['name']+'" tag-id="'+firstTierTag['id']+'">'+firstTierTag['displayName']+'</li>';
-			liList = firstTierLi + liList;
-			return liList;
-		}
-		
-		function addTag() {
+		function addFolio() {
 			$("#addDialog").empty();
 
 			var unassignedTagsField = $("#unassignedTags");
@@ -175,7 +128,7 @@
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-11">
-			<h1 th:text="#{editFolio.title}">Updated</h1>
+			<h1 th:text="#{editBook.title}">Updated</h1>
 		</div>
 	</div>
 
@@ -192,15 +145,13 @@
 		</div>
 	</div>
 
-	<form id="addTagToFolioForm" action="/shared/addTagToFolio/" method="get"></form>
-	<form id="getFolioForm" action="/shared/getFolio/" method="get"></form>
-	<form id="removeTagForm" action="/shared/removeTagFromFolio" method="get"></form>
-	<form id="createFolioForm" th:object="${folioDto}" action="#" th:action="@{/shared/editFolio}" method="post">
-		<input id="campaignId" type="hidden" th:field="*{folio.campaignId}"></input>
-		<input id="unassignedTags" type="hidden" th:field="*{unassignedTags}"></input>
-		<input id="selectedTags" type="hidden" th:field="*{selectedTags}"></input>
-		<input id="removeTag" type="hidden" th:field="*{removeTag}"></input>
-		<input id="folioId" type="hidden" th:field="*{folio.id}"></input>
+	<form id="addFolioToBookForm" action="/shared/addFolioToBook/" method="post"></form>
+	<form id="removeFolioFromBookForm" action="/shared/removeFolioFromBook" method="post"></form>
+	<form id="getBookForm" action="/shared/getBook/" method="get"></form>
+	<form id="createBookForm" th:object="${bookCreator}" action="#" th:action="@{/shared/editBook}" method="post">
+		<input id="campaignId" type="hidden" th:field="*{book.campaignId}"></input>
+		<input id="selectedFolios" type="hidden" th:field="*{selectedFolios}"></input>
+		<input id="bookId" type="hidden" th:field="*{book.id}"></input>
 
 		<div class="row">
 			<div class="col-md-1"></div>
@@ -221,42 +172,24 @@
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
-				<label class="input-margin" th:text="#{editFolio.selectFolio}">Select</label>
+				<label class="input-margin" th:text="#{editBook.selectBook}">Select</label>
 			</div>
 			<div class="col-md-8">
 				<div class="btn-group">
-  					<button type="button" class="btn btn-default" th:utext="#{editFolio.selectFolio}" th:onclick="'selectFolio();'">Select Folio</button>
+  					<button type="button" class="btn btn-default" th:utext="#{editBook.selectBook}" th:onclick="'selectBook();'">Select Folio</button>
 				</div>				
 			</div>
 		</div>
-<!-- 		
-		<div class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-1">
-				<label class="input-margin" th:text="#{editFolio.selectFolio}">Select</label>
-			</div>
-			<div class="col-md-8">
-				<div class="btn-group">
-  					<button id="selectFolioBtn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:utext="#{editFolio.selectFolioDown}">
-    					Select Folio <span class="caret"></span>
-  					</button>
-	  				<ul class="dropdown-menu" role="menu">
-	    				<li th:each="folioDescriptor : ${folioDto.folioDescriptorList}"><a th:id="${folioDescriptor.folioId}" class="selectLocation" th:text="${folioDescriptor.folioTitle}" th:onclick="'getFolio(\'' + ${folioDescriptor.folioId} + '\');'">Title</a></li>
-	  				</ul>
-				</div>				
-			</div>
-		</div>
- -->
 		<div class="row">
 			<div class="col-md-10">
 				<div id="removeDialog" title="Confirmation Required">
-  					Remove tag from folio?
+  					Remove folio from book?
 				</div>	
 		 	</div>
 		</div>
 		<div class="row">
 			<div class="col-md-10">
-				<div id="addDialog" style="display:none;" title="Add tag"></div>	
+				<div id="addDialog" style="display:none;" title="Add book"></div>	
 		 	</div>
 		</div>
 
@@ -264,29 +197,29 @@
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
-				<label class="input-margin" th:text="#{editFolio.pageTitle}">Name</label>
+				<label class="input-margin" th:text="#{editBook.pageTitle}">Name</label>
 			</div>
 			<div class="col-md-8">
-				<input id="pageTitle" class="input-margin" th:field="*{folio.title}"></input>
+				<input id="bookTitle" class="input-margin" th:field="*{book.title}"></input>
 			</div>
 		</div>
 	
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
-				<label th:text="#{editFolio.tags}">Tags</label>
+				<label th:text="#{editBook.folios}">Folios</label>
 			</div>
 			<div class="col-md-10">
 				<div class="btn-group input-margin" role="group">
-  					<button id="tagsBtn" class="btn btn-default dropdown-toggle tags-dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-    					Tags<span class="caret"></span>
+  					<button id="foliosBtn" class="btn btn-default dropdown-toggle tags-dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    					Folios<span class="caret"></span>
   					</button>
 	  				<ul class="dropdown-menu tags-dropdown-menu">
   					</ul>
 				</div>			 
 			</div>
 		</div>		 
- 
+ <!--
 		<div class="input-margin">
 			<div class="grid-container">
 				<div class="grid-width-100">
@@ -294,7 +227,7 @@
 				</div>
 			</div>
 		</div>
-	
+-->	
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-7">

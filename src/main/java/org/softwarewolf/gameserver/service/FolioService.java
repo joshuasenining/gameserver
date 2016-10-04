@@ -3,15 +3,14 @@ package org.softwarewolf.gameserver.service;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.softwarewolf.gameserver.domain.Folio;
-import org.softwarewolf.gameserver.domain.helper.FolioCreator;
-import org.softwarewolf.gameserver.domain.helper.FolioDescriptor;
 import org.softwarewolf.gameserver.domain.SimpleTag;
-import org.softwarewolf.gameserver.domain.helper.SelectFolioCreator;
-import org.softwarewolf.gameserver.domain.helper.ViewFolioCreator;
+import org.softwarewolf.gameserver.domain.dto.FolioDto;
+import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
+import org.softwarewolf.gameserver.domain.dto.SelectFolioCreator;
+import org.softwarewolf.gameserver.domain.dto.ViewFolioCreator;
 import org.softwarewolf.gameserver.repository.FolioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,16 +27,7 @@ public class FolioService implements Serializable {
 	
 	@Autowired
 	private FolioRepository folioRepository;
-	@Autowired
-	private OrganizationService organizationService;
-	@Autowired
-	private OrganizationRankService organizationRankService;
-	@Autowired
-	private OrganizationTypeService organizationTypeService;
-	@Autowired
-	private LocationService locationService;
-	@Autowired
-	private LocationTypeService locationTypeService;
+
 	@Autowired
 	private SimpleTagService simpleTagService;
 	
@@ -73,12 +63,12 @@ public class FolioService implements Serializable {
 		return folioRepository.findAll();
 	}
 	
-	public void initFolioCreator(FolioCreator folioCreator, String folioId, String campaignId) {
+	public void initFolioCreator(FolioDto folioCreator, String folioId, String campaignId) {
 		Folio folio = folioRepository.findOne(folioId);
 		initFolioCreator(folioCreator, folio, campaignId);
 	}
 	
-	public void initFolioCreator(FolioCreator folioCreator, Folio folio, String campaignId) {
+	public void initFolioCreator(FolioDto folioCreator, Folio folio, String campaignId) {
 		if (folio == null) {
 			folio = new Folio();
 			folio.setCampaignId(campaignId);

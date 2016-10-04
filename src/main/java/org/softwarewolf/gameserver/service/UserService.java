@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.softwarewolf.gameserver.domain.DeleteableRole;
 import org.softwarewolf.gameserver.domain.User;
-import org.softwarewolf.gameserver.domain.helper.RoleLists;
-import org.softwarewolf.gameserver.domain.helper.RolesData;
-import org.softwarewolf.gameserver.domain.helper.UserListItem;
+import org.softwarewolf.gameserver.domain.dto.RoleLists;
+import org.softwarewolf.gameserver.domain.dto.RolesData;
+import org.softwarewolf.gameserver.domain.dto.UserListItem;
 import org.softwarewolf.gameserver.repository.DeleteableRoleRepository;
 import org.softwarewolf.gameserver.repository.SimpleGrantedAuthorityRepository;
 import org.softwarewolf.gameserver.repository.UserRepository;

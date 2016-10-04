@@ -20,21 +20,12 @@ import org.softwarewolf.gameserver.controller.helper.ImportExportHelper;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.CampaignPlayer;
 import org.softwarewolf.gameserver.domain.Folio;
-import org.softwarewolf.gameserver.domain.Location;
-import org.softwarewolf.gameserver.domain.LocationType;
-import org.softwarewolf.gameserver.domain.Organization;
-import org.softwarewolf.gameserver.domain.OrganizationRank;
-import org.softwarewolf.gameserver.domain.OrganizationType;
 import org.softwarewolf.gameserver.domain.User;
-import org.softwarewolf.gameserver.domain.helper.CampaignData;
+import org.softwarewolf.gameserver.domain.dto.CampaignData;
 import org.softwarewolf.gameserver.repository.CampaignPlayerRepository;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
 import org.softwarewolf.gameserver.repository.FolioRepository;
-import org.softwarewolf.gameserver.repository.LocationRepository;
-import org.softwarewolf.gameserver.repository.LocationTypeRepository;
-import org.softwarewolf.gameserver.repository.OrganizationRankRepository;
-import org.softwarewolf.gameserver.repository.OrganizationRepository;
-import org.softwarewolf.gameserver.repository.OrganizationTypeRepository;
+
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,21 +51,6 @@ public class ImportExportService {
 	
 	@Autowired
 	FolioRepository folioRepository;
-
-	@Autowired
-	LocationRepository locationRepository;
-
-	@Autowired
-	LocationTypeRepository locationTypeRepository;
-
-	@Autowired
-	OrganizationRepository organizationRepository;
-
-	@Autowired
-	OrganizationTypeRepository organizationTypeRepository;
-
-	@Autowired
-	OrganizationRankRepository organizationRankRepository;
 
 	public void initImportExportHelper(ImportExportHelper importExportHelper, boolean isImport, String forwardingUrl) 
 			throws JsonGenerationException, JsonMappingException, IOException {
@@ -103,7 +79,7 @@ public class ImportExportService {
 		}
 	}
 	
-	
+	// TODO: Add SimpleTag list
 	public String exportCampaign(String campaignId) throws IOException {
 		ResourceBundle resources = ResourceBundle.getBundle("gameserver");
 		String backupDir = resources.getString("exportLocation");
@@ -147,21 +123,6 @@ public class ImportExportService {
 		List<Folio> folioList = folioRepository.findAllByKeyValue("campaignId", campaignId);
 		campaignData.setFolioList(folioList);
 
-		List<Location> locationList = locationRepository.findAllByKeyValue("campaignId", campaignId);
-		campaignData.setLocationList(locationList);
-		
-		List<LocationType> locationTypeList = locationTypeRepository.findAllByKeyValue("campaignId", campaignId);
-		campaignData.setLocationTypeList(locationTypeList);
-		
-		List<Organization> organizationList = organizationRepository.findAllByKeyValue("campaignId", campaignId);
-		campaignData.setOrganizationList(organizationList);
-		
-		List<OrganizationType> organizationTypeList = organizationTypeRepository.findAllByKeyValue("campaignId", campaignId);
-		campaignData.setOrganizationTypeList(organizationTypeList);
-		
-		List<OrganizationRank> organizationRankList = organizationRankRepository.findAllByKeyValue("campaignId", campaignId);
-		campaignData.setOrganizationRankList(organizationRankList);
-		
 		String campaignDataAsString = mapper.writeValueAsString(campaignData);
 		
 		// Write the file
@@ -188,6 +149,7 @@ public class ImportExportService {
 		return fileName;
 	}
 
+	// TODO: Add SimpleTag list
 	public void importCampaignData(MultipartFile file) throws IOException {
 	  	if (!file.isEmpty()) {
   			byte[] bytes = file.getBytes();
@@ -213,11 +175,6 @@ public class ImportExportService {
   				campaignData = mapper.readValue(campaignAsString, CampaignData.class);
   				Campaign campaign = campaignData.getCampaign();
   				List<Folio> folioList = campaignData.getFolioList();
-  				List<Location> locationList = campaignData.getLocationList();
-  				List<LocationType> locationTypeList = campaignData.getLocationTypeList();
-  				List<Organization> organizationList = campaignData.getOrganizationList();
-  				List<OrganizationRank> organizationRankList = campaignData.getOrganizationRankList();
-  				List<OrganizationType> organizationType = campaignData.getOrganizationTypeList();
   				List<User> userList = campaignData.getUserList();
   				
   				Map<String, User> oldUserIdToNewUserMap = restoreCampaignUsers(userList);
@@ -311,32 +268,6 @@ public class ImportExportService {
 			}
 			folioRepository.save(backupFolio);
 		}
-	}
-	
-	public void restoreLocations(List<Location> locationList, String campaignId) {
-		for (Location backupLocation : locationList) {
-			Location currentLocation = locationRepository.findOneByNameAndCampaignId(backupLocation.getName(), campaignId);
-			if (currentLocation != null) {
-				backupLocation.setId(currentLocation.getId());
-			}
-			locationRepository.save(backupLocation);
-		}
-	}
-	
-	public void restoreLocationTypes(List<LocationType> locationTypeList) {
-		
-	}
-	
-	public void restoreOrganizations(List<Organization> organizationList) {
-		
-	}
-	
-	public void restoreOrganizationTypes(List<OrganizationType> organizationTypeList) {
-		
-	}
-	
-	public void restoreOrganizationRanks(List<OrganizationRank> organizationRankList) {
-		
 	}
 	
 	public void importCampaign(String filePath) {

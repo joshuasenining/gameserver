@@ -2,7 +2,7 @@ package org.softwarewolf.gameserver.controller;
 
 import javax.servlet.http.HttpSession;
 
-import org.softwarewolf.gameserver.domain.helper.SelectCampaignHelper;
+import org.softwarewolf.gameserver.domain.dto.SelectCampaignHelper;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.softwarewolf.gameserver.service.CampaignService;
 import org.springframework.beans.factory.annotation.Autowired;

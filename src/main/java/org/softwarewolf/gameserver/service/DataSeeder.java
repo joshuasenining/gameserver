@@ -6,21 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.softwarewolf.gameserver.domain.Campaign;
-import org.softwarewolf.gameserver.domain.Organization;
-import org.softwarewolf.gameserver.domain.OrganizationRank;
-import org.softwarewolf.gameserver.domain.OrganizationType;
 import org.softwarewolf.gameserver.domain.Folio;
-import org.softwarewolf.gameserver.domain.Location;
-import org.softwarewolf.gameserver.domain.LocationType;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
-import org.softwarewolf.gameserver.repository.OrganizationRankRepository;
-import org.softwarewolf.gameserver.repository.OrganizationRepository;
-import org.softwarewolf.gameserver.repository.OrganizationTypeRepository;
 import org.softwarewolf.gameserver.repository.SimpleGrantedAuthorityRepository;
-import org.softwarewolf.gameserver.repository.LocationRepository;
-import org.softwarewolf.gameserver.repository.LocationTypeRepository;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -40,14 +30,10 @@ public class DataSeeder {
 	private static final String MODERN = "Modern";
 	private static final String KINGDOM = "Kingdom";
 	private static final String RIVAL_KINGDOM = "Rival Kingdom";
-	private static final String MAGIC_KINGDOM = "Magic Kingdom";
 	private static final String MAGIC_COUNTY = "Magic County";
 	private static final String MAGIC_CITY = "Magic City";
 	private static final String MAGIC_TOWN = "Magic Town";
-	private static final String MODERN_KINGDOM = "Modern Kingdom";
-	private static final String MODERN_COUNTY = "Modern County";
-	private static final String MODERN_CITY = "Modern City";
-	private static final String MODERN_SPACE_STATION = "Modern Space Station";
+	private static final String COUNTRY = "Country";
 	private static final String STATE = "State";
 	private static final String COUNTY = "County";
 	private static final String CITY = "City";
@@ -59,6 +45,8 @@ public class DataSeeder {
 	private static final String SPACE_STATION = "Space Station";
 	private static final String KINGDOM_OF_MIDLAND = KINGDOM + " of Midland";
 	private static final String GOLDEN_ROAD = "Golden Road Trading League";
+	private static final String LOCATION = "Location";
+	private static final String ORGANIZATION = "Organization";
 	
 	@Autowired
 	private UserRepository userRepo;
@@ -68,24 +56,6 @@ public class DataSeeder {
 	
 	@Autowired 
 	private CampaignRepository campaignRepo;
-	
-	@Autowired 
-	private LocationTypeRepository locationTypeRepo;
-	
-	@Autowired 
-	private LocationRepository locationRepo;
-	
-	@Autowired
-	private LocationService locationService;
-	
-	@Autowired 
-	private OrganizationTypeRepository organizationTypeRepo;
-	
-	@Autowired 
-	private OrganizationRepository organizationRepo;
-	
-	@Autowired 
-	private OrganizationRankRepository organizationRankRepo;
 	
 	@Autowired
 	private SimpleTagService simpleTagService;
@@ -97,11 +67,6 @@ public class DataSeeder {
 		sgaRepo.deleteAll();
 		userRepo.deleteAll();
 		campaignRepo.deleteAll();
-		locationRepo.deleteAll();
-		locationTypeRepo.deleteAll();
-		organizationRepo.deleteAll();
-		organizationTypeRepo.deleteAll();
-		organizationRankRepo.deleteAll();
 		folioService.deleteAll();
 		simpleTagService.deleteAll();
 	}
@@ -110,12 +75,17 @@ public class DataSeeder {
 		Map<String, SimpleGrantedAuthority> roleMap = seedRoles();
 		Map<String, User> userMap = seedUsers(roleMap);
 		Map<String, Campaign> campaignMap = seedCampaign(userMap);
+
+		Map<String, Map<String, SimpleTag>> tagMap = seedTags(campaignMap);
+		seedFolios(campaignMap, tagMap);
+/*		
 		Map<String, LocationType> locationTypeMap = seedLocationType(campaignMap);
 		Map<String, Location> locationMap = seedLocations(campaignMap, locationTypeMap);
 		Map<String, OrganizationType> organizationTypeMap = seedOrganizationType(campaignMap);
 		Map<String, Organization> organizationMap = seedOrganizations(campaignMap, organizationTypeMap);
 		seedOrganizationRanks(campaignMap, organizationMap);
 		seedFolios(organizationMap, locationMap, campaignMap);
+		*/
 	}
 	
 	private Map<String, SimpleGrantedAuthority> seedRoles() {
@@ -207,341 +177,90 @@ public class DataSeeder {
 		}
 	}
 	
-	private Map<String, LocationType> seedLocationType(Map<String, Campaign> campaignMap) {
-		Map<String, LocationType> locationTypeMap = new HashMap<>();
-
-		Boolean createTag = Boolean.TRUE;
-		
-		saveLocationType(KINGDOM, "The lands belonging to a kingdom.", campaignMap.get(SWORD_AND_SORCERY).getId(), 
-				campaignMap.get(SWORD_AND_SORCERY).getName(), locationTypeMap, createTag);
-		saveLocationType(COUNTY, "A subdivision of a kingdom.", campaignMap.get(SWORD_AND_SORCERY).getId(), 
-				campaignMap.get(SWORD_AND_SORCERY).getName(), locationTypeMap, createTag);
-		saveLocationType(CITY, "A fairly densely populated area.", campaignMap.get(SWORD_AND_SORCERY).getId(), 
-				campaignMap.get(SWORD_AND_SORCERY).getName(), locationTypeMap, createTag);
-		saveLocationType(TOWN, "Similar to a city. A somewhat populated area.", campaignMap.get(SWORD_AND_SORCERY).getId(), 
-				campaignMap.get(SWORD_AND_SORCERY).getName(), locationTypeMap, createTag);
-		saveLocationType(VILLAGE, "Similar to a town. A lightly populated area.", campaignMap.get(SWORD_AND_SORCERY).getId(), 
-				campaignMap.get(SWORD_AND_SORCERY).getName(), locationTypeMap, createTag);
-
-		saveLocationType(KINGDOM, "The lands beloning to a kingdom.", campaignMap.get(MODERN).getId(), 
-				campaignMap.get(MODERN).getName(), locationTypeMap, createTag);
-		saveLocationType(COUNTY, "A subdivision of a kingdom.", campaignMap.get(MODERN).getId(), 
-				campaignMap.get(MODERN).getName(), locationTypeMap, createTag);
-		saveLocationType(CITY, "A fairly densely populated area.", campaignMap.get(MODERN).getId(), 
-				campaignMap.get(MODERN).getName(), locationTypeMap, createTag);
-		saveLocationType(TOWN, "Similar to a city. A somewhat populated area.", campaignMap.get(MODERN).getId(), 
-				campaignMap.get(MODERN).getName(), locationTypeMap, createTag);
-		saveLocationType(MODERN_SPACE_STATION, "A life sustaining habitat in space.", campaignMap.get(MODERN).getId(), 
-				campaignMap.get(MODERN).getName(), locationTypeMap, createTag);
-
-		saveLocationType(SPACE_STATION, "A life sustaining habitat in space.", campaignMap.get(SPACE_OPERA).getId(), 
-				campaignMap.get(SPACE_OPERA).getName(), locationTypeMap, createTag);
-		
-		return locationTypeMap;
-	}
-	
-	private void saveLocationType(String locTypeName, String description, String campaignId, String campaignName,
-			Map<String, LocationType> locationTypeMap, Boolean createLocationTypeTag) {
-		LocationType locationType = locationTypeRepo.findOneByNameAndCampaignId(locTypeName, campaignId);
-		if (locationType == null) {
-			locationType = new LocationType();
-			locationType.setName(locTypeName);
-			locationType.setDescription(description);
-			locationType.setCampaignId(campaignId);
-			locationType = locationTypeRepo.save(locationType);
-			locationTypeMap.put(campaignName+locTypeName, locationType);
-			if (createLocationTypeTag) {
-				SimpleTag simpleTag = new SimpleTag(locationType.getName(), campaignId);
-				simpleTagService.save(simpleTag);
-			}
-		}
-	}
-	
-	private Map<String, Location> seedLocations(Map<String, Campaign> campaignMap, Map<String, LocationType> locationTypeMap) {
-		locationRepo.deleteAll();
-		
-		Boolean createTag = Boolean.TRUE;
-		Map<String, Location> locationMap = new HashMap<>();
-		String sAndSCampaignId = campaignMap.get(SWORD_AND_SORCERY).getId();
-		String sAndSCampaignName = campaignMap.get(SWORD_AND_SORCERY).getName();
-		Location magicKingdom = findAndSave(MAGIC_KINGDOM, sAndSCampaignId, locationTypeMap.get(sAndSCampaignName+KINGDOM).getId(), 
-				locationTypeMap.get(sAndSCampaignName+KINGDOM).getName(), campaignMap, "A magic kingdom", null, createTag);
-		locationMap.put(sAndSCampaignName+magicKingdom.getName(), magicKingdom);
-		
-		Location magicCounty = findAndSave(MAGIC_COUNTY, sAndSCampaignId, locationTypeMap.get(sAndSCampaignName+COUNTY).getId(),
-				locationTypeMap.get(sAndSCampaignName+COUNTY).getName(), campaignMap, "A magic county", magicKingdom, createTag);
-		locationMap.put(sAndSCampaignName+magicCounty.getName(), magicCounty);
-		
-		Location magicCity = findAndSave(MAGIC_CITY, sAndSCampaignId, locationTypeMap.get(sAndSCampaignName+CITY).getId(), 
-				locationTypeMap.get(sAndSCampaignName+CITY).getName(), campaignMap, "A magic city", magicCounty, createTag);
-		locationMap.put(sAndSCampaignName+magicCity.getName(), magicCity);
-		
-		Location magicTown = findAndSave(MAGIC_TOWN, sAndSCampaignId, locationTypeMap.get(sAndSCampaignName+TOWN).getId(), 
-				locationTypeMap.get(sAndSCampaignName+TOWN).getName(), campaignMap, "A magic city", magicCounty, createTag);
-		locationMap.put(sAndSCampaignName+magicTown.getName(), magicTown);
-		
-		Location rivalKingdom = findAndSave(RIVAL_KINGDOM, sAndSCampaignId, locationTypeMap.get(sAndSCampaignName+KINGDOM).getId(), 
-				locationTypeMap.get(sAndSCampaignName+KINGDOM).getName(), campaignMap, "A rival kingdom", null, createTag);
-		locationMap.put(sAndSCampaignName+rivalKingdom.getName(), rivalKingdom);
-		
-		/* MODERN */
-		String modernCampaignId = campaignMap.get(MODERN).getId();
-		String modernCampaignName = campaignMap.get(MODERN).getName();
-		Location modernKingdom = findAndSave(MODERN_KINGDOM, modernCampaignId, locationTypeMap.get(modernCampaignName+KINGDOM).getId(), 
-				locationTypeMap.get(modernCampaignName+KINGDOM).getName(), campaignMap, "A modern kingdom", null, createTag);
-		locationMap.put(modernCampaignName+modernKingdom.getName(), rivalKingdom);
-
-		Location modernCounty = findAndSave(MODERN_COUNTY, modernCampaignId, locationTypeMap.get(modernCampaignName+COUNTY).getId(), 
-				locationTypeMap.get(modernCampaignName+COUNTY).getName(), campaignMap, "A modern county", modernKingdom, createTag);
-		locationMap.put(modernCampaignName+modernCounty.getName(), rivalKingdom);
-
-		Location modernCity = findAndSave(MODERN_CITY, modernCampaignId, locationTypeMap.get(modernCampaignName+CITY).getId(), 
-				locationTypeMap.get(modernCampaignName+CITY).getName(), campaignMap, "A modern city", modernCounty, createTag);
-		locationMap.put(modernCampaignName+modernCity.getName(), rivalKingdom);
-
-		Location modernSpaceStation = findAndSave(MODERN_SPACE_STATION, modernCampaignId, locationTypeMap.get(modernCampaignName+MODERN_SPACE_STATION).getId(), 
-				locationTypeMap.get(modernCampaignName+MODERN_SPACE_STATION).getName(), campaignMap, "A modern space station", null, createTag);
-		locationMap.put(modernCampaignName+modernSpaceStation.getName(), rivalKingdom);
-
-		/* SPACE OPERA */
-		String spaceOperaCampaignId = campaignMap.get(SPACE_OPERA).getId();
-		String spaceOperaCampaignName = campaignMap.get(SPACE_OPERA).getName();
-		Location spaceStation = findAndSave(SPACE_STATION, spaceOperaCampaignId, locationTypeMap.get(spaceOperaCampaignName+SPACE_STATION).getId(),
-				locationTypeMap.get(spaceOperaCampaignName+SPACE_STATION).getName(), campaignMap, "A space station", null, createTag);
-		locationMap.put(spaceOperaCampaignName+spaceStation.getName(), rivalKingdom);
-		
-		return locationMap;
-	}
-	
-	private Location findAndSave(String name, String campaignId, String locationTypeId, String locationTypeName, 
-			Map<String, Campaign> campaignMap, String description, Location parent, Boolean createTag) {
-		Location location = locationRepo.findOneByNameAndCampaignId(name, campaignId);
-		if (location == null) {
-			location = new Location(name, campaignId);
-			location.setDescription(description);
-			location.setGameDataTypeId(locationTypeId);
-			location.setGameDataTypeName(locationTypeName);
-			// Need to get an id on location so all the parent/child links can be set
-			String parentId = null;
-			if (parent != null) {
-				parentId = parent.getId();
-			}
-			location.setParentId(parentId);
-			location = locationRepo.save(location);
-			if (parent != null) {
-				parent.addChildId(location.getId());
-				parent = locationRepo.save(parent);
-			}
-			if (createTag) {
-				SimpleTag simpleTag = new SimpleTag(location.getName(), campaignId);
-				simpleTagService.save(simpleTag);
-			}
-		}
-		return location;
-	}
-	
-	private Map<String, OrganizationType> seedOrganizationType(Map<String, Campaign> campaignMap) {
-		Map<String, OrganizationType> organizationTypeMap = new HashMap<>();
-		Boolean createTag = Boolean.TRUE;
-		
-		saveOrganizationType(KINGDOM, "A typical kingdom.", campaignMap.get(SWORD_AND_SORCERY).getId(), 
-				campaignMap.get(SWORD_AND_SORCERY).getName(), organizationTypeMap, createTag);
-		saveOrganizationType(COUNTY, "A subdivision of a kingdom.", campaignMap.get(SWORD_AND_SORCERY).getId(), 
-				campaignMap.get(SWORD_AND_SORCERY).getName(), organizationTypeMap, createTag);
-		saveOrganizationType(CITY, "A collection of people and dwellings.", campaignMap.get(SWORD_AND_SORCERY).getId(), 
-				campaignMap.get(SWORD_AND_SORCERY).getName(), organizationTypeMap, createTag);
-		saveOrganizationType(TOWN, "Like a city but smaller.", campaignMap.get(SWORD_AND_SORCERY).getId(), 
-				campaignMap.get(SWORD_AND_SORCERY).getName(), organizationTypeMap, createTag);
-		saveOrganizationType(MERCHANTS_GUILD, "Mercantile guild.", campaignMap.get(SWORD_AND_SORCERY).getId(), 
-				campaignMap.get(SWORD_AND_SORCERY).getName(), organizationTypeMap, createTag);
-		saveOrganizationType(COVEN, "A witches coven.", campaignMap.get(SWORD_AND_SORCERY).getId(), 
-				campaignMap.get(SWORD_AND_SORCERY).getName(), organizationTypeMap, createTag);
-
-		saveOrganizationType(KINGDOM, "A typical kingdom.", campaignMap.get(MODERN).getId(), 
-				campaignMap.get(MODERN).getName(), organizationTypeMap, createTag);
-		saveOrganizationType(COUNTY, "A subdivision of a kingdom.", campaignMap.get(MODERN).getId(), 
-				campaignMap.get(MODERN).getName(), organizationTypeMap, createTag);
-		saveOrganizationType(CITY, "A collection of people and dwellings.", campaignMap.get(MODERN).getId(), 
-				campaignMap.get(MODERN).getName(), organizationTypeMap, createTag);
-		saveOrganizationType(TOWN, "Like a city but smaller.", campaignMap.get(MODERN).getId(), 
-				campaignMap.get(MODERN).getName(), organizationTypeMap, createTag);
-		saveOrganizationType(MODERN_SPACE_STATION, "A typical space station.", campaignMap.get(MODERN).getId(), 
-				campaignMap.get(MODERN).getName(), organizationTypeMap, createTag);
-		
-		saveOrganizationType(SPACE_STATION, "A typical space station.", campaignMap.get(SPACE_OPERA).getId(), 
-				campaignMap.get(SPACE_OPERA).getName(), organizationTypeMap, createTag);
-		
-		return organizationTypeMap;
-	}
-	
-	private void saveOrganizationType(String orgName, String description, String campaignId, 
-			String campaignName, Map<String, OrganizationType> organizationTypeMap, Boolean createTag) {
-		OrganizationType organizationType = organizationTypeRepo.findOneByNameAndCampaignId(orgName, campaignId);
-		if (organizationType == null) {
-			organizationType = new OrganizationType();
-			organizationType.setName(orgName);
-			organizationType.setDescription(description);
-			organizationType.setCampaignId(campaignId);
-			organizationType = organizationTypeRepo.save(organizationType);
-			organizationTypeMap.put(campaignName+orgName, organizationType);
-			if (createTag) {
-				SimpleTag simpleTag = new SimpleTag(organizationType.getName(), campaignId);
-				simpleTagService.save(simpleTag);
-			}
-		}
-	}
-	
-	private Map<String, Organization> seedOrganizations(Map<String, Campaign> campaignMap, Map<String, OrganizationType> organizationTypeMap) {
-		organizationRepo.deleteAll();
-		
-		Map<String, Organization> orgMap = new HashMap<>();
-		Boolean createTag = Boolean.TRUE;
+	private Map<String, Map<String, SimpleTag>> seedTags(Map<String, Campaign> campaignMap) {
+		Map<String, Map<String, SimpleTag>> allTags = new HashMap<>();
 		
 		String sAndSCampaignId = campaignMap.get(SWORD_AND_SORCERY).getId();
-		String sAndSCampaignName = campaignMap.get(SWORD_AND_SORCERY).getName();
-		Organization kingdom = findAndSaveOrganization(KINGDOM_OF_MIDLAND, sAndSCampaignId, sAndSCampaignName,
-				organizationTypeMap.get(sAndSCampaignName+KINGDOM).getId(), 
-				organizationTypeMap.get(sAndSCampaignName+KINGDOM).getName(), campaignMap, "A kingdom", null, orgMap, createTag);
-
-		Organization county = findAndSaveOrganization("Kirkwall " + COUNTY, sAndSCampaignId, sAndSCampaignName, 
-				organizationTypeMap.get(sAndSCampaignName+COUNTY).getId(),
-				organizationTypeMap.get(sAndSCampaignName+COUNTY).getName(), campaignMap, "A county", kingdom, orgMap, createTag);
-
-		findAndSaveOrganization("Morningstar", sAndSCampaignId, sAndSCampaignName,
-				organizationTypeMap.get(sAndSCampaignName+CITY).getId(), 
-				organizationTypeMap.get(sAndSCampaignName+CITY).getName(), campaignMap, "A city", county, orgMap, createTag);
-
-		findAndSaveOrganization("Markham", sAndSCampaignId, sAndSCampaignName,
-				organizationTypeMap.get(sAndSCampaignName+TOWN).getId(), 
-				organizationTypeMap.get(sAndSCampaignName+TOWN).getName(), campaignMap, "A city", county, orgMap, createTag);
-
-		findAndSaveOrganization(GOLDEN_ROAD, sAndSCampaignId, sAndSCampaignName,
-				organizationTypeMap.get(sAndSCampaignName+MERCHANTS_GUILD).getId(), 
-				organizationTypeMap.get(sAndSCampaignName+MERCHANTS_GUILD).getName(), campaignMap, "A merchants guild", null, orgMap, createTag);
-
-		findAndSaveOrganization(BLOOD_MOON, sAndSCampaignId, sAndSCampaignName,
-				organizationTypeMap.get(sAndSCampaignName+COVEN).getId(), 
-				organizationTypeMap.get(sAndSCampaignName+COVEN).getName(), campaignMap, "A witches coven", null, orgMap, createTag);
-
-		/* MODERN */
-		String modernCampaignId = campaignMap.get(MODERN).getId();
-		String modernCampaignName = campaignMap.get(MODERN).getName();
-		Organization modernKingdom = findAndSaveOrganization("Kalibah", modernCampaignId, modernCampaignName,
-				organizationTypeMap.get(modernCampaignName+KINGDOM).getId(), 
-				organizationTypeMap.get(modernCampaignName+KINGDOM).getName(), campaignMap, "A modern kingdom", null, orgMap, createTag);
-
-		Organization modernCounty = findAndSaveOrganization("Kent", modernCampaignId, modernCampaignName, 
-				organizationTypeMap.get(modernCampaignName+COUNTY).getId(), 
-				organizationTypeMap.get(modernCampaignName+COUNTY).getName(), campaignMap, "A modern county", modernKingdom, orgMap, createTag);
-
-		findAndSaveOrganization("York", modernCampaignId, 
-				organizationTypeMap.get(modernCampaignName+CITY).getId(), modernCampaignName, 
-				organizationTypeMap.get(modernCampaignName+CITY).getName(), campaignMap, "A modern city", modernCounty, orgMap, createTag);
-
-		findAndSaveOrganization("Space Station Group", modernCampaignId, modernCampaignName, 
-				organizationTypeMap.get(modernCampaignName+MODERN_SPACE_STATION).getId(), 
-				organizationTypeMap.get(modernCampaignName+MODERN_SPACE_STATION).getName(), campaignMap, "A modern space station", null, orgMap, createTag);
-
-		/* SPACE OPERA */
-		String spaceOperaCampaignId = campaignMap.get(SPACE_OPERA).getId();
-		String spaceOperaCampaignName = campaignMap.get(SPACE_OPERA).getName();
-		findAndSaveOrganization(SPACE_STATION + " Omega", spaceOperaCampaignId, spaceOperaCampaignName,
-				organizationTypeMap.get(spaceOperaCampaignName+SPACE_STATION).getId(),
-				organizationTypeMap.get(spaceOperaCampaignName+SPACE_STATION).getName(), campaignMap, "A space station", null, orgMap, createTag);
+		Map<String, SimpleTag> sAndSTagMap = new HashMap<>();
+		saveTag(sAndSTagMap, KINGDOM, sAndSCampaignId);
+		saveTag(sAndSTagMap, KINGDOM_OF_MIDLAND, sAndSCampaignId);
+		saveTag(sAndSTagMap, RIVAL_KINGDOM, sAndSCampaignId);
+		saveTag(sAndSTagMap, MAGIC_COUNTY, sAndSCampaignId);
+		saveTag(sAndSTagMap, MAGIC_CITY, sAndSCampaignId);
+		saveTag(sAndSTagMap, MAGIC_TOWN, sAndSCampaignId);
+		saveTag(sAndSTagMap, TOWN, sAndSCampaignId);
+		saveTag(sAndSTagMap, VILLAGE, sAndSCampaignId);
+		saveTag(sAndSTagMap, MERCHANTS_GUILD, sAndSCampaignId);
+		saveTag(sAndSTagMap, GOLDEN_ROAD, sAndSCampaignId);
+		saveTag(sAndSTagMap, COVEN, sAndSCampaignId);
+		saveTag(sAndSTagMap, BLOOD_MOON, sAndSCampaignId);
+		saveTag(sAndSTagMap, LOCATION, sAndSCampaignId);
+		saveTag(sAndSTagMap, ORGANIZATION, sAndSCampaignId);
+		allTags.put(sAndSCampaignId, sAndSTagMap);
 		
-		return orgMap;
+		String modernCampaignId = campaignMap.get(MODERN).getId();
+		Map<String, SimpleTag> modernTagMap = new HashMap<>();
+		saveTag(modernTagMap, COUNTRY, modernCampaignId);
+		saveTag(modernTagMap, COUNTY, modernCampaignId);
+		saveTag(modernTagMap, CITY, modernCampaignId);
+		saveTag(modernTagMap, TOWN, modernCampaignId);
+		saveTag(modernTagMap, SPACE_STATION, modernCampaignId);
+		allTags.put(modernCampaignId, modernTagMap);
+
+		String spaceOperaCampaignId = campaignMap.get(SPACE_OPERA).getId();
+		Map<String, SimpleTag> spaceOperaTagMap = new HashMap<>();
+		saveTag(spaceOperaTagMap, COUNTRY, spaceOperaCampaignId);
+		saveTag(spaceOperaTagMap, CITY, spaceOperaCampaignId);
+		saveTag(spaceOperaTagMap, STATE, spaceOperaCampaignId);
+		saveTag(spaceOperaTagMap, SPACE_STATION, spaceOperaCampaignId);
+		allTags.put(spaceOperaCampaignId, spaceOperaTagMap);
+
+		return allTags;
 	}
 	
-	private void seedOrganizationRanks(Map<String, Campaign> campaignMap, Map<String, Organization> organizationMap) {
+	private void saveTag(Map<String, SimpleTag> tagMap, String tagName, String campaignId) {
+		SimpleTag newTag = new SimpleTag(tagName, campaignId);
+		newTag = simpleTagService.save(newTag);
+		tagMap.put(tagName, newTag);
+	}
+		
+	private void seedFolios(Map<String, Campaign> campaignMap, Map<String, Map<String, SimpleTag>> tagMap) {
 		String sAndSCampaignId = campaignMap.get(SWORD_AND_SORCERY).getId();
-		String sAndSCampaignName = campaignMap.get(SWORD_AND_SORCERY).getName();
-		Organization org = organizationMap.get(sAndSCampaignName+KINGDOM_OF_MIDLAND);
-		findAndSaveOrganizationRank("King", sAndSCampaignId, org.getId(),  
-				campaignMap, "The ruler of the kingdom", null);
-		
-		String modernCampaignId = campaignMap.get(MODERN).getId();
-		String modernCampaignName = campaignMap.get(MODERN).getName();
-		org = organizationMap.get(modernCampaignName+"Kent");
-		findAndSaveOrganizationRank("Sheriff of Kent", modernCampaignId, org.getId(), 
-				campaignMap, "The local sheriff", null);
-
-		String spaceOperaCampaignId = campaignMap.get(SPACE_OPERA).getId();
-		String spaceOperaCampaignName = campaignMap.get(SPACE_OPERA).getName();
-		org = organizationMap.get(spaceOperaCampaignName+SPACE_STATION + " Omega");
-		findAndSaveOrganizationRank("Space Station Commander", spaceOperaCampaignId, org.getId(), 
-				campaignMap, "The commander of the space station", null);
-	}
-	
-	private Organization findAndSaveOrganization(String name, String campaignId, String campaignName, String organizationTypeId, 
-			String organizationTypeName, Map<String, Campaign> campaignMap, String description, Organization parent, 
-			Map<String, Organization> orgMap, Boolean createTag) {
-		Organization organization = organizationRepo.findOneByNameAndCampaignId(name, campaignId);
-		if (organization == null) {
-			organization = new Organization(name, campaignId);
-			organization.setDescription(description);
-			organization.setGameDataTypeId(organizationTypeId);
-			organization.setGameDataTypeName(organizationTypeName);
-			// Need to get an id on location so all the parent/child links can be set
-			String parentId = null;
-			if (parent != null) {
-				parentId = parent.getId();
-			}
-			organization.setParentId(parentId);
-			organization = organizationRepo.save(organization);
-			orgMap.put(campaignName+organization.getName(), organization);
-			if (parent != null) {
-				parent.addChildId(organization.getId());
-				parent = organizationRepo.save(parent);
-			}
-			if (createTag) {
-				SimpleTag simpleTag = new SimpleTag(organization.getName(), campaignId);
-				simpleTagService.save(simpleTag);
-			}
-		}
-		return organization;
-	}	
-
-	private OrganizationRank findAndSaveOrganizationRank(String name, String campaignId, String organizationId, 
-			Map<String, Campaign> campaignMap, String description, Organization parent) {
-		OrganizationRank organizationRank = organizationRankRepo.findOneByNameAndOrganizationId(name, campaignId);
-		if (organizationRank == null) {
-			organizationRank = new OrganizationRank(name, campaignId, organizationId);
-			organizationRank.setDescription(description);
-			// Need to get an id on location so all the parent/child links can be set
-			String parentId = null;
-			if (parent != null) {
-				parentId = parent.getId();
-			}
-			organizationRank.setParentId(parentId);
-			organizationRank = organizationRankRepo.save(organizationRank);
-			if (parent != null) {
-				parent.addChildId(organizationRank.getId());
-				parent = organizationRepo.save(parent);
-			}
-		}
-		return organizationRank;
-	}	
-
-	private void seedFolios(Map<String, Organization> organizationMap, Map<String, Location> locationMap, 
-			Map<String, Campaign> campaignMap) {
-		String sAndSCampaignName = campaignMap.get(SWORD_AND_SORCERY).getName();
-		Folio goldenRoadPage = new Folio();
-		Organization goldenRoad = organizationMap.get(sAndSCampaignName+GOLDEN_ROAD);		
-		goldenRoadPage.setCampaignId(goldenRoad.getCampaignId());
-
-		goldenRoadPage.setTitle("Golden Road Trading League Intro");
-		goldenRoadPage.setContent("<H1>The Golden Road Trading League</H1><p>This is a big merchant guild</p>");
-		
-		SimpleTag merchantsGuildTag = simpleTagService.findOneByNameAndCampaignId(MERCHANTS_GUILD, goldenRoad.getCampaignId());
-		goldenRoadPage.addTag(merchantsGuildTag);
-		SimpleTag goldenRoadTag = simpleTagService.findOneByNameAndCampaignId(GOLDEN_ROAD, goldenRoad.getCampaignId());
-		goldenRoadPage.addTag(goldenRoadTag);
-		SimpleTag midlandTag = simpleTagService.findOneByNameAndCampaignId(KINGDOM_OF_MIDLAND, goldenRoad.getCampaignId());
-		goldenRoadPage.addTag(midlandTag);		
+		Folio goldenRoadFolio = new Folio();
+		goldenRoadFolio.setCampaignId(sAndSCampaignId);
+		goldenRoadFolio.setTitle("Golden Road Trading League Intro");
+		goldenRoadFolio.setContent("<H1>The Golden Road Trading League</H1><p>This is a big merchant guild</p>");		
+		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(MERCHANTS_GUILD));
+		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(GOLDEN_ROAD));
+		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
 		try {
-			folioService.save(goldenRoadPage);
+			folioService.save(goldenRoadFolio);
 		} catch (Exception e) {
 			// ignore;
 		}
+		
+		Folio KindomOfMidlandFolio = new Folio();
+		KindomOfMidlandFolio.setCampaignId(sAndSCampaignId);
+		KindomOfMidlandFolio.setTitle("The Kingdom of Midland");
+		KindomOfMidlandFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a big kingdom that stretches from east to west.</p>");		
+		KindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(LOCATION));
+		KindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
+		try {
+			folioService.save(KindomOfMidlandFolio);
+		} catch (Exception e) {
+			// ignore;
+		}		
+		
+		Folio KindomOfMidlandOrgFolio = new Folio();
+		KindomOfMidlandOrgFolio.setCampaignId(sAndSCampaignId);
+		KindomOfMidlandOrgFolio.setTitle("The Kingdom of Midland");
+		KindomOfMidlandOrgFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a fuedal society.</p>");		
+		KindomOfMidlandOrgFolio.addTag(tagMap.get(sAndSCampaignId).get(ORGANIZATION));
+		KindomOfMidlandOrgFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
+		try {
+			folioService.save(KindomOfMidlandOrgFolio);
+		} catch (Exception e) {
+			// ignore;
+		}	
 	}
 }

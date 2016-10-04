@@ -1,10 +1,10 @@
-package org.softwarewolf.gameserver.domain.helper;
+package org.softwarewolf.gameserver.domain.dto;
 
 import java.util.List;
 
 import org.softwarewolf.gameserver.domain.Folio;
 
-public class FolioCreator {
+public class FolioDto {
 	private Folio folio;
 	private String unassignedTags;
 	private String selectedTags;
@@ -12,7 +12,7 @@ public class FolioCreator {
 	private List<FolioDescriptor> folioDescriptorList;
 	private String forwardingUrl;
 	
-	public FolioCreator() {
+	public FolioDto() {
 		folio = new Folio();
 	}
 	

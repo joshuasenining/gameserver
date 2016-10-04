@@ -6,10 +6,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.softwarewolf.gameserver.domain.User;
-import org.softwarewolf.gameserver.domain.helper.RoleLists;
-import org.softwarewolf.gameserver.domain.helper.RolesData;
-import org.softwarewolf.gameserver.domain.helper.UserData;
-import org.softwarewolf.gameserver.domain.helper.UserListItem;
+import org.softwarewolf.gameserver.domain.dto.RoleLists;
+import org.softwarewolf.gameserver.domain.dto.RolesData;
+import org.softwarewolf.gameserver.domain.dto.UserData;
+import org.softwarewolf.gameserver.domain.dto.UserListItem;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.softwarewolf.gameserver.service.SimpleGrantedAuthorityService;
 import org.softwarewolf.gameserver.service.UserService;

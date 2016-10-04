@@ -1,4 +1,4 @@
-package org.softwarewolf.gameserver.domain.helper;
+package org.softwarewolf.gameserver.domain.dto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.softwarewolf.gameserver.domain.Campaign;
 
-public class CampaignCreator {
+public class CampaignDto {
 	public List<UserListItem> gamemasters;
 	public String ownerId;
 	public String ownerName;

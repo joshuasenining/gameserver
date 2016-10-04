@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.softwarewolf.gameserver.controller.helper.ControllerHelper;
+import org.softwarewolf.gameserver.controller.helper.FeFeedback;
 import org.softwarewolf.gameserver.controller.helper.ImportExportHelper;
-import org.softwarewolf.gameserver.domain.helper.FeFeedback;
 import org.softwarewolf.gameserver.service.ImportExportService;
 import org.softwarewolf.gameserver.service.CampaignService;
 

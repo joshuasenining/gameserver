@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.softwarewolf.gameserver.domain.User;
-import org.softwarewolf.gameserver.domain.helper.UserCreator;
+import org.softwarewolf.gameserver.domain.dto.UserCreator;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

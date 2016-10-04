@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.softwarewolf.gameserver.domain.helper.FolioDescriptor;
 import org.softwarewolf.gameserver.domain.SimpleTag;
+import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

@@ -2,8 +2,8 @@ package org.softwarewolf.gameserver.controller.gamemaster;
 
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.User;
-import org.softwarewolf.gameserver.domain.helper.CampaignCreator;
-import org.softwarewolf.gameserver.domain.helper.SelectCampaignHelper;
+import org.softwarewolf.gameserver.domain.dto.CampaignDto;
+import org.softwarewolf.gameserver.domain.dto.SelectCampaignHelper;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.softwarewolf.gameserver.service.CampaignService;
 import org.softwarewolf.gameserver.service.UserService;
@@ -60,22 +60,22 @@ public class CampaignController {
 	
 	@RequestMapping(value = "/createCampaign", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
-	public String getCampaignCreator(CampaignCreator campaignCreator) {
+	public String getCampaignCreator(CampaignDto campaignDto) {
 		UserDetails userDetails =
 				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String userName = userDetails.getUsername();
 		User user = userRepository.findOneByUsername(userName);
 		
-		campaignService.initCampaignCreator(campaignCreator, user);
+		campaignService.initCampaignCreator(campaignDto, user);
 		
 		return "/gamemaster/createCampaign";		
 	}
 	
 	@RequestMapping(value = "/createCampaign", method = RequestMethod.POST)
 	@Secured({"GAMEMASTER"})
-	public String postCampaign(@ModelAttribute CampaignCreator campaignCreator, BindingResult bindingResult) {
-		Campaign campaign = campaignCreator.getCampaign();
-		String ownerId = campaignCreator.getOwnerId();
+	public String postCampaign(@ModelAttribute CampaignDto campaignDto, BindingResult bindingResult) {
+		Campaign campaign = campaignDto.getCampaign();
+		String ownerId = campaignDto.getOwnerId();
 		campaign.setOwnerId(ownerId);
 		campaignService.saveCampaign(campaign);
 		

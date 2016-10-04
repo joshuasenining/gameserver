@@ -28,74 +28,74 @@ import org.softwarewolf.gameserver.service.FolioService;
 
 @Controller
 @RequestMapping("/shared")
-public class FolioController {
+public class BookController {
 	@Autowired
 	protected FolioService folioService;
 	
-	@RequestMapping(value = "/editFolio", method = RequestMethod.GET)
+	@RequestMapping(value = "/editBook", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
-	public String editFolio(HttpSession session, FolioDto folioDto, final FeFeedback feFeedback) {
+	public String editFolio(HttpSession session, FolioDto folioCreator, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 
 		Folio nullFolio = null;
-		folioService.initFolioCreator(folioDto, nullFolio, campaignId);
-		folioDto.setForwardingUrl(ControllerHelper.EDIT_FOLIO);
+		folioService.initFolioCreator(folioCreator, nullFolio, campaignId);
+		folioCreator.setForwardingUrl(ControllerHelper.EDIT_FOLIO);
 		feFeedback.setUserStatus("You are creating a new folio");
 		return ControllerHelper.EDIT_FOLIO;
 	}
 	
-	@RequestMapping(value = "/editFolio/{folioId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/editBook/{bookId}", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
-	public String editFolioWithId(HttpSession session, FolioDto folioDto, 
-			@PathVariable String folioId, final FeFeedback feFeedback) {
+	public String editFolioWithId(HttpSession session, FolioDto folioCreator, 
+			@PathVariable String bookId, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 
-		folioService.initFolioCreator(folioDto, folioId, campaignId);
-		folioDto.setForwardingUrl(ControllerHelper.EDIT_FOLIO);
-		feFeedback.setUserStatus("You are editing folio " + folioDto.getFolio().getTitle());
+		folioService.initFolioCreator(folioCreator, bookId, campaignId);
+		folioCreator.setForwardingUrl(ControllerHelper.EDIT_FOLIO);
+		feFeedback.setUserStatus("You are editing folio " + folioCreator.getFolio().getTitle());
 		return ControllerHelper.EDIT_FOLIO;
 	}
 	
-	@RequestMapping(value = "/getFolio/{folioId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/getBook/{bookId}", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
-	public String getFolio(HttpSession session, @PathVariable String folioId, 
-			FolioDto folioDto, final FeFeedback feFeedback) {
+	public String getFolio(HttpSession session, @PathVariable String bookId, 
+			FolioDto folioCreator, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 
-		Folio folio = folioService.findOne(folioId);
-		folioService.initFolioCreator(folioDto, folio, campaignId);
+		Folio folio = folioService.findOne(bookId);
+		folioService.initFolioCreator(folioCreator, folio, campaignId);
 		feFeedback.setUserStatus("You are editing '" + folio.getTitle() + "'");
 		return ControllerHelper.EDIT_FOLIO;
 	}
 		
-	@RequestMapping(value = "/removeTagFromFolio/{folioId}/{tagId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/removeFolioFromBook/{folioId}/{bookId}", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
-	public String removeTagFromFolio(HttpSession session, FolioDto folioDto, 
-			@PathVariable String folioId, @PathVariable String tagId, final FeFeedback feFeedback) {
+	public String removeTagFromFolio(HttpSession session, FolioDto folioCreator, 
+			@PathVariable String folioId, @PathVariable String bookId, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 
-		Folio folio = folioService.removeTagFromFolio(folioId, tagId);
-		folioService.initFolioCreator(folioDto, folio, campaignId);
+		Folio folio = folioService.removeTagFromFolio(folioId, bookId);
+		folioService.initFolioCreator(folioCreator, folio, campaignId);
 		feFeedback.setInfo("You have modified folio " + folio.getTitle());
 		return ControllerHelper.EDIT_FOLIO;
 	}
 
-	@RequestMapping(value = "/addTagToFolio/{folioId}/{tagName}", method = RequestMethod.GET)
+	@RequestMapping(value = "/addFolioToBook/{folioId}/{bookId}", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
-	public String addTagToFolio(HttpSession session, FolioDto folioDto, 
-			@PathVariable String folioId, @PathVariable String tagName, final FeFeedback feFeedback) {
+	public String addTagToFolio(HttpSession session, FolioDto folioCreator, 
+			@PathVariable String folioId, @PathVariable String bookId, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
@@ -116,29 +116,29 @@ public class FolioController {
 			} catch (Exception e) {
 				String errorMessage = e.getMessage();
 				feFeedback.setError(errorMessage);
-				folioService.initFolioCreator(folioDto, folio, campaignId);
+				folioService.initFolioCreator(folioCreator, folio, campaignId);
 				return ControllerHelper.EDIT_FOLIO;
 			}
 		}
-		folio = folioService.addTagToFolio(campaignId, folio.getId(), tagName);
-		folioService.initFolioCreator(folioDto, folio, campaignId);
+		folio = folioService.addTagToFolio(campaignId, folio.getId(), bookId);
+		folioService.initFolioCreator(folioCreator, folio, campaignId);
 //		feFeedback.setInfo("You have modified folio " + folio.getTitle());
 
 		return ControllerHelper.EDIT_FOLIO;
 	}
 
-	@RequestMapping(value = "/editFolio", method = RequestMethod.POST)
+	@RequestMapping(value = "/editBook", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER"})
-	public String postEditPage(HttpSession session, FolioDto folioDto, 
+	public String postEditPage(HttpSession session, FolioDto folioCreator, 
 			final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 
-		Folio folio = folioDto.getFolio();
+		Folio folio = folioCreator.getFolio();
 		try {
-			String selectedTags = folioDto.getSelectedTags();
+			String selectedTags = folioCreator.getSelectedTags();
 			ObjectMapper mapper = new ObjectMapper();
 			JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, SimpleTag.class);
 			List<SimpleTag> selectedTagList = null;
@@ -155,11 +155,11 @@ public class FolioController {
 			}
 			folio.setTags(selectedTagList);
 			folio = folioService.save(folio);
-			folioService.initFolioCreator(folioDto, folio, campaignId);
+			folioService.initFolioCreator(folioCreator, folio, campaignId);
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
-			folioService.initFolioCreator(folioDto, folio, campaignId);
+			folioService.initFolioCreator(folioCreator, folio, campaignId);
 			feFeedback.setUserStatus("You are editing folio " + folio.getTitle());
 			return ControllerHelper.EDIT_FOLIO;
 		}
@@ -168,51 +168,8 @@ public class FolioController {
 		feFeedback.setUserStatus("You are editing folio " + folio.getTitle());
 		return ControllerHelper.EDIT_FOLIO;
 	}	
-	
-	@RequestMapping(value = "/selectFolio", method = RequestMethod.GET)
-	@Secured({"USER", "GAMEMASTER"})
-	public String selectFolio(HttpSession session, SelectFolioCreator selectFolioCreator,
-			@RequestParam String from, final FeFeedback feFeedback) {
-		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
-		if (campaignId == null) {
-			return ControllerHelper.USER_MENU;
-		}		
-		
-		folioService.initSelectFolioCreator(campaignId, selectFolioCreator);
-		// Need to pick the correct forwarding url, this is just generic
-		if ("edit".equals(from)) {
-			selectFolioCreator.setForwardingUrl(ControllerHelper.EDIT_FOLIO);
-		} else if ("view".equals(from)) {
-			selectFolioCreator.setForwardingUrl(ControllerHelper.VIEW_FOLIO);
-		}
-		return ControllerHelper.SELECT_FOLIO;
-	}
 
-	@RequestMapping(value = "/folio/addTagToSearch", method = RequestMethod.POST)
-	@Secured({"USER","GAMEMASTER"})
-	public String addTagToSearch(HttpSession session, SelectFolioCreator selectFolioCreator, final FeFeedback feFeedback) {
-		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
-		if (campaignId == null) {
-			return ControllerHelper.USER_MENU;
-		}		
-		
-		folioService.initSelectFolioCreator(campaignId, selectFolioCreator); 
-		return ControllerHelper.SELECT_FOLIO;
-	}
-
-	@RequestMapping(value = "/folio/removeTagFromSearch", method = RequestMethod.POST)
-	@Secured({"USER","GAMEMASTER"})
-	public String removeTagFromSearch(HttpSession session, SelectFolioCreator selectFolioCreator, final FeFeedback feFeedback) {
-		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
-		if (campaignId == null) {
-			return ControllerHelper.USER_MENU;
-		}		
-		
-		folioService.initSelectFolioCreator(campaignId, selectFolioCreator); 
-		return ControllerHelper.SELECT_FOLIO;
-	}
-
-	@RequestMapping(value = "/viewFolio", method = RequestMethod.GET)
+	@RequestMapping(value = "/viewBook", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
 	public String viewFolio(HttpSession session, ViewFolioCreator viewFolioCreator, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
@@ -224,16 +181,16 @@ public class FolioController {
 		return ControllerHelper.VIEW_FOLIO;
 	}
 
-	@RequestMapping(value = "/viewFolio/{folioId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/viewBook/{bookId}", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
 	public String viewFolioWithId(HttpSession session, ViewFolioCreator viewFolioCreator, 
-			@PathVariable String folioId, final FeFeedback feFeedback) {
+			@PathVariable String bookId, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 		
-		folioService.initViewFolioCreator(viewFolioCreator, folioId);
+		folioService.initViewFolioCreator(viewFolioCreator, bookId);
 		viewFolioCreator.setForwardingUrl(ControllerHelper.VIEW_FOLIO);
 		return ControllerHelper.VIEW_FOLIO;
 	}

@@ -1,4 +1,4 @@
-package org.softwarewolf.gameserver.domain.helper;
+package org.softwarewolf.gameserver.controller.helper;
 
 public class FeFeedback {
 	private String error;

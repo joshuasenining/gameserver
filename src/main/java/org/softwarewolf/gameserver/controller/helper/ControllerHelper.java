@@ -7,13 +7,8 @@ public class ControllerHelper {
 	public static final String EDIT_FOLIO = "/shared/editFolio";
 	public static final String SELECT_FOLIO = "/shared/selectFolio";
 	public static final String VIEW_FOLIO = "/shared/viewFolio";
-	public static final String EDIT_LOCATION = "/gamemaster/editLocation";
-	public static final String EDIT_LOCATION_TYPE = "/gamemaster/editLocationType";
 	public static final String EXPORT_CAMPAIGN = "/admin/exportCampaign";
 	public static final String IMPORT_CAMPAIGN = "/admin/importCampaign";
 	public static final String USER_MENU = "/user/menu";
-	public static final String EDIT_ORGANIZATION = "/gamemaster/editOrganization";
-	public static final String EDIT_ORGANIZATION_RANK = "/gamemaster/editOrganizationRank";
-	public static final String EDIT_ORGANIZATION_TYPE = "/gamemaster/editOrganizationType";
 	public static final String LOGIN = "/login";
 }
