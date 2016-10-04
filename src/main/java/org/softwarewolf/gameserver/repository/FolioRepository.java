@@ -17,5 +17,5 @@ public interface FolioRepository extends MongoRepository<Folio, String> {
     /// Find by key and array of values
     @Query("{?0 : {$in : ?1}}")
     public List<Folio> findAllByKeyValues(String key, Object[] value);
-    
+
 }

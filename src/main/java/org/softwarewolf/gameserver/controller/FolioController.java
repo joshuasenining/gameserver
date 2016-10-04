@@ -122,7 +122,7 @@ public class FolioController {
 		}
 		folio = folioService.addTagToFolio(campaignId, folio.getId(), tagName);
 		folioService.initFolioCreator(folioCreator, folio, campaignId);
-		feFeedback.setInfo("You have modified folio " + folio.getTitle());
+//		feFeedback.setInfo("You have modified folio " + folio.getTitle());
 
 		return ControllerHelper.EDIT_FOLIO;
 	}

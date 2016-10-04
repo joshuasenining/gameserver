@@ -150,7 +150,10 @@ public class FolioService implements Serializable {
 		if (folioList != null && folioList.size() > 0) {
 			for (Folio folio : folioList) {
 				List<SimpleTag> folioTags = folio.getTags();
-				if (folioTags != null && !Collections.disjoint(includeTags, folioTags)) {
+//				if (folioTags != null && !Collections.disjoint(includeTags, folioTags)) {
+				if (folioTags != null && folio.getTags().containsAll(includeTags)) {
+					folioDescriptorList.add(folio.createDescriptor());
+				} else if (includeTags == null) {
 					folioDescriptorList.add(folio.createDescriptor());
 				}
 			}
