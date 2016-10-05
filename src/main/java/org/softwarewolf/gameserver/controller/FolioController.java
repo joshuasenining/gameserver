@@ -154,6 +154,9 @@ public class FolioController {
 				}
 			}
 			folio.setTags(selectedTagList);
+			if (folio.getId().isEmpty()) {
+				folio.setId(null);
+			}
 			folio = folioService.save(folio);
 			folioService.initFolioCreator(folioDto, folio, campaignId);
 		} catch (Exception e) {

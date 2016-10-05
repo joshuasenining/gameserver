@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.repository.Query;
 public interface FolioRepository extends MongoRepository<Folio, String> {
 
 	public Folio findOneByCampaignIdAndTitle(String arg0, String arg1);
+	
+	public List<Folio> findAllByCampaignId(String campaignId);
 
     /// Find by key value pair
     @Query("{?0 : ?1}")

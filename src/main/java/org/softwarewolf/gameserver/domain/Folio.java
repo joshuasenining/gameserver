@@ -3,6 +3,7 @@ package org.softwarewolf.gameserver.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
@@ -28,6 +29,7 @@ public class Folio implements Serializable {
 	public Folio() { }
 	public Folio(String campaignId) {
 		this.campaignId = campaignId;
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public String getId() {

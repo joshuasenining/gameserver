@@ -102,7 +102,7 @@ public class FolioService implements Serializable {
 			folioCreator.setUnassignedTags("{}");
 		}
 		
-		folioCreator.setFolioDescriptorList(getFolioDescriptorList(null));
+		folioCreator.setFolioDescriptorList(getFolioDescriptorList(campaignId, null));
 	}
 	
 	public void deleteAll() {
@@ -131,12 +131,12 @@ public class FolioService implements Serializable {
 		return folioRepository.save(folio);
 	}
 
-	public List<FolioDescriptor> getFolioDescriptorList(List<SimpleTag> includeTags) {
+	public List<FolioDescriptor> getFolioDescriptorList(String campaignId, List<SimpleTag> includeTags) {
 		List<FolioDescriptor> folioDescriptorList = new ArrayList<>();
 		if (includeTags == null) {
 			includeTags = new ArrayList<>();
 		}
-		List<Folio> folioList = folioRepository.findAll();
+		List<Folio> folioList = folioRepository.findAllByCampaignId(campaignId);
 		if (folioList != null && folioList.size() > 0) {
 			for (Folio folio : folioList) {
 				List<SimpleTag> folioTags = folio.getTags();
@@ -191,7 +191,7 @@ public class FolioService implements Serializable {
 		
 		String addTagName = selectFolioCreator.getAddTagName();
 		String removeTagName = selectFolioCreator.getRemoveTagName();
-		if (addTagName != null || removeTagName != null) {
+		if (!addTagName.isEmpty() || !removeTagName.isEmpty()) {
 			for(SimpleTag tag: allTags) {
 				String currentTagName = tag.getName();
 				if (addTagName != null && addTagName.equals(currentTagName)) {
@@ -212,7 +212,7 @@ public class FolioService implements Serializable {
 		}
 		
 		
-		List<FolioDescriptor> folioDescriptorList = getFolioDescriptorList(selectFolioCreator.getSelectedTagsAsTags());
+    	List<FolioDescriptor> folioDescriptorList = getFolioDescriptorList(campaignId, selectFolioCreator.getSelectedTagsAsTags());
 		String listAsString = convertFolioDescriptorListToString(folioDescriptorList);
 		selectFolioCreator.setFolioDescriptorList(listAsString);
 	}		
