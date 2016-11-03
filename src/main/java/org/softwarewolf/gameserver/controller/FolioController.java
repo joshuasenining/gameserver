@@ -1,7 +1,5 @@
 package org.softwarewolf.gameserver.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -32,6 +30,9 @@ public class FolioController {
 	@Autowired
 	protected FolioService folioService;
 	
+	private static final String NEW_FOLIO = "You are creating a new folio";
+	private static final String EDITING_FOLIO = "You are editing folio '";
+	
 	@RequestMapping(value = "/editFolio", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
 	public String editFolio(HttpSession session, FolioDto folioDto, final FeFeedback feFeedback) {
@@ -43,7 +44,7 @@ public class FolioController {
 		Folio nullFolio = null;
 		folioService.initFolioCreator(folioDto, nullFolio, campaignId);
 		folioDto.setForwardingUrl(ControllerHelper.EDIT_FOLIO);
-		feFeedback.setUserStatus("You are creating a new folio");
+		feFeedback.setUserStatus(NEW_FOLIO);
 		return ControllerHelper.EDIT_FOLIO;
 	}
 	
@@ -58,75 +59,10 @@ public class FolioController {
 
 		folioService.initFolioCreator(folioDto, folioId, campaignId);
 		folioDto.setForwardingUrl(ControllerHelper.EDIT_FOLIO);
-		feFeedback.setUserStatus("You are editing folio " + folioDto.getFolio().getTitle());
+		feFeedback.setUserStatus(EDITING_FOLIO + "'" + folioDto.getFolio().getTitle() + "'");
 		return ControllerHelper.EDIT_FOLIO;
 	}
 	
-	@RequestMapping(value = "/getFolio/{folioId}", method = RequestMethod.GET)
-	@Secured({"USER","GAMEMASTER"})
-	public String getFolio(HttpSession session, @PathVariable String folioId, 
-			FolioDto folioDto, final FeFeedback feFeedback) {
-		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
-		if (campaignId == null) {
-			return ControllerHelper.USER_MENU;
-		}		
-
-		Folio folio = folioService.findOne(folioId);
-		folioService.initFolioCreator(folioDto, folio, campaignId);
-		feFeedback.setUserStatus("You are editing '" + folio.getTitle() + "'");
-		return ControllerHelper.EDIT_FOLIO;
-	}
-		
-	@RequestMapping(value = "/removeTagFromFolio/{folioId}/{tagId}", method = RequestMethod.GET)
-	@Secured({"USER","GAMEMASTER"})
-	public String removeTagFromFolio(HttpSession session, FolioDto folioDto, 
-			@PathVariable String folioId, @PathVariable String tagId, final FeFeedback feFeedback) {
-		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
-		if (campaignId == null) {
-			return ControllerHelper.USER_MENU;
-		}		
-
-		Folio folio = folioService.removeTagFromFolio(folioId, tagId);
-		folioService.initFolioCreator(folioDto, folio, campaignId);
-		feFeedback.setInfo("You have modified folio " + folio.getTitle());
-		return ControllerHelper.EDIT_FOLIO;
-	}
-
-	@RequestMapping(value = "/addTagToFolio/{folioId}/{tagName}", method = RequestMethod.GET)
-	@Secured({"USER","GAMEMASTER"})
-	public String addTagToFolio(HttpSession session, FolioDto folioDto, 
-			@PathVariable String folioId, @PathVariable String tagName, final FeFeedback feFeedback) {
-		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
-		if (campaignId == null) {
-			return ControllerHelper.USER_MENU;
-		}		
-
-		Folio folio = null;
-		if (folioId != null) {
-			folio = folioService.findOne(folioId);
-		}
-		if (folio == null) {
-			folio = new Folio();
-			folio.setCampaignId(campaignId);
-			folio.setTitle("Placeholder title");
-		} 
-		if (folio.getId() == null) {
-			try {
-				folio = folioService.save(folio);
-			} catch (Exception e) {
-				String errorMessage = e.getMessage();
-				feFeedback.setError(errorMessage);
-				folioService.initFolioCreator(folioDto, folio, campaignId);
-				return ControllerHelper.EDIT_FOLIO;
-			}
-		}
-		folio = folioService.addTagToFolio(campaignId, folio.getId(), tagName);
-		folioService.initFolioCreator(folioDto, folio, campaignId);
-//		feFeedback.setInfo("You have modified folio " + folio.getTitle());
-
-		return ControllerHelper.EDIT_FOLIO;
-	}
-
 	@RequestMapping(value = "/editFolio", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER"})
 	public String postEditPage(HttpSession session, FolioDto folioDto, 
@@ -136,25 +72,9 @@ public class FolioController {
 			return ControllerHelper.USER_MENU;
 		}		
 
-		Folio folio = folioDto.getFolio();
+		Folio folio = null;
 		try {
-			String selectedTags = folioDto.getSelectedTags();
-			ObjectMapper mapper = new ObjectMapper();
-			JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, SimpleTag.class);
-			List<SimpleTag> selectedTagList = null;
-
-			if (selectedTags.isEmpty() || "{}".equals(selectedTags)) {
-				selectedTagList = new ArrayList<>();
-			} else {
-				try {
-					selectedTagList = mapper.readValue(selectedTags, type);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			folio.setTags(selectedTagList);
-			folio = folioService.save(folio);
+			folio = folioService.saveFolio(folioDto);
 			folioService.initFolioCreator(folioDto, folio, campaignId);
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();

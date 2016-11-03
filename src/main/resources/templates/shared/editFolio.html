@@ -10,7 +10,7 @@
     <link rel="icon" href="/werewolf-512.png"></link>
    	<link rel="stylesheet" href="/css/style.css" type="text/css" th:href="@{/css/style.css}"></link>	
 	<link rel="stylesheet" href="/css/font-awesome.css" type="text/css" th:href="@{/css/font-awesome.css}"></link>
-    <!-- Bootstrap & JQuery-->
+
     <!-- Bootstrap & JQuery -->
 	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"></link>
 	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css}"></link>
@@ -29,29 +29,51 @@
 	<script th:inline="javascript">
 	$(document).ready(function() {
 		$( window ).load(function() {
-			
-			var value = $("#selectedTags").val();
-			var data = jQuery.parseJSON(value);
-
-			var ul = '<ul class="dropdown-menu"></ul>';
-			$(".tags-dropdown-toggle").after(ul);
-			var string0 = '<li id="0" class="selectTag"><a href="#" onclick="addTag();">Add a tag</a></li>';
-			$(".tags-dropdown-menu").append(string0);
-			var string1 = '<li class="divider"></li>';
-			$(".tags-dropdown-menu").append(string1);
-				
-			var folioId = $("#folioId").val();
-			if (data.length == 0) {
-				alert("0");
+			var unselectedList = $("#unselectedTags")[0].value;
+			var unselectedTagList = null;
+			if (unselectedList.length > 0) {
+				unselectedTagList = jQuery.parseJSON(unselectedList);
+			} else {
+				unselectedTagList= [];
 			}
-			$.each(data, function(index, currentTag) {
-				var tagId = currentTag['objectId'];
-				var tagName = currentTag['tagName'];
-				var paramString = "\'"+folioId+"\', \'"+tagId+"\', \'"+tagName+"\'";
-				var current = '<li id="'+tagId+'" class="selectTag"><a href="#" onclick="removeTag('+paramString+');">'+tagName+'</a></li>'; 
-				$(".tags-dropdown-menu").append(current);
+			
+			var selectedList = $("#selectedTags")[0].value;
+			var selectedTagList = null;
+			if (selectedList.length > 0) {
+				selectedTagList = jQuery.parseJSON(selectedList);
+			} else {
+				selectedTagList = [];
+			}
+			
+			$.each(unselectedTagList, function(i, item) {
+				var name = item["name"];
+				var id = item["id"];
+				var newButton = $('<button type="button"/>')
+				  .text(name)
+				  .click( function() { 
+						$("#addTag").val(id);
+						$("#editFolioForm").submit();
+				  })
+				  .addClass("btn btn-default add-btn")
+				  .attr('id', id)
+				  .attr('name', name)
+				  .appendTo($("#unselectedTagSpan"));
 			});
 
+			$.each(selectedTagList, function(i, item) {
+				var name = item["name"];
+				var id = item["id"];
+				var newButton = $('<button type="button"/>')
+				  .text(name)
+				  .click( function() { 
+						$("#removeTag").val(id);
+						$("#editFolioForm").submit();
+				  })
+				  .addClass("btn btn-default add-btn")
+				  .attr('id', id)
+				  .attr('name', name)
+				  .appendTo($("#selectedTagSpan"));
+			});
 		});	
 
 		$("#removeDialog").dialog({
@@ -71,18 +93,16 @@
 			$( "#selectable" ).selectable();
 		});
 	});		
-
-
 	</script>   
 
-	<script>
+	<script th:inline="javascript">
 		function removeTag(folioId, tagId, tagName) {
 			$("#removeDialog").text("Remove the tag " + tagName + "?");
 	
 			$("#removeDialog").dialog({
 				buttons : {
 			    	"Confirm" : function() {
-			    		var action = "/gameserver/shared/removeTagFromFolio/" + folioId + "/" + tagId;
+			    		var action = "/shared/removeTagFromFolio/" + folioId + "/" + tagId;
 			    		window.location.href = action;
 			    		$("#removeTagForm").attr("action", action);
 			    		$("#removeTagForm").submit();
@@ -96,32 +116,7 @@
 			$("#removeDialog").dialog("open");			
 		}
 		
-		// unselectedTags is an object with nested objects in a parent->children relationship
-		// with the top element being Root (a fake element) and there being only two levels
-		// beneath them
-		function getTags(tags) {
-			var firstTierChildren = tags.children;
-			
-			var liList = ' ';
-			$.each(firstTierChildren, function(index, firstTierTag) {
-				liList += getSecondTierTags(firstTierTag);
-			});
-			
-			return liList;
-		}
-		
-		function getSecondTierTags(firstTierTag) {
-			var liList = ' ';
-			$.each(firstTierTag.children, function(index, secondTierTag) {
-				var secondTierLi = '<li class="ui-widget-content" class-name="'+secondTierTag['name']+'" tag-id="'+secondTierTag['id']+'">'+secondTierTag['displayName']+'</li>'; 
-				liList += secondTierLi;
-			});
-			var firstTierLi = '<li class="ui-widget-content" class-name="'+firstTierTag['name']+'" tag-id="'+firstTierTag['id']+'">'+firstTierTag['displayName']+'</li>';
-			liList = firstTierLi + liList;
-			return liList;
-		}
-		
-		function addTag() {
+		function createTag(tagName) {
 			$("#addDialog").empty();
 
 			var unassignedTagsField = $("#unassignedTags");
@@ -138,19 +133,6 @@
 				  addTagForm[0].setAttribute("action", action);
 				  addTagForm.submit();
             }});;	
-		}
-		
-		function createAddTagElement(currentTag, unassignedtags, listString) {
-			if (currentTag.children.length > 0) {				
-				$.each(currentTag.children, function(index, childTag) {
-					listString += createAddTagElement(childTag, unassignedtags, listString);
-				});
-			}
-			if (currentTag.id != "Root") {
-				var newBit = '<li class="ui-widget-content" class-name="'+currentTag['name']+'" tag-id="'+currentTag['id']+'">'+currentTag['displayName']+'</li>';
-				listString += newBit;
-			}
-			return listString;
 		}
 		
 		function getFolio(folioId) {
@@ -191,16 +173,17 @@
 			<span class="info-message" th:if="${feFeedback.info}" th:text="${feFeedback.info}">Info.</span>
 		</div>
 	</div>
-
-	<form id="addTagToFolioForm" action="/shared/addTagToFolio/" method="get"></form>
+ 
+	<form id="addTagForm" action="/shared/addTagToFolio" method="get"></form>
 	<form id="getFolioForm" action="/shared/getFolio/" method="get"></form>
 	<form id="removeTagForm" action="/shared/removeTagFromFolio" method="get"></form>
-	<form id="createFolioForm" th:object="${folioDto}" action="#" th:action="@{/shared/editFolio}" method="post">
-		<input id="campaignId" type="hidden" th:field="*{folio.campaignId}"></input>
-		<input id="unassignedTags" type="hidden" th:field="*{unassignedTags}"></input>
-		<input id="selectedTags" type="hidden" th:field="*{selectedTags}"></input>
-		<input id="removeTag" type="hidden" th:field="*{removeTag}"></input>
-		<input id="folioId" type="hidden" th:field="*{folio.id}"></input>
+	<form id="editFolioForm" th:object="${folioDto}" action="#" th:action="@{/shared/editFolio}" method="post">
+		<input type="hidden" id="campaignId" th:field="*{folio.campaignId}"></input>
+		<input type="hidden" id="unselectedTags" th:field="*{unselectedTags}"></input>
+		<input type="hidden" id="selectedTags" th:field="*{selectedTags}"></input>
+		<input type="hidden" id="addTag" th:field="*{addTag}"></input>
+		<input type="hidden" id="removeTag" th:field="*{removeTag}"></input>
+		<input type="hidden" id="folioId" th:field="*{folio.id}"></input>
 
 		<div class="row">
 			<div class="col-md-1"></div>
@@ -229,24 +212,7 @@
 				</div>				
 			</div>
 		</div>
-<!-- 		
-		<div class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-1">
-				<label class="input-margin" th:text="#{editFolio.selectFolio}">Select</label>
-			</div>
-			<div class="col-md-8">
-				<div class="btn-group">
-  					<button id="selectFolioBtn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:utext="#{editFolio.selectFolioDown}">
-    					Select Folio <span class="caret"></span>
-  					</button>
-	  				<ul class="dropdown-menu" role="menu">
-	    				<li th:each="folioDescriptor : ${folioDto.folioDescriptorList}"><a th:id="${folioDescriptor.folioId}" class="selectLocation" th:text="${folioDescriptor.folioTitle}" th:onclick="'getFolio(\'' + ${folioDescriptor.folioId} + '\');'">Title</a></li>
-	  				</ul>
-				</div>				
-			</div>
-		</div>
- -->
+		
 		<div class="row">
 			<div class="col-md-10">
 				<div id="removeDialog" title="Confirmation Required">
@@ -271,22 +237,34 @@
 			</div>
 		</div>
 	
+						
 		<div class="row">
 			<div class="col-md-1"></div>
-			<div class="col-md-1">
-				<label th:text="#{editFolio.tags}">Tags</label>
+			<div class="col-md-3">
+				<label class="input-margin" th:text="#{selectFolio.unselectedTags}">Tags</label>	  
 			</div>
-			<div class="col-md-10">
-				<div class="btn-group input-margin" role="group">
-  					<button id="tagsBtn" class="btn btn-default dropdown-toggle tags-dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-    					Tags<span class="caret"></span>
-  					</button>
-	  				<ul class="dropdown-menu tags-dropdown-menu">
-  					</ul>
-				</div>			 
+		</div>
+		
+		<div class="row">   
+			<div class="col-md-1"></div>   	
+			<div class="row col-md-10">
+				<span id="unselectedTagSpan"></span>
+			</div>	
+		</div>	        	
+
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-3">
+				<label class="input-margin" th:text="#{selectFolio.selectedTags}">Tags</label>	  
 			</div>
-		</div>		 
- 
+		</div>
+		
+		<div class="row">   
+			<div class="col-md-1"></div>   	
+			<div id="selectedTagSpan" class="row col-md-10">
+			</div>	
+		</div>	  		
+
 		<div class="input-margin">
 			<div class="grid-container">
 				<div class="grid-width-100">

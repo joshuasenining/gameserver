@@ -239,26 +239,39 @@ public class DataSeeder {
 			// ignore;
 		}
 		
-		Folio KindomOfMidlandFolio = new Folio();
-		KindomOfMidlandFolio.setCampaignId(sAndSCampaignId);
-		KindomOfMidlandFolio.setTitle("The Kingdom of Midland");
-		KindomOfMidlandFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a big kingdom that stretches from east to west.</p>");		
-		KindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(LOCATION));
-		KindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
+		Folio kindomOfMidlandFolio = new Folio();
+		kindomOfMidlandFolio.setCampaignId(sAndSCampaignId);
+		kindomOfMidlandFolio.setTitle("The Kingdom of Midland Geography");
+		kindomOfMidlandFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a big kingdom that stretches from east to west.</p>");		
+		kindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(LOCATION));
+		kindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
 		try {
-			folioService.save(KindomOfMidlandFolio);
+			folioService.save(kindomOfMidlandFolio);
 		} catch (Exception e) {
 			// ignore;
 		}		
 		
-		Folio KindomOfMidlandOrgFolio = new Folio();
-		KindomOfMidlandOrgFolio.setCampaignId(sAndSCampaignId);
-		KindomOfMidlandOrgFolio.setTitle("The Kingdom of Midland");
-		KindomOfMidlandOrgFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a fuedal society.</p>");		
-		KindomOfMidlandOrgFolio.addTag(tagMap.get(sAndSCampaignId).get(ORGANIZATION));
-		KindomOfMidlandOrgFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
+		Folio kindomOfMidlandOrgFolio = new Folio();
+		kindomOfMidlandOrgFolio.setCampaignId(sAndSCampaignId);
+		kindomOfMidlandOrgFolio.setTitle("The Kingdom of Midland");
+		kindomOfMidlandOrgFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a feudal society.</p>");		
+		kindomOfMidlandOrgFolio.addTag(tagMap.get(sAndSCampaignId).get(ORGANIZATION));
+		kindomOfMidlandOrgFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
 		try {
-			folioService.save(KindomOfMidlandOrgFolio);
+			folioService.save(kindomOfMidlandOrgFolio);
+		} catch (Exception e) {
+			// ignore;
+		}	
+
+		Folio magicCountyFolio = new Folio();
+		magicCountyFolio.setCampaignId(sAndSCampaignId);
+		magicCountyFolio.setTitle("The Kingdom of Midland");
+		magicCountyFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a feudal society.</p>");		
+		magicCountyFolio.addTag(tagMap.get(sAndSCampaignId).get(ORGANIZATION));
+		magicCountyFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
+		magicCountyFolio.addTag(tagMap.get(sAndSCampaignId).get(MAGIC_COUNTY));
+		try {
+			folioService.save(magicCountyFolio);
 		} catch (Exception e) {
 			// ignore;
 		}	

@@ -6,8 +6,9 @@ import org.softwarewolf.gameserver.domain.Folio;
 
 public class FolioDto {
 	private Folio folio;
-	private String unassignedTags;
+	private String unselectededTags;
 	private String selectedTags;
+	private String addTag;
 	private String removeTag;
 	private List<FolioDescriptor> folioDescriptorList;
 	private String forwardingUrl;
@@ -23,11 +24,11 @@ public class FolioDto {
 		this.folio = folio;
 	}
 	
-	public String getUnassignedTags() {
-		return unassignedTags;
+	public String getUnselectedTags() {
+		return unselectededTags;
 	}
-	public void setUnassignedTags(String unassignedTags) {
-		this.unassignedTags = unassignedTags;
+	public void setUnselectededTags(String unassignedTags) {
+		this.unselectededTags = unassignedTags;
 	}
 
 	public String getSelectedTags() {
@@ -35,6 +36,13 @@ public class FolioDto {
 	}
 	public void setSelectedTags(String selectedTags) {
 		this.selectedTags = selectedTags;
+	}
+	
+	public String getAddTag() {
+		return addTag;
+	}
+	public void setAddTag(String addTag) {
+		this.addTag = addTag;
 	}
 	
 	public String getRemoveTag() {

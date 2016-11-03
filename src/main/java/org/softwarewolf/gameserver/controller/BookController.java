@@ -91,7 +91,7 @@ public class BookController {
 		feFeedback.setInfo("You have modified folio " + folio.getTitle());
 		return ControllerHelper.EDIT_FOLIO;
 	}
-
+/*
 	@RequestMapping(value = "/addFolioToBook/{folioId}/{bookId}", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
 	public String addTagToFolio(HttpSession session, FolioDto folioCreator, 
@@ -126,33 +126,20 @@ public class BookController {
 
 		return ControllerHelper.EDIT_FOLIO;
 	}
-
+*/
 	@RequestMapping(value = "/editBook", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER"})
 	public String postEditPage(HttpSession session, FolioDto folioCreator, 
 			final FeFeedback feFeedback) {
-		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
+/*		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 
 		Folio folio = folioCreator.getFolio();
 		try {
-			String selectedTags = folioCreator.getSelectedTags();
-			ObjectMapper mapper = new ObjectMapper();
-			JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, SimpleTag.class);
-			List<SimpleTag> selectedTagList = null;
+			List<SimpleTag> selectedTagList = folioCreator.getSelectedTags();
 
-			if (selectedTags.isEmpty() || "{}".equals(selectedTags)) {
-				selectedTagList = new ArrayList<>();
-			} else {
-				try {
-					selectedTagList = mapper.readValue(selectedTags, type);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
 			folio.setTags(selectedTagList);
 			folio = folioService.save(folio);
 			folioService.initFolioCreator(folioCreator, folio, campaignId);
@@ -165,7 +152,7 @@ public class BookController {
 		}
 		
 		feFeedback.setInfo("You have modified folio " + folio.getTitle());
-		feFeedback.setUserStatus("You are editing folio " + folio.getTitle());
+		feFeedback.setUserStatus("You are editing folio " + folio.getTitle());*/
 		return ControllerHelper.EDIT_FOLIO;
 	}	
 

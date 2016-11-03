@@ -1,6 +1,7 @@
 package org.softwarewolf.gameserver.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,10 @@ public class SimpleTagService {
 	
 	@Autowired
 	private FolioService folioService;
+	
+	public SimpleTag findOne(String id) {
+		return simpleTagRepository.findOne(id);
+	}
 	
 	public List<SimpleTag> getTagList(String campaignId, List<SimpleTag> excludeTags) {
 		List<SimpleTag> tagList = simpleTagRepository.findAllByCampaignId(campaignId);
@@ -53,20 +58,12 @@ public class SimpleTagService {
 	 * @param campaignId
 	 * @return
 	 */
-	public List<SimpleTag> getUnassignedTags(String campaignId, String folioId) {
+	public List<SimpleTag> getUnassignedTags(Folio folio) {
 		List<SimpleTag> unassignedTags = new ArrayList<>();
-		List<SimpleTag> allTags = getTagList(campaignId, unassignedTags);
-		Folio folio = null;
-		if (folioId != null) {
-			folio = folioService.findOne(folioId);
-		}
-		if (folio == null) {
-			unassignedTags = allTags;
-		} else {
-			for (SimpleTag currentTag : allTags) {
-				if (!folio.getTags().contains(currentTag)) {
-					unassignedTags.add(currentTag);
-				}
+		List<SimpleTag> allTags = getTagList(folio.getCampaignId(), unassignedTags);
+		for (SimpleTag currentTag : allTags) {
+			if (!folio.getTags().contains(currentTag)) {
+				unassignedTags.add(currentTag);
 			}
 		}
 		return unassignedTags;

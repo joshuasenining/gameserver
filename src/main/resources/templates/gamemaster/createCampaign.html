@@ -46,7 +46,7 @@
 		</div>
 	</div>
 	<br></br>
-	<form id="updateOwnerForm" th:object="${campaignCreator}" action="#" th:action="@{/gamemaster/createCampaign}" method="post">
+	<form id="updateOwnerForm" th:object="${campaignDto}" action="#" th:action="@{/gamemaster/createCampaign}" method="post">
 		<input id="ownerId" type="hidden" th:field="*{ownerId}"></input>
 		<div class="row">
 			<div class="col-md-1"></div>

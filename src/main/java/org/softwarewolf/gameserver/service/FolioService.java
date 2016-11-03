@@ -3,12 +3,14 @@ package org.softwarewolf.gameserver.service;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
-import org.softwarewolf.gameserver.domain.dto.FolioDto;
 import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
+import org.softwarewolf.gameserver.domain.dto.FolioDto;
 import org.softwarewolf.gameserver.domain.dto.SelectFolioCreator;
 import org.softwarewolf.gameserver.domain.dto.ViewFolioCreator;
 import org.softwarewolf.gameserver.repository.FolioRepository;
@@ -33,7 +35,44 @@ public class FolioService implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
+	public Folio saveFolio(FolioDto folioDto) throws Exception {
+		String selectedTagString = folioDto.getSelectedTags();
+		ObjectMapper mapper = new ObjectMapper();
+		JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, SimpleTag.class);
+		List<SimpleTag> selectedTagList = mapper.readValue(selectedTagString, type);
+//		if ("[]".equals(selectedTagList)) {
+//			selectedTagList = null;
+//		}
+
+		Folio folio = folioDto.getFolio();
+		folio.setTags(selectedTagList);	
+		
+		String addTagId = folioDto.getAddTag();
+		if (addTagId != null && !addTagId.isEmpty()) {
+			SimpleTag newTag = simpleTagService.findOne(addTagId);
+			if (newTag != null) {
+				folio.addTag(newTag);
+			}
+		}
+		String removeTagId = folioDto.getRemoveTag();
+		if (removeTagId != null && !removeTagId.isEmpty()) {
+			SimpleTag oldTag = simpleTagService.findOne(removeTagId);
+			if (oldTag != null) {
+				folio.removeTag(oldTag.getName());
+			}
+		}
+		
+		if (folio.getTitle() == null || folio.getTitle().isEmpty()) {
+			return folio;
+		}
+		return save(folio);
+	}
+	
 	public Folio save(Folio folio) throws Exception {
+		String folioId = folio.getId();
+		if (folioId != null && folioId.isEmpty()) {
+			folio.setId(null);
+		}
 		String errorList = validateFolio(folio);
 		if (errorList.length() > 0) {
 			throw new Exception(errorList);
@@ -63,46 +102,44 @@ public class FolioService implements Serializable {
 		return folioRepository.findAll();
 	}
 	
-	public void initFolioCreator(FolioDto folioCreator, String folioId, String campaignId) {
+	public void initFolioCreator(FolioDto folioDto, String folioId, String campaignId) {
 		Folio folio = folioRepository.findOne(folioId);
-		initFolioCreator(folioCreator, folio, campaignId);
+		initFolioCreator(folioDto, folio, campaignId);
 	}
 	
-	public void initFolioCreator(FolioDto folioCreator, Folio folio, String campaignId) {
+	public void initFolioCreator(FolioDto folioDto, Folio folio, String campaignId) {
 		if (folio == null) {
 			folio = new Folio();
 			folio.setCampaignId(campaignId);
 		}
 
-		folioCreator.setFolio(folio);
-		List<SimpleTag> selectedTags = folio.getTags();
-		ObjectMapper mapper = new ObjectMapper();
-		if (selectedTags != null && !selectedTags.isEmpty()) {
-			String json;
-			try {
-				json = mapper.writeValueAsString(selectedTags);
-				folioCreator.setSelectedTags(json);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				folioCreator.setSelectedTags("{}");
-			}
-		} else {
-			folioCreator.setSelectedTags("{}");
-		}
+		folioDto.setFolio(folio);
+		List<SimpleTag> selectedTagList = folio.getTags();
+		Collections.sort(selectedTagList, new SimpleTagCompare());
+		String selectedTags = tagListToString(selectedTagList);
+		folioDto.setSelectedTags(selectedTags);
 
-		List<SimpleTag> unassignedTags = simpleTagService.getUnassignedTags(campaignId, folio.getId());
-		String json;
+		List<SimpleTag> unselectedTagList = simpleTagService.getUnassignedTags(folio);
+		Collections.sort(unselectedTagList, new SimpleTagCompare());
+		String unselectedTags = tagListToString(unselectedTagList);
+		folioDto.setUnselectededTags(unselectedTags);
+		
+		folioDto.setFolioDescriptorList(getFolioDescriptorList(null));
+	}
+
+	private String tagListToString(List<SimpleTag> simpleTagList) {
+		String tagsString = null;
+		if (simpleTagList == null || simpleTagList.isEmpty()) {
+			return "[]";
+		}
 		try {
-			json = mapper.writeValueAsString(unassignedTags);
-			folioCreator.setUnassignedTags(json);
+			ObjectMapper mapper = new ObjectMapper();
+			tagsString = mapper.writeValueAsString(simpleTagList);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			folioCreator.setUnassignedTags("{}");
 		}
-		
-		folioCreator.setFolioDescriptorList(getFolioDescriptorList(null));
+		return tagsString;
 	}
 	
 	public void deleteAll() {
@@ -117,18 +154,45 @@ public class FolioService implements Serializable {
 		return folioRepository.save(folio);
 	}
 
-	public Folio addTagToFolio(String campaignId, String folioId, String tagName) {
-		SimpleTag tag = simpleTagService.findOneByNameAndCampaignId(tagName, campaignId);
-		if (tag == null) {
-			return null;
+	public Folio addTagToFolio(String campaignId, String folioId, String tagId) throws Exception {
+		if (tagId == null) {
+			throw new Exception("tagId can not be null");
 		}
-		return addTagToFolio(folioId, tag);
+		SimpleTag tag = simpleTagService.findOne(tagId);
+		if (tag == null) {
+			throw new Exception("Could not locate a tag for id "+tagId);
+		}
+		
+ 		if (folioId.equals("null")) {
+			folioId = null;
+		}
+		Folio folio = null;
+		if (folioId != null) {
+			folio = findOne(folioId);
+		}
+		if (folio == null) {
+			folio = new Folio();
+			folio.setCampaignId(campaignId);
+			folio.setTitle("Placeholder title");
+		} 
+
+		return addTagToFolio(folio, tag);		
 	}
 	
-	public Folio addTagToFolio(String folioId, SimpleTag tag) {
+	public Folio addTagToFolio(String folioId, SimpleTag tag) throws Exception {
 		Folio folio = folioRepository.findOne(folioId);
+		if (folio != null) {
+			return addTagToFolio(folio, tag);
+		}
+		throw new Exception("Invalid folio id");
+	}
+	
+	public Folio addTagToFolio(Folio folio, SimpleTag tag) {
 		folio.addTag(tag);
-		return folioRepository.save(folio);
+		if (folio.getId() != null) {
+			folio = folioRepository.save(folio);
+		}
+		return folio;
 	}
 
 	public List<FolioDescriptor> getFolioDescriptorList(List<SimpleTag> includeTags) {
@@ -316,5 +380,12 @@ public class FolioService implements Serializable {
 			viewFolioCreator.setContent(folio.getContent());
 		}
 		
+	}
+}
+
+class SimpleTagCompare implements Comparator<SimpleTag> {
+	@Override
+	public int compare(SimpleTag o1, SimpleTag o2) {
+		return o1.getName().compareTo(o2.getName());
 	}
 }
