@@ -58,7 +58,7 @@ public class FolioService implements Serializable {
 		if (removeTagId != null && !removeTagId.isEmpty()) {
 			SimpleTag oldTag = simpleTagService.findOne(removeTagId);
 			if (oldTag != null) {
-				folio.removeTag(oldTag);
+				folio.removeTag(oldTag.getName());
 			}
 		}
 		
@@ -144,6 +144,14 @@ public class FolioService implements Serializable {
 	
 	public void deleteAll() {
 		folioRepository.deleteAll();
+	}
+	
+	public Folio removeTagFromFolio(String folioId, String tagId) {
+		Folio folio = folioRepository.findOne(folioId);
+		if (folio != null) {
+			folio.removeTag(tagId);
+		}
+		return folioRepository.save(folio);
 	}
 
 	public Folio addTagToFolio(String campaignId, String folioId, String tagId) throws Exception {

@@ -60,13 +60,13 @@ public class CampaignController {
 	
 	@RequestMapping(value = "/createCampaign", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
-	public String getCampaignCreator(CampaignDto campaignDto) {
+	public String getCampaignDto(CampaignDto campaignDto) {
 		UserDetails userDetails =
 				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String userName = userDetails.getUsername();
 		User user = userRepository.findOneByUsername(userName);
 		
-		campaignService.initCampaignCreator(campaignDto, user);
+		campaignService.initCampaignDto(campaignDto, user);
 		
 		return "/gamemaster/createCampaign";		
 	}

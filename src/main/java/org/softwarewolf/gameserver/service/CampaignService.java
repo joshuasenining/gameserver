@@ -43,7 +43,7 @@ public class CampaignService {
 		return gamemasters;
 	}
 	
-	public void initCampaignCreator(CampaignDto campaignCreator, User user) {
+	public void initCampaignDto(CampaignDto campaignCreator, User user) {
 		campaignCreator.setGamemasters(getGamemasters());
 		campaignCreator.setOwnerId(user.getId());
 		campaignCreator.setOwnerName(user.getUsername());

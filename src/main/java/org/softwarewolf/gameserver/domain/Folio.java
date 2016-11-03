@@ -2,7 +2,9 @@ package org.softwarewolf.gameserver.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
@@ -28,6 +30,7 @@ public class Folio implements Serializable {
 	public Folio() { }
 	public Folio(String campaignId) {
 		this.campaignId = campaignId;
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public String getId() {
@@ -87,13 +90,15 @@ public class Folio implements Serializable {
 		}
 	}
 
-	public void removeTag(String tagName) {
-		if (tags != null && tags.contains(tagName)) {
-			for (SimpleTag tag : tags) {
-				if (tag.getName().equals(tagName)) {
+	public void removeTag(SimpleTag tag) {
+		if (tags != null && tags.contains(tag)) {
+			Iterator<SimpleTag> iter = tags.iterator();
+			while (iter.hasNext()) {
+				SimpleTag currentTag = iter.next();
+				if (currentTag.equals(tag)) {
 					tags.remove(tag);	
 					break;
-				}
+				}				
 			}
 		}
 	}
