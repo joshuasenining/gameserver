@@ -1,7 +1,5 @@
 package org.softwarewolf.gameserver.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.softwarewolf.gameserver.controller.helper.ControllerHelper;
 import org.softwarewolf.gameserver.controller.helper.FeFeedback;
 import org.softwarewolf.gameserver.domain.Folio;
-import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDto;
 import org.softwarewolf.gameserver.domain.dto.SelectFolioCreator;
-import org.softwarewolf.gameserver.domain.dto.ViewFolioCreator;
+import org.softwarewolf.gameserver.domain.dto.ViewFolioDto;
 import org.softwarewolf.gameserver.service.FolioService;
 
 @Controller
@@ -134,27 +128,28 @@ public class FolioController {
 
 	@RequestMapping(value = "/viewFolio", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
-	public String viewFolio(HttpSession session, ViewFolioCreator viewFolioCreator, final FeFeedback feFeedback) {
+	public String viewFolio(HttpSession session, ViewFolioDto viewFolioDto, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 		
-		viewFolioCreator.setForwardingUrl(ControllerHelper.VIEW_FOLIO);
+		folioService.initViewFolioDto(viewFolioDto, null);
+		viewFolioDto.setForwardingUrl(ControllerHelper.VIEW_FOLIO);
 		return ControllerHelper.VIEW_FOLIO;
 	}
 
 	@RequestMapping(value = "/viewFolio/{folioId}", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
-	public String viewFolioWithId(HttpSession session, ViewFolioCreator viewFolioCreator, 
+	public String viewFolioWithId(HttpSession session, ViewFolioDto viewFolioDto, 
 			@PathVariable String folioId, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 		
-		folioService.initViewFolioCreator(viewFolioCreator, folioId);
-		viewFolioCreator.setForwardingUrl(ControllerHelper.VIEW_FOLIO);
+		folioService.initViewFolioDto(viewFolioDto, folioId);
+		viewFolioDto.setForwardingUrl(ControllerHelper.VIEW_FOLIO);
 		return ControllerHelper.VIEW_FOLIO;
 	}
 

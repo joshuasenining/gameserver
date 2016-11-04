@@ -49,7 +49,7 @@
 		</div>
 	</div>
 
-	<form id="viewFolioForm" th:object="${viewFolioCreator}" action="#" th:action="@{/shared/viewFolio}" method="get">
+	<form id="viewFolioForm" th:object="${viewFolioDto}" action="#" th:action="@{/shared/viewFolio}" method="get">
 		
 		<div class="row">
 			<div class="col-md-1"></div>
@@ -62,6 +62,16 @@
 				</div>				
 			</div>
 		</div>
+ 
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="input-margin" th:text="#{viewFolio.tags}">Ta</label>
+			</div>
+			<div class="col-md-8">
+				<span th:text="*{tags}"></span>
+			</div>
+		</div>
 
 		<div class="row">
 			<div class="col-md-1"></div>
@@ -69,7 +79,7 @@
 				<label class="input-margin" th:text="#{viewFolio.content}">Cont</label>
 			</div>
 			<div class="col-md-8">
-				<span th:utext="*{content}"></span>
+				<span th:utext="*{folio.content}"></span>
 			</div>
 		</div>
 	

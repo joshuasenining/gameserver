@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.softwarewolf.gameserver.domain.Folio;
@@ -12,7 +13,7 @@ import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
 import org.softwarewolf.gameserver.domain.dto.FolioDto;
 import org.softwarewolf.gameserver.domain.dto.SelectFolioCreator;
-import org.softwarewolf.gameserver.domain.dto.ViewFolioCreator;
+import org.softwarewolf.gameserver.domain.dto.ViewFolioDto;
 import org.softwarewolf.gameserver.repository.FolioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -366,12 +367,29 @@ public class FolioService implements Serializable {
 		return folioList;
 	}
 	
-	public void initViewFolioCreator(ViewFolioCreator viewFolioCreator, String folioId) {
-		Folio folio = folioRepository.findOne(folioId);
-		if (folio != null) {
-			viewFolioCreator.setContent(folio.getContent());
+	public void initViewFolioDto(ViewFolioDto viewFolioDto, String folioId) {
+		Folio folio = null;
+		if (folioId != null) { 
+			folio = folioRepository.findOne(folioId);
 		}
+		if (folio == null) {
+			folio = new Folio();
+		}
+		viewFolioDto.setFolio(folio);
 		
+		List<SimpleTag> tagList = folio.getTags();
+		String tags = "";
+		if (tagList != null) {
+			Iterator<SimpleTag> tagIter = tagList.iterator();
+			while(tagIter.hasNext()) {
+				SimpleTag tag = tagIter.next();
+				tags += tag.getName();
+				if (tagIter.hasNext()) {
+					tags += ", ";
+				}
+			}
+		}
+		viewFolioDto.setTags(tags);
 	}
 }
 

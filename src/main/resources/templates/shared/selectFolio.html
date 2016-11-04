@@ -153,7 +153,6 @@
 			<div class="col-md-1"></div>   	
 			<div class="row col-md-10">
 				<span id="unselectedTagSpan"></span>
-<!-- 				<span th:each="tag : ${selectFolioCreator.unselectedTagList}"><button class="btn btn-default" type="button" th:id="${tag.objectId}" data-th-attr="className=${tag.className}" th:text="${tag.tagName}" th:onclick="'addTag(\'' + ${tag.name} + '\');'">tagName</button></span>  -->
 			</div>	
 		</div>	        	
 
@@ -167,12 +166,11 @@
 		
 		<div class="row">   
 			<div class="col-md-1"></div>   	
-			<div id="selectedTagSpan" class="row col-md-10">
-<!-- 				<span th:each="tag : ${selectFolioCreator.selectedTagList}"><button class="btn btn-default" type="button" th:id="${tag.objectId}" data-th-attr="className=${tag.className}" th:text="${tag.tagName}" th:onclick="'addTag(\'' + ${tag.name} + '\');'">tagName</button></span>  -->
+			<div class="row col-md-10">
+				<span id="selectedTagSpan"></span>
 			</div>	
 		</div>	        	
 				
-
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
