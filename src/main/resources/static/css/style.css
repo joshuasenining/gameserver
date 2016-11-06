@@ -13,6 +13,24 @@ hr {
 	margin-bottom: 5px;
 }
 
+.accordion-heading { 
+	background-color:#DDD; 
+}
+
+.accordion-heading:hover { 
+	background-color:#000;
+	color:#FFF;
+	-webkit-transition: all 0.5s ease-in-out;
+	-moz-transition: all 0.5s ease-in-out;
+	-o-transition: all 0.5s ease-in-out;
+	transition: all 0.5s ease-in-out; 
+}
+
+.accordion-heading > a { 
+	color:#FFF; 
+	text-decoration:none; 
+	text-transform:uppercase; 
+}
 
 .authority {
 	width: 250px;

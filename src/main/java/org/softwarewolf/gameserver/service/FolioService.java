@@ -12,7 +12,7 @@ import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
 import org.softwarewolf.gameserver.domain.dto.FolioDto;
-import org.softwarewolf.gameserver.domain.dto.SelectFolioCreator;
+import org.softwarewolf.gameserver.domain.dto.SelectFolioDto;
 import org.softwarewolf.gameserver.domain.dto.ViewFolioDto;
 import org.softwarewolf.gameserver.repository.FolioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -216,18 +216,18 @@ public class FolioService implements Serializable {
 	 * In order to communicate with the back-end the SelectFolioCreator stores the list of selected 
 	 * and unselected ObjectTags as a JSON String. They need to be converted back to be manipulated. 
 	 * @param campaignId
-	 * @param selectFolioCreator
+	 * @param selectFolioDto
 	 */ 
-	public void initSelectFolioCreator(String campaignId, SelectFolioCreator selectFolioCreator) {
-		selectFolioCreator.setCampaignId(campaignId);
+	public void initSelectFolioCreator(String campaignId, SelectFolioDto selectFolioDto) {
+		selectFolioDto.setCampaignId(campaignId);
 		List<SimpleTag> excludeTags = new ArrayList<>();
 		List<SimpleTag> allTags = simpleTagService.getTagList(campaignId, excludeTags);
 		
-		String unselectedTags = selectFolioCreator.getUnselectedTags();
+		String unselectedTags = selectFolioDto.getUnselectedTags();
 		if (unselectedTags == null) {
 			unselectedTags = "";
 		}
-		String selectedTags = selectFolioCreator.getSelectedTags();
+		String selectedTags = selectFolioDto.getSelectedTags();
 		if (selectedTags == null) {
 			selectedTags = "";
 		}
@@ -239,39 +239,39 @@ public class FolioService implements Serializable {
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 				unselectedTags = mapper.writeValueAsString(allTags);
-				selectFolioCreator.setUnselectedTags(unselectedTags);
+				selectFolioDto.setUnselectedTags(unselectedTags);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		
-		String addTagName = selectFolioCreator.getAddTagName();
-		String removeTagName = selectFolioCreator.getRemoveTagName();
+		String addTagName = selectFolioDto.getAddTagName();
+		String removeTagName = selectFolioDto.getRemoveTagName();
 		if (!addTagName.isEmpty() || !removeTagName.isEmpty()) {
 			for(SimpleTag tag: allTags) {
 				String currentTagName = tag.getName();
 				if (addTagName != null && addTagName.equals(currentTagName)) {
 					addTag = tag;
-					selectFolioCreator.setAddTagName(null);
+					selectFolioDto.setAddTagName(null);
 				} else if (removeTagName != null && removeTagName.equals(currentTagName)) {
 					removeTag = tag;
-					selectFolioCreator.setRemoveTagName(null);
+					selectFolioDto.setRemoveTagName(null);
 				}
 			}
 		}
 
 		if (addTag != null) {
-			createTagList(ADD, selectFolioCreator, addTag);
+			createTagList(ADD, selectFolioDto, addTag);
 		}
 		if (removeTag != null) {
-			createTagList(REMOVE, selectFolioCreator, removeTag);
+			createTagList(REMOVE, selectFolioDto, removeTag);
 		}
 		
 		
-    	List<FolioDescriptor> folioDescriptorList = getFolioDescriptorList(campaignId, selectFolioCreator.getSelectedTagsAsTags());
+    	List<FolioDescriptor> folioDescriptorList = getFolioDescriptorList(campaignId, selectFolioDto.getSelectedTagsAsTags());
 		String listAsString = convertFolioDescriptorListToString(folioDescriptorList);
-		selectFolioCreator.setFolioDescriptorList(listAsString);
+		selectFolioDto.setFolioDescriptorList(listAsString);
 	}		
 	
 	private String convertFolioDescriptorListToString(List<FolioDescriptor> folioDescriptorList) {
@@ -292,7 +292,7 @@ public class FolioService implements Serializable {
 		return listAsString;
 	}
 	
-	private void createTagList(String operation, SelectFolioCreator selectFolioCreator, SimpleTag tag) {
+	private void createTagList(String operation, SelectFolioDto selectFolioDto, SimpleTag tag) {
 		if (!ADD.equals(operation) && !REMOVE.equals(operation)) {
 			throw new IllegalArgumentException("Only 'add' and remove' are allowable operations.");
 		}
@@ -302,21 +302,21 @@ public class FolioService implements Serializable {
 		List<SimpleTag> unselectedTagList = null;
 		List<SimpleTag> selectedTagList = null;
 
-		if (selectFolioCreator.getUnselectedTags().isEmpty()) {
+		if (selectFolioDto.getUnselectedTags().isEmpty()) {
 			unselectedTagList = new ArrayList<>();
 		} else {
 			try {
-				unselectedTagList = mapper.readValue(selectFolioCreator.getUnselectedTags(), type);
+				unselectedTagList = mapper.readValue(selectFolioDto.getUnselectedTags(), type);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		if (selectFolioCreator.getSelectedTags().isEmpty()) {
+		if (selectFolioDto.getSelectedTags().isEmpty()) {
 			selectedTagList = new ArrayList<>();
 		} else {
 			try {
-				selectedTagList = mapper.readValue(selectFolioCreator.getSelectedTags(), type);
+				selectedTagList = mapper.readValue(selectFolioDto.getSelectedTags(), type);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -336,8 +336,8 @@ public class FolioService implements Serializable {
 		}
 		
 		try {
-			selectFolioCreator.setUnselectedTags(mapper.writeValueAsString(unselectedTagList));
-			selectFolioCreator.setSelectedTags(mapper.writeValueAsString(selectedTagList));
+			selectFolioDto.setUnselectedTags(mapper.writeValueAsString(unselectedTagList));
+			selectFolioDto.setSelectedTags(mapper.writeValueAsString(selectedTagList));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -355,7 +355,7 @@ public class FolioService implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		selectFolioCreator.setFolioDescriptorList(folioDescriptors);
+		selectFolioDto.setFolioDescriptorList(folioDescriptors);
 	}
 	
 	public List<Folio> findFoliosByTags(List<SimpleTag> selectedTags) {

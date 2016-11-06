@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.softwarewolf.gameserver.domain.User;
 
-public class UserData implements Serializable {
+public class UserAdminDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private List<UserListItem> userList;
 	private String selectedUserId;
@@ -18,7 +18,7 @@ public class UserData implements Serializable {
 	public Map<String, String> allRoles;
 	public Map<String, String> selectedRoles;	
 
-	public UserData() {}
+	public UserAdminDto() {}
 	
 	public List<UserListItem> getUserList() {
 		return userList;

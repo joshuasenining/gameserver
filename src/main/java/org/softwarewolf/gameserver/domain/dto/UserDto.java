@@ -1,6 +1,6 @@
 package org.softwarewolf.gameserver.domain.dto;
 
-public class UserCreator {
+public class UserDto {
 	private String id;
 	private String username;
 	private String firstName;

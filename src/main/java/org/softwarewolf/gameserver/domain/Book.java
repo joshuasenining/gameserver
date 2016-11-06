@@ -7,9 +7,6 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-/**
- * @author tmanchester
- */
 @Document
 public class Book implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -60,11 +57,6 @@ public class Book implements Serializable {
 		this.folios = folios;
 	}
 
-	// TODO: Figure out best way to create tag with/without classname
-	public void addFolio(String folioId) {
-		
-	}
-
 	public void addFolio(Folio folio) {
 		if (folios == null) {
 			folios = new ArrayList<>();
@@ -76,12 +68,7 @@ public class Book implements Serializable {
 
 	public void removeFolio(Folio folio) {
 		if (folios != null && folios.contains(folio)) {
-			for (Folio currentFolio : folios) {
-				if (currentFolio.getId().equals(folio.getId())) {
-					folios.remove(folio);	
-					break;
-				}
-			}
+			folios.remove(folio);
 		}
 	}
 

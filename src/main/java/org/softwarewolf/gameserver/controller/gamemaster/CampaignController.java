@@ -3,7 +3,7 @@ package org.softwarewolf.gameserver.controller.gamemaster;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.CampaignDto;
-import org.softwarewolf.gameserver.domain.dto.SelectCampaignHelper;
+import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.softwarewolf.gameserver.service.CampaignService;
 import org.softwarewolf.gameserver.service.UserService;
@@ -32,26 +32,26 @@ public class CampaignController {
 	/**
 	 * This method is distinct from user/selectCampaign in that the list of campaigns is generated
 	 * from the list of campaigns 'owned' by the currently logged in user
-	 * @param selectCampaignHelper
+	 * @param selectCampaignDto
 	 * @return
 	 */
 	@RequestMapping(value = "/selectCampaign", method = RequestMethod.GET)
 	@Secured({"USER"})
-	public String selectCampaign(final SelectCampaignHelper selectCampaignHelper) {
+	public String selectCampaign(final SelectCampaignDto selectCampaignDto) {
 		UserDetails userDetails =
 				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username = userDetails.getUsername();
 		String userId = userService.getUserIdFromUsername(username);
-		campaignService.initSelectCampaignHelperByGM(selectCampaignHelper, userId);
+		campaignService.initSelectCampaignHelperByGM(selectCampaignDto, userId);
 
 		return "/user/selectCampaign";
 	}
 	
 //	@RequestMapping(value = "/selectCampaign", method = RequestMethod.POST)
 //	@Secured({"USER"})
-//	public String selectCampaign(HttpSession session, final SelectCampaignHelper selectCampaignHelper) {
-//		String campaignId = selectCampaignHelper.getSelectedCampaignId(); 
-//		String campaignName = selectCampaignHelper.getSelectedCampaignName();
+//	public String selectCampaign(HttpSession session, final SelectCampaignHelper selectCampaignDto) {
+//		String campaignId = selectCampaignDto.getSelectedCampaignId(); 
+//		String campaignName = selectCampaignDto.getSelectedCampaignName();
 //		session.setAttribute(CAMPAIGN_ID, campaignId);
 //		session.setAttribute("campaignName", campaignName);
 //		

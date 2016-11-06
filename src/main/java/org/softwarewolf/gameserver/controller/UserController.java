@@ -2,7 +2,7 @@ package org.softwarewolf.gameserver.controller;
 
 import javax.servlet.http.HttpSession;
 
-import org.softwarewolf.gameserver.domain.dto.SelectCampaignHelper;
+import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.softwarewolf.gameserver.service.CampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +23,17 @@ public class UserController {
 	
 	@RequestMapping(value = "/selectCampaign", method = RequestMethod.GET)
 	@Secured({"USER"})
-	public String getCampaign(SelectCampaignHelper selectCampaignHelper) {
-		campaignService.initSelectCampaignHelper(selectCampaignHelper);
+	public String getCampaign(SelectCampaignDto selectCampaignDto) {
+		campaignService.initSelectCampaignHelper(selectCampaignDto);
 		return "/user/selectCampaign";
 	}
 	
 	@RequestMapping(value = "/selectCampaign", method = RequestMethod.POST)
 	@Secured({"USER"})
-	public String postCampaign(HttpSession session, final SelectCampaignHelper selectCampaignHelper) {
-		selectCampaignHelper.setAllCampaigns(campaignService.getAllCampaigns());
-		String campaignId = selectCampaignHelper.getSelectedCampaignId(); 
-		String campaignName = selectCampaignHelper.getSelectedCampaignName();
+	public String postCampaign(HttpSession session, final SelectCampaignDto selectCampaignDto) {
+		selectCampaignDto.setAllCampaigns(campaignService.getAllCampaigns());
+		String campaignId = selectCampaignDto.getSelectedCampaignId(); 
+		String campaignName = selectCampaignDto.getSelectedCampaignName();
 		session.setAttribute("campaignId", campaignId);
 		session.setAttribute("campaignName", campaignName);
 		

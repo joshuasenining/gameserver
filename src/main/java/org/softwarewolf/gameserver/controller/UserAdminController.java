@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.RoleLists;
 import org.softwarewolf.gameserver.domain.dto.RolesData;
-import org.softwarewolf.gameserver.domain.dto.UserData;
+import org.softwarewolf.gameserver.domain.dto.UserAdminDto;
 import org.softwarewolf.gameserver.domain.dto.UserListItem;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.softwarewolf.gameserver.service.SimpleGrantedAuthorityService;
@@ -110,9 +110,9 @@ public class UserAdminController {
 
 	@RequestMapping("/getUserData")
 	@Secured({"ADMIN"})
-	public String getUserDataWithId(@RequestParam(required = false) final String userId, final UserData userData) {
+	public String getUserDataWithId(@RequestParam(required = false) final String userId, final UserAdminDto userAdminDto) {
 		List<UserListItem> userList = userService.getUserList();
-		userData.setUserList(userList);
+		userAdminDto.setUserList(userList);
 		User user = null;
 		if (userId == null) {
 			user = new User();
@@ -122,8 +122,8 @@ public class UserAdminController {
 				user = new User();
 			}
 		}
-		userData.setSelectedUser(user);
-		userData.setAllRoles(userService.getAllRoles());
+		userAdminDto.setSelectedUser(user);
+		userAdminDto.setAllRoles(userService.getAllRoles());
 		return "/admin/updateUser";
 	}
 	
@@ -144,13 +144,13 @@ public class UserAdminController {
 
 	@RequestMapping(value = "/updateUserData", method = RequestMethod.POST)
 	@Secured({"ADMIN"})
-	public String postUser(final UserData userData) {
-		User user = userData.getSelectedUser();
+	public String postUser(final UserAdminDto userAdminDto) {
+		User user = userAdminDto.getSelectedUser();
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 		User prevVersion = userRepository.findOne(user.getId());
-		String newPassword = userData.getPassword();
-		String verifyPassword = userData.getVerifyPassword();
+		String newPassword = userAdminDto.getPassword();
+		String verifyPassword = userAdminDto.getVerifyPassword();
 		if (prevVersion != null) {
 			if (newPassword.isEmpty() && verifyPassword.isEmpty()) {
 				String prevEncodedPwd = prevVersion.getPassword();
@@ -159,7 +159,7 @@ public class UserAdminController {
 				String encodedPwd = encoder.encode(newPassword);
 				user.setPassword(encodedPwd);
 			} else {
-				userData.setErrorMessage("Password does not match verify password. Please retry");
+				userAdminDto.setErrorMessage("Password does not match verify password. Please retry");
 				return "/admin/updateUser";
 			}
 			userRepository.save(user);

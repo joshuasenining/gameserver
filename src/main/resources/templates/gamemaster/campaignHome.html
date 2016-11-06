@@ -27,212 +27,20 @@
 	.accordion-heading > a { color:#FFF; 
 	   text-decoration:none; 
 	   text-transform:uppercase; }
+	.smaller-panel {
+		margin-bottom: 10px !important;
+		margin-top: 5px !important;
+	}
 	</style>    
     <title th:text="#{campaignHome.title}">Title</title>
-    
+
 	<script th:inline="javascript">
-
-//		$('#accordionidone').on('hidden.bs.collapse', togglePanel);
-//		$('#accordionidone').on('shown.bs.collapse', togglePanel);
-	
-//	function togglePanel(e) {
-//		alert(e);
-//	    $(e.target)
-//	        .prev('.panel-heading')
-//	        .find("i.indicator")
-//	        .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
-//	}
-</script>
-
-<script type="text/javascript">	
-	function buildTree(locationNode, nodeParent, index, indent) {
-		var parentId = $(nodeParent).attr("id");
-		var indentClass = "indent" + indent;
-	    var subMenu = "subMenu" + index;
-	    index = index + 1;
-		var newList = document.createElement("ul");
-		var listItem = document.createElement("li");
-		var locationId = locationNode["id"];
-		var locationName = locationNode["name"];
-		var displayName = locationNode["displayName"];
-		var itemHtml;
-		var children = locationNode["children"];
-		if (children.length > 0) {
-			itemHtml = '<div class="on-same-line"><button type="button" class="addParent fa fa-plus" onclick="clickPlus(\''+locationId+'\',\''+locationName+'\');"></button> <span id="'+locationId+'Txt" class="outline pointer-cursor basic-padding" onclick="clickText(\''+locationId+'\');">'+displayName+' <span class="caret"></span></span></div>';
-		} else {
-			itemHtml = '<div class="on-same-line"><button type="button" class="addParent fa fa-plus" onclick="clickPlus(\''+locationId+'\',\''+locationName+'\');"></button> <span id="'+locationId+'Txt" class="outline pointer-cursor basic-padding" onclick="clickText(\''+locationId+'\');">'+displayName+'</span> </div>';
-		}
-		$(listItem).html(itemHtml);
-		$(listItem).attr("id", locationId);
-		$(listItem).addClass(parentId);
-		$(newList).append(listItem);
-		$(nodeParent).append(newList);
-		if ($(locationNode).attr("id") != "ROOT") {
-			$(listItem).attr("hidden", "hidden");
-		}
-		
-		if (children.length > 0) {
-			indent = indent + 1;
-			$(children).each(function() {
-				buildTree(this, listItem, index, indent);
-				index = index + 1;
+		$(document).ready(function() {
+			$( window ).load(function() {
+				// placeholder
 			});
-		}
-		return index;
-	}
-	
-	function buildOTree(organizationNode, nodeParent, index, indent) {
-		var parentId = $(nodeParent).attr("id");
-		var indentClass = "indent" + indent;
-	    var subMenu = "subMenu" + index;
-	    index = index + 1;
-		var newList = document.createElement("ul");
-		var listItem = document.createElement("li");
-		var organizationId = organizationNode["id"];
-		var organizationName = organizationNode["name"];
-		var displayName = organizationNode["displayName"];
-		var itemHtml;
-		var children = organizationNode["children"];
-		if (children.length > 0) {
-			itemHtml = '<div class="on-same-line"><button type="button" class="addParent fa fa-plus" onclick="clickOPlus(\''+organizationId+'\',\''+organizationName+'\');"></button> <span id="'+organizationId+'Txt" class="outline pointer-cursor basic-padding" onclick="clickText(\''+organizationId+'\');">'+displayName+' <span class="caret"></span></span></div>';
-		} else {
-			itemHtml = '<div class="on-same-line"><button type="button" class="addParent fa fa-plus" onclick="clickOPlus(\''+organizationId+'\',\''+organizationName+'\');"></button> <span id="'+organizationId+'Txt" class="outline pointer-cursor basic-padding" onclick="clickText(\''+organizationId+'\');">'+displayName+'</span> </div>';
-		}
-		$(listItem).html(itemHtml);
-		$(listItem).attr("id", organizationId);
-		$(listItem).addClass(parentId);
-		$(newList).append(listItem);
-		$(nodeParent).append(newList);
-		if ($(organizationNode).attr("id") != "ROOT") {
-			$(listItem).attr("hidden", "hidden");
-		}
-		
-		if (children.length > 0) {
-			indent = indent + 1;
-			$(children).each(function() {
-				buildOTree(this, listItem, index, indent);
-				index = index + 1;
-			});
-		}
-		return index;
-	}
-	
-	function clickPlus(parentLocationId, parentLocationName) {
-		$("#hiddenParentId").val(parentLocationId);
-		$("#locationParentName").val(parentLocationName);
-		event.preventDefault();
-	}
-	
-	function clickOPlus(organizationId, organizationName) {
-		$("#hiddenParentData").attr("data-id", organizationId);
-		$("#hiddenParentData").val(organizationName);
-		$("#organizationParentId").val(organizationName);
-		event.preventDefault();
-	}
-	
-	function clickText(locationId) {
-//		var territory = $("#"+locationId);
-        var search = "."+locationId;
-		var children = $(search);
-		$.each(children, function() {
-			var hidden = $(this).attr("hidden");
-			if (hidden == "hidden") {
-				$(this).removeAttr("hidden");
-			} else {
-				$(this).attr("hidden", "hidden");
-			}
-		});
-	}
-</script>   
-<script th:inline="javascript">
-	$(document).ready(function() {
-		$( window ).load(function() {
-			var locationTypeId = $("#locationTypeId");
-			if (locationTypeId.val() != "") {
-	            $('.modifyTT').each(function(data) {
-    	        	var id = $(data).attr("id");
-			        if (id == locationTypeId) {
-			        	var value = $(data).val();
-			        	var elem = $("#allLocationTypeId");
-			        	$(elem).val(id);
-			        }
-		    	});
-			}
-			
-			var locationTreeJson = $("#locationTreeJson").val();
-			var locationTree = jQuery.parseJSON( locationTreeJson );
-			var nodeParent = $("#locationGroupPanel");
-			var children = locationTree["children"];
-			var index = 0;
-			var indent = 0;
-			buildTree(locationTree, $(nodeParent), index, indent);
-
-			var organizationTypeId = $("#organizationTypeId");
-			if (organizationTypeId.val() != "") {
-	            $('.modifyOT').each(function(data) {
-    	        	var id = $(data).attr("id");
-			        if (id == organizationTypeId) {
-			        	var value = $(data).val();
-			        	var elem = $("#addOrganizationTypeId");
-			        	$(elem).val(value);
-			        }
-		    	});
-			}
-			
-			var organizationTreeJson = $("#organizationTreeJson").val();
-			var organizationTree = jQuery.parseJSON( organizationTreeJson );
-			var nodeParent = $("#organizationGroupPanel");
-			var children = organizationTree["children"];
-			var index = 0;
-			var indent = 0;
-			buildOTree(organizationTree, $(nodeParent), index, indent);
 		});		
-
-		$(".addTType").click(function(event) {
-			var target = $(event.target);
-			var id = $(target).attr('id');
-			var name = $(target).attr('name');
-			var addTT = $("#addGameDataTypeId");
-			addTT.attr("value", id);		
-			var form = $("#editLocationTypeForm");
-			form.attr("action", "/gameserver/gamemaster/addLocationTypeToCampaign");
-			form.submit();
-		});
-		
-		$(".removeTType").click(function(event) {
-			var target = $(event.target);
-			var id = $(target).attr('id');
-			var name = $(target).attr('name');
-			var removeTT = $("#removeGameDataTypeId");
-			var form = $("#editLocationTypeForm");
-			removeTT.attr("value", id);		
-			form.attr("action", "/gameserver/gamemaster/removeLocationTypeFromCampaign");
-			form.submit();
-		});
-
-		$(".addOrgType").click(function(event) {
-			var target = $(event.target);
-			var id = $(target).attr('id');
-			var name = $(target).attr('name');
-			var addTT = $("#addGameDataTypeId");
-			addTT.attr("value", id);		
-			var form = $("#editOrganizationForm");
-			form.attr("action", "/gameserver/gamemaster/addOrganizationTypeToCampaign");
-			form.submit();
-		});
-		
-		$(".removeOrgType").click(function(event) {
-			var target = $(event.target);
-			var id = $(target).attr('id');
-			var name = $(target).attr('name');
-			var removeTT = $("#removeGameDataTypeId");
-			var form = $("#editOrganizationForm");
-			removeTT.attr("value", id);		
-			form.attr("action", "/gameserver/gamemaster/removeOrganizationTypeFromCampaign");
-			form.submit();
-		});
-	});		
-</script>   
+	</script>   
 </head>
 <body>
 	<div th:include="/public/navbar :: navbar"></div>
@@ -260,14 +68,14 @@
 		<div class="col-md-10">
 			<div class="accordion" id="accordionidone">
 			  <div class="accordion-group">
-			    <div class="accordion-heading panel panel-default">
+			    <div class="smaller-panel accordion-heading panel panel-default">
 					<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionidone" href="index.html#one">
-					   	<h4 class="left-padding-10">Create/Edit Location Type</h4>
+					   	<span class="left-padding-10">Check messages</span>
 					</a>
 			    </div>
 			    <div id="one" class="collapse">
 			      <div class="accordion-inner outline">
-			        <div th:include="/gamemaster/editLocationType :: editLocationType"></div>	
+			        <div>Test</div>	
 			      </div>
 			    </div>
 			  </div>
@@ -279,14 +87,14 @@
 		<div class="col-md-10">
 			<div class="accordion" id="accordionidtwo">
 			  <div class="accordion-group">
-			    <div class="accordion-heading panel panel-default">
-						<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionidtwo" href="index.html#two">
-					    	<h4 class="left-padding-10">Create/Edit Location</h4>
-					    </a>
+			    <div class="smaller-panel accordion-heading panel panel-default">
+					<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionidtwo" href="index.html#two">
+				    	<span class="left-padding-10">Edit module</span>
+				    </a>
 			    </div>
 			    <div id="two" class="collapse">
 			      <div class="accordion-inner outline">
-			        <div th:include="/gamemaster/editLocation :: editLocation"></div>	
+			        <div>Test</div>	
 			      </div>
 			    </div>
 			  </div>
@@ -298,14 +106,14 @@
 		<div class="col-md-10">
 			<div class="accordion" id="accordionid">
 			  <div class="accordion-group">
-			    <div class="accordion-heading panel panel-default">
-						<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionid" href="index.html#three">
-					    	<h4 class="left-padding-10">Create/Edit Organization Type</h4>
-					    </a>
+			    <div class="smaller-panel accordion-heading panel panel-default">
+					<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionid" href="index.html#three">
+				    	<span class="left-padding-10">Test</span>
+				    </a>
 			    </div>
 			    <div id="three" class="collapse">
 			      <div class="accordion-inner outline">
-			        <div th:include="/gamemaster/editOrganizationType :: editOrganizationType"></div>	
+			        <div>Test</div>	
 			      </div>
 			    </div>
 			  </div>
@@ -317,14 +125,14 @@
 		<div class="col-md-10">
 			<div class="accordion" id="accordionid">
 			  <div class="accordion-group">
-			    <div class="accordion-heading panel panel-default">
-						<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionid" href="index.html#four">
-					    	<h4 class="left-padding-10">Create/Edit Organization</h4>
-					    </a>
+			    <div class="smaller-panel accordion-heading panel panel-default">
+					<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionid" href="index.html#four">
+				    	<span class="left-padding-10">Test</span>
+				    </a>
 			    </div>
 			    <div id="four" class="collapse">
 			      <div class="accordion-inner outline">
-			        <div th:include="/gamemaster/editOrganization :: editOrganization"></div>	
+			        <div>Test</div>	
 			      </div>
 			    </div>
 			  </div>

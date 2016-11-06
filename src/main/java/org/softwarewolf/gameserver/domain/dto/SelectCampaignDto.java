@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.softwarewolf.gameserver.domain.Campaign;
 
-public class SelectCampaignHelper {
+public class SelectCampaignDto {
 	public List<Campaign> allCampaigns;
 	public String selectedCampaignId;
 	

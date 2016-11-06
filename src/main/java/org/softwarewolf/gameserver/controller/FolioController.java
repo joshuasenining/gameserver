@@ -14,7 +14,7 @@ import org.softwarewolf.gameserver.controller.helper.ControllerHelper;
 import org.softwarewolf.gameserver.controller.helper.FeFeedback;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.dto.FolioDto;
-import org.softwarewolf.gameserver.domain.dto.SelectFolioCreator;
+import org.softwarewolf.gameserver.domain.dto.SelectFolioDto;
 import org.softwarewolf.gameserver.domain.dto.ViewFolioDto;
 import org.softwarewolf.gameserver.service.FolioService;
 
@@ -85,44 +85,44 @@ public class FolioController {
 	
 	@RequestMapping(value = "/selectFolio", method = RequestMethod.GET)
 	@Secured({"USER", "GAMEMASTER"})
-	public String selectFolio(HttpSession session, SelectFolioCreator selectFolioCreator,
+	public String selectFolio(HttpSession session, SelectFolioDto selectFolioDto,
 			@RequestParam String from, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 		
-		folioService.initSelectFolioCreator(campaignId, selectFolioCreator);
+		folioService.initSelectFolioCreator(campaignId, selectFolioDto);
 		// Need to pick the correct forwarding url, this is just generic
 		if ("edit".equals(from)) {
-			selectFolioCreator.setForwardingUrl(ControllerHelper.EDIT_FOLIO);
+			selectFolioDto.setForwardingUrl(ControllerHelper.EDIT_FOLIO);
 		} else if ("view".equals(from)) {
-			selectFolioCreator.setForwardingUrl(ControllerHelper.VIEW_FOLIO);
+			selectFolioDto.setForwardingUrl(ControllerHelper.VIEW_FOLIO);
 		}
 		return ControllerHelper.SELECT_FOLIO;
 	}
 
 	@RequestMapping(value = "/folio/addTagToSearch", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER"})
-	public String addTagToSearch(HttpSession session, SelectFolioCreator selectFolioCreator, final FeFeedback feFeedback) {
+	public String addTagToSearch(HttpSession session, SelectFolioDto selectFolioDto, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 		
-		folioService.initSelectFolioCreator(campaignId, selectFolioCreator); 
+		folioService.initSelectFolioCreator(campaignId, selectFolioDto); 
 		return ControllerHelper.SELECT_FOLIO;
 	}
 
 	@RequestMapping(value = "/folio/removeTagFromSearch", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER"})
-	public String removeTagFromSearch(HttpSession session, SelectFolioCreator selectFolioCreator, final FeFeedback feFeedback) {
+	public String removeTagFromSearch(HttpSession session, SelectFolioDto selectFolioDto, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerHelper.USER_MENU;
 		}		
 		
-		folioService.initSelectFolioCreator(campaignId, selectFolioCreator); 
+		folioService.initSelectFolioCreator(campaignId, selectFolioDto); 
 		return ControllerHelper.SELECT_FOLIO;
 	}
 

@@ -21,7 +21,7 @@ import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.CampaignPlayer;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.User;
-import org.softwarewolf.gameserver.domain.dto.CampaignData;
+import org.softwarewolf.gameserver.domain.dto.ImportExportCampaignDto;
 import org.softwarewolf.gameserver.repository.CampaignPlayerRepository;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
 import org.softwarewolf.gameserver.repository.FolioRepository;
@@ -85,7 +85,7 @@ public class ImportExportService {
 		String backupDir = resources.getString("exportLocation");
 		
 		ObjectMapper mapper = new ObjectMapper();
-		CampaignData campaignData = new CampaignData();
+		ImportExportCampaignDto campaignData = new ImportExportCampaignDto();
 		Campaign campaign = campaignRepository.findOne(campaignId);
 		String campaignName = campaign.getName();
 		campaignName = campaignName.replace(" ", "_");
@@ -170,9 +170,9 @@ public class ImportExportService {
   			String campaignAsString = new String(newBytes);
   			
   			ObjectMapper mapper = new ObjectMapper();
-  			CampaignData campaignData = null;
+  			ImportExportCampaignDto campaignData = null;
   			try {
-  				campaignData = mapper.readValue(campaignAsString, CampaignData.class);
+  				campaignData = mapper.readValue(campaignAsString, ImportExportCampaignDto.class);
   				Campaign campaign = campaignData.getCampaign();
   				List<Folio> folioList = campaignData.getFolioList();
   				List<User> userList = campaignData.getUserList();
@@ -203,9 +203,9 @@ public class ImportExportService {
 		}
 		// Create the CampaignData object
 		ObjectMapper mapper = new ObjectMapper();
-		CampaignData campaignData = null;
+		ImportExportCampaignDto campaignData = null;
 		try {
-			campaignData = mapper.readValue(campaignDataAsString, CampaignData.class);
+			campaignData = mapper.readValue(campaignDataAsString, ImportExportCampaignDto.class);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

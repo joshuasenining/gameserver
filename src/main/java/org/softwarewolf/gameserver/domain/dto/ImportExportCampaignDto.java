@@ -7,7 +7,7 @@ import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.User;
 
-public class CampaignData {
+public class ImportExportCampaignDto {
 	private Campaign campaign;
 	private List<User> userList;
 	private List<Folio> folioList;

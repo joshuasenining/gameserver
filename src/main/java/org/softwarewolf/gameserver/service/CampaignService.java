@@ -6,7 +6,7 @@ import java.util.List;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.CampaignDto;
-import org.softwarewolf.gameserver.domain.dto.SelectCampaignHelper;
+import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
 import org.softwarewolf.gameserver.domain.dto.UserListItem;
 import org.softwarewolf.gameserver.repository.CampaignPlayerRepository;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
@@ -62,17 +62,17 @@ public class CampaignService {
 		return allCampaigns;
 	}
 	
-	public void initSelectCampaignHelperByGM(SelectCampaignHelper selectCampaignHelper, String ownerId) {
+	public void initSelectCampaignHelperByGM(SelectCampaignDto selectCampaignDto, String ownerId) {
 		List<Campaign> campaigns = campaignRepository.findAllByKeyValue("ownerId", ownerId);
-		selectCampaignHelper.setAllCampaigns(campaigns);
+		selectCampaignDto.setAllCampaigns(campaigns);
 	}
 
-	public void initSelectCampaignHelperByPlayer(SelectCampaignHelper selectCampaignHelper, String playerId) {
-		selectCampaignHelper.setAllCampaigns(campaignRepository.findAll());
+	public void initSelectCampaignHelperByPlayer(SelectCampaignDto selectCampaignDto, String playerId) {
+		selectCampaignDto.setAllCampaigns(campaignRepository.findAll());
 	}
 
-	public void initSelectCampaignHelper(SelectCampaignHelper selectCampaignHelper) {
-		selectCampaignHelper.setAllCampaigns(campaignRepository.findAll());
+	public void initSelectCampaignHelper(SelectCampaignDto selectCampaignDto) {
+		selectCampaignDto.setAllCampaigns(campaignRepository.findAll());
 	}
 	
 	public List<Campaign> getAllCampaignsByGM(String ownerId) {

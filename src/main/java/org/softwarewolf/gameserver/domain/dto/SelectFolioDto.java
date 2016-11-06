@@ -9,7 +9,7 @@ import org.softwarewolf.gameserver.domain.SimpleTag;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class SelectFolioCreator {
+public class SelectFolioDto {
 	private String campaignId; 
 	private String unselectedTags;
 	private String selectedTags;
@@ -18,7 +18,7 @@ public class SelectFolioCreator {
 	private String folioDescriptorList;
 	private String forwardingUrl;
 	
-	public SelectFolioCreator() {
+	public SelectFolioDto() {
 		unselectedTags = "";
 		selectedTags = "";
 		addTagName = "";
