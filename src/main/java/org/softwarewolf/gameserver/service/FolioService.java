@@ -391,6 +391,10 @@ public class FolioService implements Serializable {
 		}
 		viewFolioDto.setTags(tags);
 	}
+	
+	public List<Folio> deleteByCampaignId(String campaignId) {
+		return folioRepository.deleteByCampaignId(campaignId);
+	}
 }
 
 class SimpleTagCompare implements Comparator<SimpleTag> {

@@ -1,10 +1,7 @@
 package org.softwarewolf.gameserver.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
@@ -18,9 +15,6 @@ public class SimpleTagService {
 
 	@Autowired
 	private SimpleTagRepository simpleTagRepository;
-	
-	@Autowired
-	private FolioService folioService;
 	
 	public SimpleTag findOne(String id) {
 		return simpleTagRepository.findOne(id);
@@ -71,5 +65,9 @@ public class SimpleTagService {
 	
 	public SimpleTag findOneByNameAndCampaignId(String name, String campaignId) {
 		return simpleTagRepository.findOneByNameAndCampaignId(name, campaignId);
+	}
+	
+	public List<SimpleTag> deleteByCampaignId(String campaignId) {
+		return simpleTagRepository.deleteByCampaignId(campaignId);
 	}
 }

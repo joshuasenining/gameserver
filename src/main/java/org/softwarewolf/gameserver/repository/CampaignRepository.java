@@ -20,4 +20,6 @@ public interface CampaignRepository extends MongoRepository<Campaign, String> {
     /// Find by key and array of values
     @Query("{?0 : {$in : ?1}}")
     List<Campaign> findAllByKeyValues(String key, Object[] value);
+    
+    List<Campaign> deleteByName(String name);
 }

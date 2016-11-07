@@ -20,4 +20,5 @@ public interface FolioRepository extends MongoRepository<Folio, String> {
     @Query("{?0 : {$in : ?1}}")
     public List<Folio> findAllByKeyValues(String key, Object[] value);
 
+    public List<Folio> deleteByCampaignId(String campaignId);
 }

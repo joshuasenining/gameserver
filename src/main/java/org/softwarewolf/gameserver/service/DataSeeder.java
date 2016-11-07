@@ -10,6 +10,7 @@ import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
+import org.softwarewolf.gameserver.repository.DeleteableRoleRepository;
 import org.softwarewolf.gameserver.repository.SimpleGrantedAuthorityRepository;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,9 @@ public class DataSeeder {
 	private UserRepository userRepo;
 
 	@Autowired
+	private DeleteableRoleRepository roleRepo;
+	
+	@Autowired
 	private SimpleGrantedAuthorityRepository sgaRepo;
 	
 	@Autowired 
@@ -67,11 +71,30 @@ public class DataSeeder {
 	private FolioService folioService;
 	
 	public void cleanRepos() {
-		sgaRepo.deleteAll();
-		userRepo.deleteAll();
-		campaignRepo.deleteAll();
-		folioService.deleteAll();
-		simpleTagService.deleteAll();
+		Campaign sAndSCampaign = campaignRepo.findOneByName(SWORD_AND_SORCERY);
+		if (sAndSCampaign != null) {
+			folioService.deleteByCampaignId(sAndSCampaign.getId());
+			simpleTagService.deleteByCampaignId(sAndSCampaign.getId());
+		}
+		Campaign modernCampaign  = campaignRepo.findOneByName(MODERN);
+		if (modernCampaign != null) {
+			folioService.deleteByCampaignId(modernCampaign.getId());
+			simpleTagService.deleteByCampaignId(modernCampaign.getId());
+		}
+		Campaign spaceCampaign = campaignRepo.findOneByName(SPACE_OPERA);
+		if (spaceCampaign != null) {
+			folioService.deleteByCampaignId(spaceCampaign.getId());
+			simpleTagService.deleteByCampaignId(spaceCampaign.getId());
+		}
+		campaignRepo.deleteByName(SWORD_AND_SORCERY);
+		campaignRepo.deleteByName(MODERN);
+		campaignRepo.deleteByName(SPACE_OPERA);
+		roleRepo.deleteByRole(ROLE_ADMIN);
+		roleRepo.deleteByRole(ROLE_GAMEMASTER);
+		roleRepo.deleteByRole(ROLE_USER);
+		userRepo.deleteByUsername(ADMIN);
+		userRepo.deleteByUsername(GM);
+		userRepo.deleteByUsername(USER);
 	}
 	
 	public void seedData() {

@@ -20,5 +20,7 @@ public interface SimpleTagRepository extends MongoRepository<SimpleTag, String> 
 
     /// Find by key and array of values
     @Query("{?0 : {$in : ?1}}")
-    List<SimpleTag> findAllByKeyValues(String key, Object[] value);	
+    List<SimpleTag> findAllByKeyValues(String key, Object[] value);
+    
+    List<SimpleTag> deleteByCampaignId(String campaignId);
 }

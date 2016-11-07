@@ -20,4 +20,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     /// Find by key and array of values
     @Query("{?0 : {$in : ?1}}")
     List<User> findAllByKeyValues(String key, Object[] value);		
+    
+    List<User> deleteByUsername(String username);
 }
