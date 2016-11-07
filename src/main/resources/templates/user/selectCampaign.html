@@ -27,7 +27,7 @@
 			<h1 th:text="#{menu.item.selectCampaign}">Select</h1>
 		</div>
 	</div>
-	<form id="updateUserForm" th:object="${selectCampaignHelper}" action="#" th:action="@{/user/selectCampaign}" method="post">
+	<form id="updateUserForm" th:object="${selectCampaignDto}" action="#" th:action="@{/user/selectCampaign}" method="post">
 		<div class="row">		        	
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
@@ -38,7 +38,7 @@
 			<div class="col-md-1"></div>
 			<div class="col-md-4">			
 				<ul>
-				  <li class="no-bullets" th:each="campaign : ${selectCampaignHelper.allCampaigns}">
+				  <li class="no-bullets" th:each="campaign : *{allCampaigns}">
 				    <input type="radio" th:field="*{selectedCampaignId}" th:value="${campaign.id}" />
 				    <label th:for="${#ids.prev('selectedCampaignId')}" th:text="${campaign.name}">Campaign Name</label>
 				  </li>

@@ -39,6 +39,9 @@ public class DataSeeder {
 	private static final String CITY = "City";
 	private static final String TOWN = "Town";
 	private static final String VILLAGE = "Village";
+	private static final String OAKDALE = "Oakdale";
+	private static final String MAYOR = "Mayor";
+	private static final String SHOPKEEPER = "Shopkeeper";
 	private static final String MERCHANTS_GUILD = "Merchants Guild";
 	private static final String COVEN = "A witches coven";
 	private static final String BLOOD_MOON = "The Blood Moon Coven";
@@ -78,14 +81,6 @@ public class DataSeeder {
 
 		Map<String, Map<String, SimpleTag>> tagMap = seedTags(campaignMap);
 		seedFolios(campaignMap, tagMap);
-/*		
-		Map<String, LocationType> locationTypeMap = seedLocationType(campaignMap);
-		Map<String, Location> locationMap = seedLocations(campaignMap, locationTypeMap);
-		Map<String, OrganizationType> organizationTypeMap = seedOrganizationType(campaignMap);
-		Map<String, Organization> organizationMap = seedOrganizations(campaignMap, organizationTypeMap);
-		seedOrganizationRanks(campaignMap, organizationMap);
-		seedFolios(organizationMap, locationMap, campaignMap);
-		*/
 	}
 	
 	private Map<String, SimpleGrantedAuthority> seedRoles() {
@@ -196,6 +191,9 @@ public class DataSeeder {
 		saveTag(sAndSTagMap, BLOOD_MOON, sAndSCampaignId);
 		saveTag(sAndSTagMap, LOCATION, sAndSCampaignId);
 		saveTag(sAndSTagMap, ORGANIZATION, sAndSCampaignId);
+		saveTag(sAndSTagMap, OAKDALE, sAndSCampaignId);
+		saveTag(sAndSTagMap, MAYOR, sAndSCampaignId);
+		saveTag(sAndSTagMap, SHOPKEEPER, sAndSCampaignId);
 		allTags.put(sAndSCampaignId, sAndSTagMap);
 		
 		String modernCampaignId = campaignMap.get(MODERN).getId();
@@ -265,13 +263,56 @@ public class DataSeeder {
 
 		Folio magicCountyFolio = new Folio();
 		magicCountyFolio.setCampaignId(sAndSCampaignId);
-		magicCountyFolio.setTitle("The Kingdom of Midland");
-		magicCountyFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a feudal society.</p>");		
+		magicCountyFolio.setTitle("Magic County");
+		magicCountyFolio.setContent("<H1>A magic county in the Kingdom of Midland</H1><p>This is a county in the Kingdom of Midland.</p>");		
 		magicCountyFolio.addTag(tagMap.get(sAndSCampaignId).get(ORGANIZATION));
 		magicCountyFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
 		magicCountyFolio.addTag(tagMap.get(sAndSCampaignId).get(MAGIC_COUNTY));
 		try {
 			folioService.save(magicCountyFolio);
+		} catch (Exception e) {
+			// ignore;
+		}	
+
+		Folio oakdaleFolio = new Folio();
+		oakdaleFolio.setCampaignId(sAndSCampaignId);
+		oakdaleFolio.setTitle("The Town of Oakdale");
+		oakdaleFolio.setContent("<H1>The Town of Oakdale</H1><p>This is a town in the Kindom of Midland.</p>");		
+		oakdaleFolio.addTag(tagMap.get(sAndSCampaignId).get(OAKDALE));
+		oakdaleFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
+		oakdaleFolio.addTag(tagMap.get(sAndSCampaignId).get(MAGIC_COUNTY));
+		oakdaleFolio.addTag(tagMap.get(sAndSCampaignId).get(TOWN));
+		try {
+			folioService.save(oakdaleFolio);
+		} catch (Exception e) {
+			// ignore;
+		}	
+	
+		Folio johnDarteFolio = new Folio();
+		johnDarteFolio.setCampaignId(sAndSCampaignId);
+		johnDarteFolio.setTitle("John Darte");
+		johnDarteFolio.setContent("<H1>John Darte</H1><p>John Darte is the Mayor of Oakdale.</p>");		
+		johnDarteFolio.addTag(tagMap.get(sAndSCampaignId).get(MAYOR));
+		johnDarteFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
+		johnDarteFolio.addTag(tagMap.get(sAndSCampaignId).get(MAGIC_COUNTY));
+		johnDarteFolio.addTag(tagMap.get(sAndSCampaignId).get(OAKDALE));
+		try {
+			folioService.save(johnDarteFolio);
+		} catch (Exception e) {
+			// ignore;
+		}	
+		
+		Folio jimBeamFolio = new Folio();
+		jimBeamFolio.setCampaignId(sAndSCampaignId);
+		jimBeamFolio.setTitle("Jim Beam");
+		jimBeamFolio.setContent("<H1>Jim Beam, Merchant of Oakdale</H1><p>A shopkeeper in Oakdale.</p>");		
+		jimBeamFolio.addTag(tagMap.get(sAndSCampaignId).get(MERCHANTS_GUILD));
+		jimBeamFolio.addTag(tagMap.get(sAndSCampaignId).get(SHOPKEEPER));
+		jimBeamFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
+		jimBeamFolio.addTag(tagMap.get(sAndSCampaignId).get(MAGIC_COUNTY));
+		jimBeamFolio.addTag(tagMap.get(sAndSCampaignId).get(OAKDALE));
+		try {
+			folioService.save(jimBeamFolio);
 		} catch (Exception e) {
 			// ignore;
 		}	

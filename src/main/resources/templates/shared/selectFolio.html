@@ -133,8 +133,8 @@
 		</div>
 	</div>
 
-	<form id="getFolioForm" th:object="${selectFolioCreator}" action="#" th:action="@{/gamemaster/getFolio}" method="get"></form>
-	<form id="selectFolioForm" th:object="${selectFolioCreator}" action="#" th:action="@{/shared/selectFolio}" method="get">
+	<form id="getFolioForm" th:object="${selectFolioDto}" action="#" th:action="@{/gamemaster/getFolio}" method="get"></form>
+	<form id="selectFolioForm" th:object="${selectFolioDto}" action="#" th:action="@{/shared/selectFolio}" method="get">
 		<input type="hidden" id="addTagName" th:field="*{addTagName}"></input>
 		<input type="hidden" id="removeTagName" th:field="*{removeTagName}"></input>
 		<input type="hidden" id="unselectedTags" th:field="*{unselectedTags}"></input>
