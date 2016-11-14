@@ -1,7 +1,7 @@
 package org.softwarewolf.gameserver.controller;
 
 import org.softwarewolf.gameserver.controller.helper.FeFeedback;
-import org.softwarewolf.gameserver.domain.dto.EmailSettingsDto;
+import org.softwarewolf.gameserver.domain.EmailSetting;
 import org.softwarewolf.gameserver.service.DataSeeder;
 import org.softwarewolf.gameserver.service.GameMailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +38,14 @@ public class AppAdminController {
 
 	@RequestMapping(value="/emailSettings", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
-	public String getEmailSettings(final EmailSettingsDto emailSettingsDto, final FeFeedback feFeedback) {
+	public String getEmailSettings(final EmailSetting emailSettingsDto, final FeFeedback feFeedback) {
 		gameMail.initEmailSettignsDto(emailSettingsDto);
 		return "admin/emailSettings";
 	}
 	
 	@RequestMapping(value="/emailSettings", method = RequestMethod.POST)
 	@Secured({"ADMIN"})
-	public String changeEmailSettings(EmailSettingsDto emailSettingsDto, FeFeedback feFeedback) {
+	public String changeEmailSettings(EmailSetting emailSettingsDto, FeFeedback feFeedback) {
 		gameMail.initEmailSettignsDto(emailSettingsDto);
 		feFeedback.setInfo("Email Settings Changed");
 		return "admin/emailSettings";

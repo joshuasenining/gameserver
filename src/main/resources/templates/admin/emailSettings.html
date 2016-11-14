@@ -52,7 +52,7 @@
 				<label th:text="#{emailSettings.disableEmail}"></label>
 			</div>
 			<div class="col-md-8">
-				<input id="disableEmail" th:field="*{disableEmail}" ></input>
+				<input id="disableEmail" type="checkbox" th:field="*{disableEmail}" ></input>
 			</div>
 		</div>
 		<div class="row">
@@ -81,7 +81,7 @@
 				<label th:text="#{emailSettings.smtp.auth}"></label>
 			</div>
 			<div class="col-md-8">
-				<input id="smtpAuth" th:field="*{smtpAuth}"></input>
+				<input id="smtpAuth" type="checkbox" th:field="*{smtpAuth}"></input>
 			</div>
 		</div>
 		

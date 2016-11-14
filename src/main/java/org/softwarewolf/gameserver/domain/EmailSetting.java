@@ -1,15 +1,15 @@
-package org.softwarewolf.gameserver.domain.dto;
+package org.softwarewolf.gameserver.domain;
 
 import java.io.Serializable;
 
-public class EmailSettingsDto implements Serializable {
+public class EmailSetting implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String smtpHost;
 	private String socketFactoryPort;
 	private String socketFactoryClass;
-	private String smtpAuth;
+	private Boolean smtpAuth;
 	private String smtpPort;
-	private String disableEmail;
+	private Boolean disableEmail;
 	private String userLogin;
 	private String userPassword;
 	
@@ -43,10 +43,10 @@ public class EmailSettingsDto implements Serializable {
 	public void setSocketFactoryClass(String socketFactoryClass) {
 		this.socketFactoryClass = socketFactoryClass;
 	}
-	public String getSmtpAuth() {
+	public Boolean getSmtpAuth() {
 		return smtpAuth;
 	}
-	public void setSmtpAuth(String smtpAuth) {
+	public void setSmtpAuth(Boolean smtpAuth) {
 		this.smtpAuth = smtpAuth;
 	}
 	public String getSmtpPort() {
@@ -55,10 +55,10 @@ public class EmailSettingsDto implements Serializable {
 	public void setSmtpPort(String smtpPort) {
 		this.smtpPort = smtpPort;
 	}
-	public String getDisableEmail() {
+	public Boolean getDisableEmail() {
 		return disableEmail;
 	}
-	public void setDisableEmail(String disableEmail) {
+	public void setDisableEmail(Boolean disableEmail) {
 		this.disableEmail = disableEmail;
 	}
 	

@@ -11,7 +11,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.softwarewolf.gameserver.controller.helper.FeFeedback;
-import org.softwarewolf.gameserver.domain.dto.EmailSettingsDto;
+import org.softwarewolf.gameserver.domain.EmailSetting;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -73,10 +73,20 @@ public class GameMailService {
 		return props;
 	}
 
-	public EmailSettingsDto initEmailSettignsDto(EmailSettingsDto emailSettingsDto) {
+	public EmailSetting initEmailSettignsDto(EmailSetting emailSettingsDto) {
 		Properties props = getEmailProperties();
-		emailSettingsDto.setDisableEmail(props.getProperty("mail.disable"));
-		emailSettingsDto.setSmtpAuth(props.getProperty("mail.smtp.auth"));
+		String disableMailString = props.getProperty("mail.disable");
+		Boolean disableMail = Boolean.FALSE;
+		if (disableMail != null && "true".equals(disableMailString)) {
+			disableMail = Boolean.TRUE;
+		}
+		emailSettingsDto.setDisableEmail(disableMail);
+		String authString = props.getProperty("mail.smtp.auth");
+		Boolean auth = Boolean.FALSE;
+		if (authString != null && "true".equals(authString)) {
+			auth = Boolean.TRUE;
+		}
+		emailSettingsDto.setSmtpAuth(auth);
 		emailSettingsDto.setSmtpHost(props.getProperty("mail.smtp.host"));
 		emailSettingsDto.setSmtpPort(props.getProperty("mail.smtp.port"));
 		emailSettingsDto.setSocketFactoryClass(props.getProperty("mail.smtp.socketFactory.class"));
@@ -84,7 +94,7 @@ public class GameMailService {
 		return emailSettingsDto;
 	}
 	
-	public void changeEmailSettings(EmailSettingsDto emailSettingsDto, FeFeedback feFeedback) {
+	public void changeEmailSettings(EmailSetting emailSettingsDto, FeFeedback feFeedback) {
 		feFeedback.setInfo("Settings updated");
 	}
 }
