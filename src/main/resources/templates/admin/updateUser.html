@@ -145,14 +145,14 @@
 			<h1 th:text="#{updateUser.title}">Update</h1>
 		</div>
 	</div>
-	<form id="updateUserForm" th:object="${userData}" action="#" th:action="@{/admin/updateUserData}" method="post">
-	    <select id="selectedRoles" class="select optional item-hide" multiple="multiple" th:field="${userData.selectedUser.authorities}" size="1"></select>
+	<form id="updateUserForm" th:object="${userAdminDto}" action="#" th:action="@{/admin/updateUserData}" method="post">
+	    <select id="selectedRoles" class="select optional item-hide" multiple="multiple" th:field="*{selectedUser.authorities}" size="1"></select>
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-10">
 	        	<fieldset>
 	        		<legend th:text="#{updateUser.editInfo}">Edit</legend>
-		        	<input type="hidden" id="id" th:field="${userData.selectedUser.id}"></input>
+		        	<input type="hidden" id="id" th:field="*{selectedUser.id}"></input>
 				</fieldset>
 			</div>
 		</div>
@@ -165,7 +165,7 @@
 		        		<button type="button" class="btn btn-default" th:text="#{updateUser.selectUser}">Action</button>
 				        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
 				        <ul class="dropdown-menu">
-		        		    <li th:each="user : ${userData.userList}" th:value="${user.id}">
+		        		    <li th:each="user : *{userList}" th:value="${user.id}">
 		            			<a th:href="@{/admin/getUserData(userId=${user.id})}" th:text="${user.displayName}">test</a>
 				           	</li>
 				        </ul>
@@ -179,7 +179,7 @@
 				<label class="input-margin">User Name</label>
 			</div>
 			<div class="col-md-9">
-				<input id="username" name="username" class="input-margin" th:field="${userData.selectedUser.username}" ></input>
+				<input id="username" name="username" class="input-margin" th:field="*{selectedUser.username}" ></input>
 			</div>
 		</div>
 		<div class="row">		        	
@@ -188,7 +188,7 @@
 				<label class="input-margin">First Name</label>
 			</div>
 			<div class="col-md-9">
-				<input id="firstName" class="input-margin" th:field="${userData.selectedUser.firstName}" ></input>
+				<input id="firstName" class="input-margin" th:field="*{selectedUser.firstName}" ></input>
 			</div>
 		</div>
 		<div class="row">		        	
@@ -197,7 +197,7 @@
 				<label class="input-margin">Last Name</label>
 			</div>
 			<div class="col-md-9">
-				<input id="lastName" class="input-margin" th:field="${userData.selectedUser.lastName}" ></input>
+				<input id="lastName" class="input-margin" th:field="*{selectedUser.lastName}" ></input>
 			</div>
 		</div>
 		<div class="row">		        	
@@ -206,7 +206,7 @@
 				<label class="input-margin" th:text="#{updateUser.password}">Pass</label>
 			</div>
 			<div class="col-md-9">
-				<input type="password" id="password" class="input-margin" th:field="${userData.password}" ></input>
+				<input type="password" id="password" class="input-margin" th:field="*{password}" ></input>
 			</div>
 		</div>
 		<div class="row">		        	
@@ -215,7 +215,7 @@
 				<label class="input-margin" th:text="#{updateUser.verifyPassword}">Pass</label>
 			</div>
 			<div class="col-md-9">
-				<input type="password" id="password" class="input-margin" th:field="${userData.verifyPassword}" ></input>
+				<input type="password" id="password" class="input-margin" th:field="*{verifyPassword}" ></input>
 			</div>
 		</div>
 		<div class="row">		        	
@@ -224,7 +224,7 @@
 				<label class="input-margin">Email</label>
 			</div>
 			<div class="col-md-9">
-				<input id="email" class="input-margin" th:field="${userData.selectedUser.email}" ></input>
+				<input id="email" class="input-margin" th:field="*{selectedUser.email}" ></input>
 			</div>
 		</div>
 		<div class="row">		        	
@@ -238,7 +238,7 @@
 			<div class="col-md-1"></div>
 			<div class="col-md-2">			
 				<ul id="roles" class="no-bullets">
-					<li th:each="role : ${userData.allRoles}">
+					<li th:each="role : *{allRoles}">
 						<input th:id="${role.key}" type="checkbox" class="margin-right-5" th:value="${role.value}" th:text="${role.key}"></input>
 					</li>				
 				</ul>	
@@ -251,7 +251,7 @@
 				<label class="input-margin">Account non-expired</label>
 			</div>
 			<div class="col-md-8">
-				<input type="checkbox" id="accountNonExpired" th:field="${userData.selectedUser.accountNonExpired}"></input>
+				<input type="checkbox" id="accountNonExpired" th:field="*{selectedUser.accountNonExpired}"></input>
 			</div>
 		</div>
 		<div class="row">		        	
@@ -260,7 +260,7 @@
 				<label class="input-margin">Account non-locked</label>
 			</div>
 			<div class="col-md-8">
-				<input type="checkbox" id="accountNonLocked" class="input-margin" th:field="${userData.selectedUser.accountNonLocked}"></input>
+				<input type="checkbox" id="accountNonLocked" class="input-margin" th:field="*{selectedUser.accountNonLocked}"></input>
 			</div>
 		</div>
 		<div class="row">		        	
@@ -269,7 +269,7 @@
 				<label class="input-margin">Credentials non-expired</label>
 			</div>
 			<div class="col-md-8">
-				<input type="checkbox" id="credentialsNonExpired" class="input-margin" th:field="${userData.selectedUser.credentialsNonExpired}"></input>
+				<input type="checkbox" id="credentialsNonExpired" class="input-margin" th:field="*{selectedUser.credentialsNonExpired}"></input>
 			</div>
 		</div>
 		<div class="row">		        	
@@ -278,7 +278,7 @@
 				<label class="input-margin">Enabled</label>
 			</div>
 			<div class="col-md-8">
-				<input type="checkbox" id="enabled" class="input-margin" th:field="${userData.selectedUser.enabled}"></input>
+				<input type="checkbox" id="enabled" class="input-margin" th:field="*{selectedUser.enabled}"></input>
 			</div>
 		</div>
 		<div class="row">		  

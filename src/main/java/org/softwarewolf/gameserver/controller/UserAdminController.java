@@ -122,7 +122,7 @@ public class UserAdminController {
 				user = new User();
 			}
 		}
-		userAdminDto.setSelectedUser(user);
+   		userAdminDto.setSelectedUser(user);
 		userAdminDto.setAllRoles(userService.getAllRoles());
 		return "/admin/updateUser";
 	}

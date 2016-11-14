@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:fragment="header">
+    <meta charset="utf-8"></meta>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <link rel="icon" href="/werewolf-512.png"></link>
+   	<link rel="stylesheet" href="/css/style.css" type="text/css" th:href="@{/css/style.css}"></link>	
+	<link rel="stylesheet" href="/css/font-awesome.css" type="text/css" th:href="@{/css/font-awesome.css}"></link>
+
+    <!-- Bootstrap & JQuery -->
+	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"></link>
+	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css}"></link>
+	<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" th:src="@{/webjars/jquery-ui-themes/1.11.4/smoothness/jquery-ui.min.css}"></link>
+    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js" th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
+    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
+	<script type="application/javascript" src="https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js" th:src="@{/webjars/jquery-ui/1.11.4/jquery-ui.min.js}"></script>
+
+</head>
+<body>
+	<div th:include="/public/navbar :: navbar"></div>
+
+	<br></br>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10"><h1 th:text="#{emailSettings.title}">Title</h1></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<span class="error-message" th:if="${feFeedback.error}" th:text="${feFeedback.error}">Error.</span>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<span class="info-message" th:if="${feFeedback.info}" th:text="${feFeedback.info}">Info.</span>
+		</div>
+	</div>
+	
+	<br></br><br></br>
+	<form id="editEmailSettingsForm" th:object="${emailSettingsDto}" action="#" th:action="@{/admin/emailSettings}" method="post">
+
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label th:text="#{emailSettings.disableEmail}"></label>
+			</div>
+			<div class="col-md-8">
+				<input id="disableEmail" th:field="*{disableEmail}" ></input>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label th:text="#{emailSettings.email.userLogin}"></label>
+			</div>
+			<div class="col-md-8">
+				<input id="userLogin" th:field="*{userLogin}"></input>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label th:text="#{emailSettings.email.userPassword}"></label>
+			</div>
+			<div class="col-md-8">
+				<input id="userPassword" th:field="*{userPassword}"></input>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label th:text="#{emailSettings.smtp.auth}"></label>
+			</div>
+			<div class="col-md-8">
+				<input id="smtpAuth" th:field="*{smtpAuth}"></input>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label th:text="#{emailSettings.smtpHost}"></label>
+			</div>
+			<div class="col-md-8">
+				<input id="smtpHost" th:field="*{smtpHost}"></input>
+			</div>
+		</div>		
+			
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label th:text="#{emailSettings.smtp.socketFactory.class}"></label>
+			</div>
+			<div class="col-md-8">
+				<input id="socketFactoryClass" th:field="*{socketFactoryClass}"></input>
+			</div>
+		</div>		
+			
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label th:text="#{emailSettings.smtp.socketFactory.port}"></label>
+			</div>
+			<div class="col-md-8">
+				<input id="socketFactoryPost" th:field="*{socketFactoryPort}"></input>
+			</div>
+		</div>	
+		
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label th:text="#{emailSettings.smtp.port}"></label>
+			</div>
+			<div class="col-md-8">
+				<input id="smtpPort" th:field="*{smtpPort}"></input>
+			</div>
+		</div>	
+		
+		<div class="row">
+		    <div class="col-md-1"></div>
+			<div class="col-md-10">
+				<input type="submit" name="submit" value="Submit"></input>
+			</div>
+		</div>
+	</form>
+</body>
+</html>
