@@ -1,7 +1,6 @@
 package org.softwarewolf.gameserver.service;
 
 import java.security.Key;
-import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.List;
 import java.util.Random;
@@ -18,9 +17,6 @@ import org.springframework.stereotype.Service;
 public class EncodingService {
 	@Autowired
 	private ApplicationSettingsRepository applicationSettingsRepository;
-	
-//	private static final String KEY = "1Hbfh667adfDEJ79";
-//	private SecureRandom random = new SecureRandom();
 	
 	public String encrypt(String value)
 			throws Exception {
@@ -44,7 +40,6 @@ public class EncodingService {
 	}
 	
     private Key generateKey() throws Exception {
-//        Key key = new SecretKeySpec(EncodingService.KEY.getBytes(),"AES");
         Key key = new SecretKeySpec(getSalt().getBytes(),"AES");
         return key;
     }

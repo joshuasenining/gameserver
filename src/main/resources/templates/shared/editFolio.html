@@ -147,6 +147,31 @@
 		}
 		
 	</script>
+	
+	<style>
+         .ui-widget-header,.ui-state-default, ui-button{
+            background:#b9cd6d;
+            border: 1px solid #b9cd6d;
+            color: #FFFFFF;
+            font-weight: bold;
+         }
+      </style>
+      <!-- Javascript -->
+      <script>
+         $(function() {
+            $( "#addTagDialog" ).dialog({
+               autoOpen: false,  
+               buttons: {
+            	   OK: function() {
+            		   $(this).dialog("close");
+            	   }
+               }
+            });
+            $( "#createTag" ).click(function() {
+               $( "#addTagDialog" ).dialog( "open" );
+            });
+         });
+      </script>
 </head>
 <body id="main">
 	<div th:include="/public/navbar :: navbar"></div>
@@ -226,7 +251,6 @@
 		 	</div>
 		</div>
 
-
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
@@ -237,6 +261,19 @@
 			</div>
 		</div>
 	
+		<div id="addTagDialog" title="Add a tag">
+			<label for="tagName">New tag</label>
+            <input id="tagName"></input>
+		</div>	
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="input-margin" th:text="#{editFolio.createTag}">Create</label>
+			</div>
+			<div class="col-md-8">
+				<input type="button" id="createTag" class="input-margin" th:value="#{editFolio.createTagText}"></input>
+			</div>
+		</div>
 						
 		<div class="row">
 			<div class="col-md-1"></div>
