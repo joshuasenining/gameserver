@@ -11,7 +11,6 @@ public class UserAdminDto implements Serializable {
 	private List<UserListItem> userList;
 	private String selectedUserId;
 	private User selectedUser;
-//	public RoleLists roleLists;
 	private String password;
 	private String verifyPassword;
 	private String errorMessage;
@@ -43,14 +42,6 @@ public class UserAdminDto implements Serializable {
 	public void setSelectedUser(User selectedUser) {
 		 this.selectedUser = selectedUser;
 	}
-//	
-//	public RoleLists getRoleLists() {
-//		return roleLists;
-//	}
-//	
-//	public void setRoleLists(RoleLists roleLists) {
-//		this.roleLists = roleLists;
-//	}
 	
 	public String getPassword() {
 		return password;

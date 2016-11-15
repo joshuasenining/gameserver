@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/test")
 public class TestController {
 	@Autowired
-	private GameMailService gameMail;
+	private GameMailService gameMailService;
 	
 	@Autowired
 	private EncodingService encodingService;
@@ -22,6 +22,8 @@ public class TestController {
 	@RequestMapping(value = "/testMail", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
 	public String testMail(FeFeedback feFeedback) {
+		gameMailService.testMail(feFeedback);
+/*
 		String testText = "test text";
 		String encryptedText = null;
 		try {
@@ -36,6 +38,7 @@ public class TestController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		return ControllerHelper.CAMPAIGN_HOME;
 	}
 }

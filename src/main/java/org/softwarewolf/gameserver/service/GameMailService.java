@@ -1,5 +1,6 @@
 package org.softwarewolf.gameserver.service;
 
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -11,51 +12,50 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.softwarewolf.gameserver.controller.helper.FeFeedback;
-import org.softwarewolf.gameserver.domain.EmailSetting;
-import org.springframework.beans.factory.annotation.Value;
+import org.softwarewolf.gameserver.domain.EmailSettings;
+import org.softwarewolf.gameserver.repository.EmailSettingsRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 @Service
 @PropertySource({"classpath:application.properties"})
 public class GameMailService {
-	@Value("${mail.smtp.host}")
-	private String smtpHost;
+	@Autowired
+	private EmailSettingsRepository emailSettingsRepository;
 	
-	@Value("${mail.smpt.socketFactory.port}")
-	private String socketFactoryPort;
-
-	@Value("${mail.smtp.socketFactory.class}")
-	private String socketFactoryClass;
-
-	@Value("${mail.smtp.auth}")
-	private String auth;
-
-	@Value("${mail.smtp.port}")
-	private String port;
-
-	public void testMail() {
+	@Autowired
+	EncodingService encodingService;
+	
+	public void testMail(FeFeedback feFeedback) {
 		Properties props = getEmailProperties();
+		String encryptedPassword = props.getProperty("mail.password");
+		String decryptedPassword = null;
+		try {
+			decryptedPassword = encodingService.decrypt(encryptedPassword);
+			props.put("mail.password.decrypted", decryptedPassword);
+		} catch (Exception e1) {
+			feFeedback.setError(e1.getMessage());
+			return;
+		}
 		
 		Session session = Session.getDefaultInstance(props,
 			new javax.mail.Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication("dirkwiggley@gmail.com","Gm@ilS0cks");
+					return new PasswordAuthentication(props.getProperty("mail.login"), props.getProperty("mail.password.decrypted"));
 				}
 			});
 
 		try {
 			Message message = new MimeMessage(session);
-			message.setFrom(new InternetAddress("dirkwiggley@gmail.com"));
+			message.setFrom(new InternetAddress(props.getProperty("mail.test.from")));
 			message.setRecipients(Message.RecipientType.TO,
-					InternetAddress.parse("dm_tim@yahoo.com"));
+					InternetAddress.parse(props.getProperty("mail.test.to")));
 			message.setSubject("Testing Subject");
 			message.setText("Dear Mail Crawler," +
 					"\n\n No spam to my email, please!");
 
 			Transport.send(message);
-
-			System.out.println("Done");
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}		
@@ -63,38 +63,86 @@ public class GameMailService {
 	
 	public Properties getEmailProperties() {
 		Properties props = new Properties();
-		props.put("mail.smtp.host", smtpHost);
-		props.put("mail.smtp.socketFactory.port", socketFactoryPort);
-		props.put("mail.smtp.socketFactory.class",
-				socketFactoryClass);
-		props.put("mail.smtp.auth", auth);
-		props.put("mail.smtp.port", port);
+		EmailSettings emailSettings = getEmailSettings();
+		
+		props.put("mail.smtp.host", emailSettings.getSmtpHost() == null ? "" : emailSettings.getSmtpHost());
+		props.put("mail.smtp.socketFactory.port", emailSettings.getSocketFactoryPort() == null ? "" : emailSettings.getSocketFactoryPort());
+		props.put("mail.smtp.socketFactory.class", emailSettings.getSocketFactoryClass() == null ? "" : emailSettings.getSocketFactoryClass());
+		props.put("mail.smtp.auth", emailSettings.getSmtpAuth() ? "true" : "false");
+		props.put("mail.smtp.port", emailSettings.getSmtpPort() == null ? "" : emailSettings.getSmtpPort());
+		props.put("mail.login", emailSettings.getUserLogin() == null ? "" : emailSettings.getUserLogin());
+		props.put("mail.password", emailSettings.getUserPassword() == null ? "" : emailSettings.getUserPassword());
+		props.put("mail.test.from", emailSettings.getTestFromAddress() == null ? "" : emailSettings.getTestFromAddress());
+		props.put("mail.test.to", emailSettings.getTestToAddress() == null ? "" : emailSettings.getTestToAddress());
 		
 		return props;
 	}
 
-	public EmailSetting initEmailSettignsDto(EmailSetting emailSettingsDto) {
+	public EmailSettings initEmailSettings(EmailSettings emailSettings) {
 		Properties props = getEmailProperties();
-		String disableMailString = props.getProperty("mail.disable");
-		Boolean disableMail = Boolean.FALSE;
-		if (disableMail != null && "true".equals(disableMailString)) {
-			disableMail = Boolean.TRUE;
-		}
-		emailSettingsDto.setDisableEmail(disableMail);
-		String authString = props.getProperty("mail.smtp.auth");
-		Boolean auth = Boolean.FALSE;
-		if (authString != null && "true".equals(authString)) {
-			auth = Boolean.TRUE;
-		}
-		emailSettingsDto.setSmtpAuth(auth);
-		emailSettingsDto.setSmtpHost(props.getProperty("mail.smtp.host"));
-		emailSettingsDto.setSmtpPort(props.getProperty("mail.smtp.port"));
-		emailSettingsDto.setSocketFactoryClass(props.getProperty("mail.smtp.socketFactory.class"));
-		emailSettingsDto.setSocketFactoryPort(props.getProperty("mail.smtp.socketFactory.port"));
-		return emailSettingsDto;
+
+		emailSettings.setDisableEmail(Boolean.valueOf(props.getProperty("mail.disable")));
+		emailSettings.setSmtpAuth(Boolean.valueOf(props.getProperty("mail.smtp.auth")));
+		emailSettings.setSmtpHost(props.getProperty("mail.smtp.host"));
+		emailSettings.setSmtpPort(props.getProperty("mail.smtp.port"));
+		emailSettings.setSocketFactoryClass(props.getProperty("mail.smtp.socketFactory.class"));
+		emailSettings.setSocketFactoryPort(props.getProperty("mail.smtp.socketFactory.port"));
+		emailSettings.setUserLogin(props.getProperty("mail.login"));
+		emailSettings.setUserPassword(props.getProperty("mail.password"));
+		emailSettings.setTestFromAddress(props.getProperty("mail.test.from"));
+		emailSettings.setTestToAddress(props.getProperty("mail.test.to"));
+		
+		return emailSettings;
 	}
 	
-	public void changeEmailSettings(EmailSetting emailSettingsDto, FeFeedback feFeedback) {
-		feFeedback.setInfo("Settings updated");
+	public void updateEmailSettings(EmailSettings emailSettings, FeFeedback feFeedback) {
+		// Should probably do some validation...
+		EmailSettings originalEmailSettings = getEmailSettings();
+		String currentPassword = emailSettings.getUserPassword();
+		if (emailSettings.getId() == null) {
+			if (originalEmailSettings != null) {
+				emailSettings.setId(originalEmailSettings.getId());
+			}
+			if (currentPassword != null) {
+				try {
+					emailSettings.setUserPassword(encodingService.encrypt(currentPassword));
+				} catch (Exception e) {
+					feFeedback.setError(e.getMessage());
+					return;
+				}
+			}
+		} else {
+			// This is an update, check to see if we need to encode a new password
+			String originalPassword = originalEmailSettings.getUserPassword();
+			if (originalPassword != currentPassword) {
+				try {
+					emailSettings.setUserPassword(encodingService.encrypt(currentPassword));
+				} catch (Exception e) {
+					feFeedback.setError(e.getMessage());
+					return;
+				}
+			}
+		}
+		String info = null;
+		String error = null;
+		try {
+			emailSettingsRepository.save(emailSettings);
+			info = "Settings updated";
+		} catch (Exception e) {
+			error = e.getMessage();
+		}
+		feFeedback.setInfo(info);
+		feFeedback.setError(error);
+	}
+		
+	public EmailSettings getEmailSettings() {
+		List<EmailSettings> emailSettingsList = emailSettingsRepository.findAll();
+		EmailSettings emailSettings = null;
+		if (emailSettingsList.size() >  0) {
+			emailSettings = emailSettingsList.get(0);
+		} else {
+			emailSettings = new EmailSettings();
+		}	
+		return emailSettings;
 	}
 }

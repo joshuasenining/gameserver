@@ -2,16 +2,34 @@ package org.softwarewolf.gameserver.domain;
 
 import java.io.Serializable;
 
-public class EmailSetting implements Serializable {
+import org.springframework.data.annotation.Id;
+
+public class EmailSettings implements Serializable {
 	private static final long serialVersionUID = 1L;
+	@Id
+	private String id;
 	private String smtpHost;
 	private String socketFactoryPort;
 	private String socketFactoryClass;
-	private Boolean smtpAuth;
+	private boolean smtpAuth;
 	private String smtpPort;
-	private Boolean disableEmail;
+	private boolean disableEmail;
 	private String userLogin;
 	private String userPassword;
+	private String testFromAddress;
+	private String testToAddress;
+	
+	public EmailSettings() {
+		smtpAuth = false;
+		disableEmail = true;
+	}
+	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	
 	public String getUserLogin() {
 		return userLogin;
@@ -59,6 +77,30 @@ public class EmailSetting implements Serializable {
 		return disableEmail;
 	}
 	public void setDisableEmail(Boolean disableEmail) {
+		this.disableEmail = disableEmail;
+	}
+
+	public String getTestFromAddress() {
+		return testFromAddress;
+	}
+
+	public void setTestFromAddress(String testFromAddress) {
+		this.testFromAddress = testFromAddress;
+	}
+
+	public String getTestToAddress() {
+		return testToAddress;
+	}
+
+	public void setTestToAddress(String testToAddress) {
+		this.testToAddress = testToAddress;
+	}
+
+	public void setSmtpAuth(boolean smtpAuth) {
+		this.smtpAuth = smtpAuth;
+	}
+
+	public void setDisableEmail(boolean disableEmail) {
 		this.disableEmail = disableEmail;
 	}
 	

@@ -44,91 +44,112 @@
 	</div>
 	
 	<br></br><br></br>
-	<form id="editEmailSettingsForm" th:object="${emailSettingsDto}" action="#" th:action="@{/admin/emailSettings}" method="post">
+	<form id="editEmailSettingsForm" th:object="${emailSettings}" action="#" th:action="@{/admin/emailSettings}" method="post">
 
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
-				<label th:text="#{emailSettings.disableEmail}"></label>
+				<label class="input-margin" th:text="#{emailSettings.disableEmail}"></label>
 			</div>
 			<div class="col-md-8">
-				<input id="disableEmail" type="checkbox" th:field="*{disableEmail}" ></input>
+				<input id="disableEmail" class="input-margin" type="checkbox" th:field="*{disableEmail}" ></input>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
-				<label th:text="#{emailSettings.email.userLogin}"></label>
+				<label class="input-margin" th:text="#{emailSettings.email.userLogin}"></label>
 			</div>
 			<div class="col-md-8">
-				<input id="userLogin" th:field="*{userLogin}"></input>
-			</div>
-		</div>
-		
-		<div class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-2">
-				<label th:text="#{emailSettings.email.userPassword}"></label>
-			</div>
-			<div class="col-md-8">
-				<input id="userPassword" th:field="*{userPassword}"></input>
+				<input id="userLogin" class="input-margin" th:field="*{userLogin}"></input>
 			</div>
 		</div>
 		
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
-				<label th:text="#{emailSettings.smtp.auth}"></label>
+				<label class="input-margin" th:text="#{emailSettings.email.userPassword}"></label>
 			</div>
 			<div class="col-md-8">
-				<input id="smtpAuth" type="checkbox" th:field="*{smtpAuth}"></input>
+				<input type="password" id="userPassword" class="input-margin" th:field="*{userPassword}"></input>
 			</div>
 		</div>
 		
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
-				<label th:text="#{emailSettings.smtpHost}"></label>
+				<label class="input-margin" th:text="#{emailSettings.smtp.auth}"></label>
 			</div>
 			<div class="col-md-8">
-				<input id="smtpHost" th:field="*{smtpHost}"></input>
+				<input id="smtpAuth" class="input-margin" type="checkbox" th:field="*{smtpAuth}"></input>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label class="input-margin" th:text="#{emailSettings.smtpHost}"></label>
+			</div>
+			<div class="col-md-8">
+				<input id="smtpHost" class="input-margin" th:field="*{smtpHost}"></input>
 			</div>
 		</div>		
 			
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
-				<label th:text="#{emailSettings.smtp.socketFactory.class}"></label>
+				<label class="input-margin" th:text="#{emailSettings.smtp.socketFactory.class}"></label>
 			</div>
 			<div class="col-md-8">
-				<input id="socketFactoryClass" th:field="*{socketFactoryClass}"></input>
+				<input id="socketFactoryClass" class="input-margin" th:field="*{socketFactoryClass}"></input>
 			</div>
 		</div>		
 			
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
-				<label th:text="#{emailSettings.smtp.socketFactory.port}"></label>
+				<label class="input-margin" th:text="#{emailSettings.smtp.socketFactory.port}"></label>
 			</div>
 			<div class="col-md-8">
-				<input id="socketFactoryPost" th:field="*{socketFactoryPort}"></input>
+				<input id="socketFactoryPost" class="input-margin" th:field="*{socketFactoryPort}"></input>
 			</div>
 		</div>	
 		
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
-				<label th:text="#{emailSettings.smtp.port}"></label>
+				<label class="input-margin" th:text="#{emailSettings.smtp.port}"></label>
 			</div>
 			<div class="col-md-8">
-				<input id="smtpPort" th:field="*{smtpPort}"></input>
+				<input id="smtpPort" class="input-margin" th:field="*{smtpPort}"></input>
+			</div>
+		</div>	
+		
+		
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label class="input-margin" th:text="#{emailSettings.test.to}"></label>
+			</div>
+			<div class="col-md-8">
+				<input id="testToAddress" class="input-margin" th:field="*{testToAddress}"></input>
+			</div>
+		</div>	
+				
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label class="input-margin" th:text="#{emailSettings.test.from}"></label>
+			</div>
+			<div class="col-md-8">
+				<input id="testFromAddress" class="input-margin" th:field="*{testFromAddress}"></input>
 			</div>
 		</div>	
 		
 		<div class="row">
 		    <div class="col-md-1"></div>
 			<div class="col-md-10">
-				<input type="submit" name="submit" value="Submit"></input>
+				<input class="input-margin" type="submit" name="submit" value="Submit"></input>
 			</div>
 		</div>
 	</form>
