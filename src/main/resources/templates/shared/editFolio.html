@@ -75,19 +75,6 @@
 				  .appendTo($("#selectedTagSpan"));
 			});
 		});	
-
-		$("#removeDialog").dialog({
-  	    	autoOpen: false,
-	  	    modal: true,
-	  	  	position: { my: "left top", at: "right top", of: "#tagsBtn", collision: "flip flip" }
-  		});
-
-		$("#addDialog").dialog({
-  	    	autoOpen: false,
-	  	    modal: true,
-	  	  	position: { my: "left top", at: "right top", of: "#tagsBtn", collision: "flip flip" },
-			"width": 460
-  		});
 		
 		$(function() {
 			$( "#selectable" ).selectable();
@@ -96,45 +83,6 @@
 	</script>   
 
 	<script th:inline="javascript">
-		function removeTag(folioId, tagId, tagName) {
-			$("#removeDialog").text("Remove the tag " + tagName + "?");
-	
-			$("#removeDialog").dialog({
-				buttons : {
-			    	"Confirm" : function() {
-			    		var action = "/shared/removeTagFromFolio/" + folioId + "/" + tagId;
-			    		window.location.href = action;
-			    		$("#removeTagForm").attr("action", action);
-			    		$("#removeTagForm").submit();
-			        },
-			        "Cancel" : function() {
-			        	$(this).dialog("close");
-			        }
-			    }
-			});
-	
-			$("#removeDialog").dialog("open");			
-		}
-		
-		function createTag(tagName) {
-			$("#addDialog").empty();
-
-			var unassignedTagsField = $("#unassignedTags");
-			var unassignedTagsText = unassignedTagsField.val();
-			var tags = jQuery.parseJSON(unassignedTagsText);
-			var newText = '<ol id="selectable">' + getTags(tags) + '</ol>';
-			$("#addDialog").append(newText);
-			$("#addDialog").dialog("open").find('ol').selectable({selected: function(event,ui) {
-                  var className = ui.selected.getAttribute("class-name");
-                  var tagId = ui.selected.getAttribute("tag-id");
-                  var addTagForm = $("#addTagToFolioForm");
-                  var folioId = $("#folioId").val();
-                  var action = $("#addTagToFolioForm").attr("action") + folioId + "/" + className + "/" + tagId;
-				  addTagForm[0].setAttribute("action", action);
-				  addTagForm.submit();
-            }});;	
-		}
-		
 		function getFolio(folioId) {
 			var action = $("#getFolioForm").attr("action");
 			action += folioId;
@@ -163,7 +111,10 @@
                autoOpen: false,  
                buttons: {
             	   OK: function() {
+            		   $("#addTag").val($("#tagName").val());
             		   $(this).dialog("close");
+            		   $("#editFolioForm").attr("action", "/shared/addTag");
+            		   $("#editFolioForm").submit();
             	   }
                }
             });
@@ -209,6 +160,7 @@
 		<input type="hidden" id="addTag" th:field="*{addTag}"></input>
 		<input type="hidden" id="removeTag" th:field="*{removeTag}"></input>
 		<input type="hidden" id="folioId" th:field="*{folio.id}"></input>
+		<input type="hidden" id="forwardingUrl" th:field="*{forwardingUrl}"></input>
 
 		<div class="row">
 			<div class="col-md-1"></div>
@@ -236,19 +188,6 @@
   					<button type="button" class="btn btn-default" th:utext="#{editFolio.selectFolio}" th:onclick="'selectFolio();'">Select Folio</button>
 				</div>				
 			</div>
-		</div>
-		
-		<div class="row">
-			<div class="col-md-10">
-				<div id="removeDialog" title="Confirmation Required">
-  					Remove tag from folio?
-				</div>	
-		 	</div>
-		</div>
-		<div class="row">
-			<div class="col-md-10">
-				<div id="addDialog" style="display:none;" title="Add tag"></div>	
-		 	</div>
 		</div>
 
 		<div class="row">

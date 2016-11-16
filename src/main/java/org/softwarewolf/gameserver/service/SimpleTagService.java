@@ -28,13 +28,19 @@ public class SimpleTagService {
 		return tagList;
 	}
 		
+	public SimpleTag save(String simpleTagName, String campaignId) {
+		SimpleTag newTag = new SimpleTag();
+		newTag.setCampaignId(campaignId);
+		newTag.setName(simpleTagName);
+		return save(newTag);
+	}
+	
 	public SimpleTag save(SimpleTag simpleTag) {
-		String tagName = simpleTag.getName();
-		List<SimpleTag> tagList = simpleTagRepository.findAllByKeyValue("name", tagName);
-		if (tagList == null || tagList.isEmpty()) {
+		SimpleTag oldTag = simpleTagRepository.findOneByNameAndCampaignId(simpleTag.getName(), simpleTag.getCampaignId());
+		if (oldTag == null) {
 			simpleTag = simpleTagRepository.save(simpleTag);
 		} else {
-			simpleTag = tagList.get(0);
+			simpleTag.setId(oldTag.getId());
 		}
 		return simpleTag;
 	}

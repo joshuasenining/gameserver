@@ -103,12 +103,12 @@ public class FolioService implements Serializable {
 		return folioRepository.findAll();
 	}
 	
-	public void initFolioCreator(FolioDto folioDto, String folioId, String campaignId) {
+	public void initFolioDto(FolioDto folioDto, String folioId, String campaignId) {
 		Folio folio = folioRepository.findOne(folioId);
-		initFolioCreator(folioDto, folio, campaignId);
+		initFolioDto(folioDto, folio, campaignId);
 	}
 	
-	public void initFolioCreator(FolioDto folioDto, Folio folio, String campaignId) {
+	public void initFolioDto(FolioDto folioDto, Folio folio, String campaignId) {
 		if (folio == null) {
 			folio = new Folio();
 			folio.setCampaignId(campaignId);
@@ -124,6 +124,9 @@ public class FolioService implements Serializable {
 		Collections.sort(unselectedTagList, new SimpleTagCompare());
 		String unselectedTags = tagListToString(unselectedTagList);
 		folioDto.setUnselectededTags(unselectedTags);
+		
+		folioDto.setAddTag(null);
+		folioDto.setRemoveTag(null);
 		
 		folioDto.setFolioDescriptorList(getFolioDescriptorList(folio.getCampaignId(), null));
 	}
