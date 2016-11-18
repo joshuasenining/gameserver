@@ -1,5 +1,8 @@
 package org.softwarewolf.gameserver.controller.gamemaster;
 
+import javax.servlet.http.HttpSession;
+
+import org.softwarewolf.gameserver.controller.helper.ControllerHelper;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.CampaignDto;
@@ -38,25 +41,25 @@ public class CampaignController {
 	@RequestMapping(value = "/selectCampaign", method = RequestMethod.GET)
 	@Secured({"USER"})
 	public String selectCampaign(final SelectCampaignDto selectCampaignDto) {
-		UserDetails userDetails =
+/*		UserDetails userDetails =
 				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username = userDetails.getUsername();
-		String userId = userService.getUserIdFromUsername(username);
-		campaignService.initSelectCampaignHelperByGM(selectCampaignDto, userId);
+		String userId = userService.getUserIdFromUsername(username);*/
+		campaignService.initSelectCampaignDto(selectCampaignDto);
 
 		return "/user/selectCampaign";
 	}
 	
-//	@RequestMapping(value = "/selectCampaign", method = RequestMethod.POST)
-//	@Secured({"USER"})
-//	public String selectCampaign(HttpSession session, final SelectCampaignHelper selectCampaignDto) {
-//		String campaignId = selectCampaignDto.getSelectedCampaignId(); 
-//		String campaignName = selectCampaignDto.getSelectedCampaignName();
-//		session.setAttribute(CAMPAIGN_ID, campaignId);
-//		session.setAttribute("campaignName", campaignName);
-//		
-//		return ControllerHelper.USER_MENU;
-//	}
+	@RequestMapping(value = "/selectCampaign", method = RequestMethod.POST)
+	@Secured({"USER"})
+	public String selectCampaign(HttpSession session, final SelectCampaignDto selectCampaignDto) {
+		String campaignId = selectCampaignDto.getSelectedCampaignId();
+		Campaign selectedCampaign = campaignService.findOne(campaignId);
+		session.setAttribute(ControllerHelper.CAMPAIGN_ID, campaignId);
+		session.setAttribute("campaignName", selectedCampaign.getName());
+		
+		return ControllerHelper.USER_MENU;
+	}
 	
 	@RequestMapping(value = "/createCampaign", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})

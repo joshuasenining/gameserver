@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.softwarewolf.gameserver.domain.Campaign;
+import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.User;
+import org.softwarewolf.gameserver.repository.CampaignUserRepository;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
 import org.softwarewolf.gameserver.repository.DeleteableRoleRepository;
 import org.softwarewolf.gameserver.repository.SimpleGrantedAuthorityRepository;
@@ -69,6 +71,9 @@ public class DataSeeder {
 	
 	@Autowired
 	private FolioService folioService;
+	
+	@Autowired
+	private CampaignUserRepository campaignUserRepository;
 	
 	public void cleanRepos() {
 		Campaign sAndSCampaign = campaignRepo.findOneByName(SWORD_AND_SORCERY);
@@ -192,6 +197,8 @@ public class DataSeeder {
 			campaign.setOwnerId(ownerId);
 			campaign = campaignRepo.save(campaign);
 			campaignMap.put(name, campaign);
+			CampaignUser cp = new CampaignUser(campaign.getId(), ROLE_GAMEMASTER, ownerId);
+			campaignUserRepository.save(cp);
 		}
 	}
 	

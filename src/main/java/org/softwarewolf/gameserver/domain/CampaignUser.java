@@ -6,15 +6,20 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-public class CampaignPlayer implements Serializable {
+public class CampaignUser implements Serializable {
 	private static final long serialVersionUID = 1L;
 	@Id
 	private String id;
 	private String campaignId;
-	private String playerName;
-	private String playerId;
+	private String role;
+	private String userId;
 	
-	public CampaignPlayer() {}
+	public CampaignUser() {}
+	public CampaignUser(String campaignId, String role, String userId) {
+		this.campaignId = campaignId;
+		this.role = role;
+		this.userId = userId;
+	}
 	
 	public String getId() {
 		return id;
@@ -32,20 +37,20 @@ public class CampaignPlayer implements Serializable {
 		this.campaignId = campaignId;
 	}
 	
-	public String getPlayerName() {
-		return playerName;
+	public String getRole() {
+		return role;
 	}
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
+	public void setRole(String role) {
+		this.role = role;
 	}
 		
-	public String getPlayerId() {
-		return playerId;
+	public String getUserId() {
+		return userId;
 	}
 	
-	public void setPlayerId(String playerId) {
-		this.playerId = playerId;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 	
 }

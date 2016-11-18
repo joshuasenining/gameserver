@@ -38,8 +38,8 @@
 			<div class="col-md-1"></div>
 			<div class="col-md-4">			
 				<ul>
-				  <li class="no-bullets" th:each="campaign : *{allCampaigns}">
-				    <input type="radio" th:field="*{selectedCampaignId}" th:value="${campaign.id}" />
+				  <li class="no-bullets" th:each="campaign : *{accessableCampaigns}">
+				    <input type="radio" th:field="*{selectedCampaignId}" th:value="${campaign.id}" th:name="${campaign.name}"/>
 				    <label th:for="${#ids.prev('selectedCampaignId')}" th:text="${campaign.name}">Campaign Name</label>
 				  </li>
 				</ul>			

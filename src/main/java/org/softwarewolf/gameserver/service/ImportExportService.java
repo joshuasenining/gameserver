@@ -18,11 +18,11 @@ import java.util.Scanner;
 import org.softwarewolf.gameserver.controller.helper.ImportExportHelper;
 //import org.softwarewolf.gameserver.controller.helper.ImportExportHelper;
 import org.softwarewolf.gameserver.domain.Campaign;
-import org.softwarewolf.gameserver.domain.CampaignPlayer;
+import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.ImportExportCampaignDto;
-import org.softwarewolf.gameserver.repository.CampaignPlayerRepository;
+import org.softwarewolf.gameserver.repository.CampaignUserRepository;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
 import org.softwarewolf.gameserver.repository.FolioRepository;
 
@@ -47,7 +47,7 @@ public class ImportExportService {
 	CampaignRepository campaignRepository;
 	
 	@Autowired
-	CampaignPlayerRepository campaignPlayerRepository;
+	CampaignUserRepository campaignPlayerRepository;
 	
 	@Autowired
 	FolioRepository folioRepository;
@@ -96,7 +96,7 @@ public class ImportExportService {
 		// ** Users **
 		String campaignOwnerId = campaign.getOwnerId();
 		List<String> gmIdList = campaign.getGameMasterIdList();
-		List<CampaignPlayer> playerList = campaignPlayerRepository.findAllByKeyValue("campaignId", campaignId);
+		List<CampaignUser> playerList = campaignPlayerRepository.findAllByKeyValue("campaignId", campaignId);
 		// Populate the list of all campaign user ids
 		List<String> campaignUserIdList = new ArrayList<>();
 		campaignUserIdList.add(campaignOwnerId);
@@ -108,9 +108,9 @@ public class ImportExportService {
 			}
 		}
 		if (playerList != null) {
-			for (CampaignPlayer player : playerList) {
-				if (!campaignUserIdList.contains(player.getPlayerId())) {
-					campaignUserIdList.add(player.getPlayerId());
+			for (CampaignUser player : playerList) {
+				if (!campaignUserIdList.contains(player.getUserId())) {
+					campaignUserIdList.add(player.getUserId());
 				}
 			}
 		}

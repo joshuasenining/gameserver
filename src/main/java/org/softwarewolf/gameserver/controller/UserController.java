@@ -2,6 +2,7 @@ package org.softwarewolf.gameserver.controller;
 
 import javax.servlet.http.HttpSession;
 
+import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.softwarewolf.gameserver.service.CampaignService;
@@ -24,18 +25,17 @@ public class UserController {
 	@RequestMapping(value = "/selectCampaign", method = RequestMethod.GET)
 	@Secured({"USER"})
 	public String getCampaign(SelectCampaignDto selectCampaignDto) {
-		campaignService.initSelectCampaignHelper(selectCampaignDto);
+		campaignService.initSelectCampaignDto(selectCampaignDto);
 		return "/user/selectCampaign";
 	}
 	
 	@RequestMapping(value = "/selectCampaign", method = RequestMethod.POST)
 	@Secured({"USER"})
 	public String postCampaign(HttpSession session, final SelectCampaignDto selectCampaignDto) {
-		selectCampaignDto.setAllCampaigns(campaignService.getAllCampaigns());
 		String campaignId = selectCampaignDto.getSelectedCampaignId(); 
-		String campaignName = selectCampaignDto.getSelectedCampaignName();
+		Campaign selectedCampaign = campaignService.findOne(campaignId);
 		session.setAttribute("campaignId", campaignId);
-		session.setAttribute("campaignName", campaignName);
+		session.setAttribute("campaignName", selectedCampaign.getName());
 		
 		return "/user/menu";
 	}

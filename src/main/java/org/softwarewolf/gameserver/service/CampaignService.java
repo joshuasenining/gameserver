@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.softwarewolf.gameserver.domain.Campaign;
+import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.CampaignDto;
 import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
 import org.softwarewolf.gameserver.domain.dto.UserListItem;
-import org.softwarewolf.gameserver.repository.CampaignPlayerRepository;
+import org.softwarewolf.gameserver.repository.CampaignUserRepository;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class CampaignService {
 	CampaignRepository campaignRepository;
 	
 	@Autowired
-	CampaignPlayerRepository campaignPlayerRepository;
+	CampaignUserRepository campaignUserRepository;
 	
 	public List<UserListItem> getGamemasters() {
 		List<UserListItem> gamemasters = new ArrayList<>();
@@ -62,17 +63,24 @@ public class CampaignService {
 		return allCampaigns;
 	}
 	
-	public void initSelectCampaignHelperByGM(SelectCampaignDto selectCampaignDto, String ownerId) {
-		List<Campaign> campaigns = campaignRepository.findAllByKeyValue("ownerId", ownerId);
-		selectCampaignDto.setAllCampaigns(campaigns);
-	}
+	public void initSelectCampaignDto(SelectCampaignDto selectCampaignDto) {
+		String userId = userService.getCurrentUserId();
+		List<Campaign> allCampaigns = campaignRepository.findAll();
+		List<CampaignUser> campaignUserList = campaignUserRepository.findAllByUserId(userId);
 
-	public void initSelectCampaignHelperByPlayer(SelectCampaignDto selectCampaignDto, String playerId) {
-		selectCampaignDto.setAllCampaigns(campaignRepository.findAll());
-	}
-
-	public void initSelectCampaignHelper(SelectCampaignDto selectCampaignDto) {
-		selectCampaignDto.setAllCampaigns(campaignRepository.findAll());
+		List<String> campaignIdList = new ArrayList<>();
+		for (CampaignUser player : campaignUserList) {
+			campaignIdList.add(player.getCampaignId());
+		}
+		Object[] campaignArray = new Object[campaignIdList.size()];
+		campaignArray = campaignIdList.toArray(campaignArray);
+		List<Campaign> inCampaignList = campaignRepository.findAllByKeyValues("id", campaignArray);
+		
+		List<Campaign> inaccessableCampaigns = new ArrayList<Campaign>(allCampaigns);
+		inaccessableCampaigns.removeAll(inCampaignList);
+		
+		selectCampaignDto.setAccessableCampaigns(inCampaignList);
+		selectCampaignDto.setInaccessableCampaigns(inaccessableCampaigns);
 	}
 	
 	public List<Campaign> getAllCampaignsByGM(String ownerId) {
@@ -85,6 +93,10 @@ public class CampaignService {
 			throw new IllegalArgumentException("No campaign exists for id " + campaignId);
 		}
 		return campaign.getName();
+	}
+	
+	public Campaign findOne(String id) {
+		return campaignRepository.findOne(id);
 	}
 
 }
