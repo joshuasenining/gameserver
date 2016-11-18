@@ -3,6 +3,7 @@ package org.softwarewolf.gameserver.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.User;
@@ -44,15 +45,14 @@ public class CampaignService {
 		return gamemasters;
 	}
 	
-	public void initCampaignDto(CampaignDto campaignCreator, User user) {
-		campaignCreator.setGamemasters(getGamemasters());
-		campaignCreator.setOwnerId(user.getId());
-		campaignCreator.setOwnerName(user.getUsername());
-		campaignCreator.setCampaign(new Campaign(user.getId()));
+	public void initCampaignDto(CampaignDto campaignDto, String ownerId) {
+		campaignDto.setGamemasters(null);
+		campaignDto.setOwnerId(ownerId);
+		campaignDto.setCampaign(new Campaign(ownerId));
 	}
 	
-	public void saveCampaign(Campaign campaign) {
-		campaignRepository.save(campaign);
+	public Campaign saveCampaign(Campaign campaign) {
+		return campaignRepository.save(campaign);
 	}
 	
 	public List<Campaign> getAllCampaigns() {
@@ -63,23 +63,38 @@ public class CampaignService {
 		return allCampaigns;
 	}
 	
-	public void initSelectCampaignDto(SelectCampaignDto selectCampaignDto) {
+	public void initSelectCampaignDto(SelectCampaignDto selectCampaignDto, String asType) {
 		String userId = userService.getCurrentUserId();
 		List<Campaign> allCampaigns = campaignRepository.findAll();
-		List<CampaignUser> campaignUserList = campaignUserRepository.findAllByUserId(userId);
+		List<CampaignUser> inCampaignList = new ArrayList<>();
+		if (ControllerUtils.GM_TYPE.equals(asType)) {
+			List<CampaignUser> ownerList = campaignUserRepository.findAllByUserIdAndRole(userId, "ROLE_OWNER");
+			if (!ownerList.isEmpty()) {
+				inCampaignList.addAll(ownerList);
+			}
+			List<CampaignUser> gmList = campaignUserRepository.findAllByUserIdAndRole(userId, "ROLE_GM");
+			if (!gmList.isEmpty()) {
+				inCampaignList.addAll(gmList);
+			}
+		} else if (ControllerUtils.PLAYER_TYPE.equals(asType)) {
+			List<CampaignUser> playerList = campaignUserRepository.findAllByUserIdAndRole(userId, "ROLE_USER");
+			if (!playerList.isEmpty()) {
+				inCampaignList.addAll(playerList);
+			}
+		}
 
 		List<String> campaignIdList = new ArrayList<>();
-		for (CampaignUser player : campaignUserList) {
+		for (CampaignUser player : inCampaignList) {
 			campaignIdList.add(player.getCampaignId());
 		}
 		Object[] campaignArray = new Object[campaignIdList.size()];
 		campaignArray = campaignIdList.toArray(campaignArray);
-		List<Campaign> inCampaignList = campaignRepository.findAllByKeyValues("id", campaignArray);
+		List<Campaign> campaignList = campaignRepository.findAllByKeyValues("id", campaignArray);
 		
 		List<Campaign> inaccessableCampaigns = new ArrayList<Campaign>(allCampaigns);
-		inaccessableCampaigns.removeAll(inCampaignList);
+		inaccessableCampaigns.removeAll(campaignList);
 		
-		selectCampaignDto.setAccessableCampaigns(inCampaignList);
+		selectCampaignDto.setAccessableCampaigns(campaignList);
 		selectCampaignDto.setInaccessableCampaigns(inaccessableCampaigns);
 	}
 	
@@ -97,6 +112,17 @@ public class CampaignService {
 	
 	public Campaign findOne(String id) {
 		return campaignRepository.findOne(id);
+	}
+	
+	public void createCampaign(CampaignDto campaignDto) {
+		Campaign campaign = campaignDto.getCampaign();
+		String ownerId = campaignDto.getOwnerId();
+		campaign.setOwnerId(ownerId);
+		campaign = saveCampaign(campaign);
+		CampaignUser ownerCu = new CampaignUser(campaign.getId(), "ROLE_OWNER", ownerId);
+		campaignUserRepository.save(ownerCu);
+		CampaignUser gmCu = new CampaignUser(campaign.getId(), "ROLE_GAMEMASTER", ownerId);
+		campaignUserRepository.save(gmCu);		
 	}
 
 }

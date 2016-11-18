@@ -25,6 +25,7 @@ public class DataSeeder {
 	private static final String ROLE_USER = "ROLE_USER";
 	private static final String ROLE_ADMIN = "ROLE_ADMIN";
 	private static final String ROLE_GAMEMASTER = "ROLE_GAMEMASTER";
+	private static final String ROLE_OWNER = "ROLE_OWNER";
 	private static final String ADMIN = "admin";
 	private static final String USER = "user";
 	private static final String GM = "gm";
@@ -73,7 +74,7 @@ public class DataSeeder {
 	private FolioService folioService;
 	
 	@Autowired
-	private CampaignUserRepository campaignUserRepository;
+	private CampaignUserRepository campaignUserRepo;
 	
 	public void cleanRepos() {
 		Campaign sAndSCampaign = campaignRepo.findOneByName(SWORD_AND_SORCERY);
@@ -97,9 +98,16 @@ public class DataSeeder {
 		roleRepo.deleteByRole(ROLE_ADMIN);
 		roleRepo.deleteByRole(ROLE_GAMEMASTER);
 		roleRepo.deleteByRole(ROLE_USER);
-		userRepo.deleteByUsername(ADMIN);
-		userRepo.deleteByUsername(GM);
-		userRepo.deleteByUsername(USER);
+		User adminUser = userRepo.findOneByUsername(ADMIN);
+		campaignUserRepo.deleteByUserId(adminUser.getId());
+		userRepo.delete(adminUser);
+		User gmUser = userRepo.findOneByUsername(GM);
+		campaignUserRepo.deleteByUserId(gmUser.getId());
+		userRepo.delete(gmUser);
+		User userUser = userRepo.findOneByUsername(USER);
+		campaignUserRepo.deleteByUserId(userUser.getId());
+		userRepo.delete(userUser);
+
 	}
 	
 	public void seedData() {
@@ -185,6 +193,11 @@ public class DataSeeder {
 		saveCampaign(SPACE_OPERA, "Generic space opera campaign", gmId, campaignMap);
 		saveCampaign(MODERN, "Generic modern campaign", gmId, campaignMap);
 		
+		User playerUser = userMap.get(USER);
+		Campaign sAs = campaignMap.get(SWORD_AND_SORCERY);
+		CampaignUser player = new CampaignUser(sAs.getId(), "ROLE_USER", playerUser.getId());
+		campaignUserRepo.save(player);
+		
 		return campaignMap;
 	}
 	
@@ -197,8 +210,10 @@ public class DataSeeder {
 			campaign.setOwnerId(ownerId);
 			campaign = campaignRepo.save(campaign);
 			campaignMap.put(name, campaign);
-			CampaignUser cp = new CampaignUser(campaign.getId(), ROLE_GAMEMASTER, ownerId);
-			campaignUserRepository.save(cp);
+			CampaignUser ownerCu = new CampaignUser(campaign.getId(), ROLE_OWNER, ownerId);
+			campaignUserRepo.save(ownerCu);
+			CampaignUser gmCu = new CampaignUser(campaign.getId(), ROLE_GAMEMASTER, ownerId);
+			campaignUserRepo.save(gmCu);
 		}
 	}
 	

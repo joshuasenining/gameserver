@@ -8,8 +8,8 @@ import org.softwarewolf.gameserver.domain.Campaign;
 
 public class CampaignDto {
 	public List<UserListItem> gamemasters;
+	public List<UserListItem> players;
 	public String ownerId;
-	public String ownerName;
 	public Campaign campaign;
 	
 	public List<UserListItem> getGamemasters() {
@@ -37,9 +37,40 @@ public class CampaignDto {
 		gamemasters.add(newItem);
 	}
 	
-	public void removeGamemaster(String gamemasterUserId) {
+	public void removeGamemaste(String gamemasterUserId) {
 		if (gamemasters != null) {
 			gamemasters.remove(gamemasterUserId);
+		}
+	}
+	
+	public List<UserListItem> getPlayers() {
+		return players;
+	}
+	
+	public void setPlayers(List<UserListItem> players) {
+		this.players = players;
+	}
+	
+	public void addPlayer(Map<String, String> player) {
+		if (players == null) {
+			players = new ArrayList<UserListItem>();
+		}
+		String key = (String)player.keySet().toArray()[0];
+		String value = player.get(key);
+		for (UserListItem item : players) {
+			if (item.id.equals(key)) {
+				item.displayName = value;
+				return;
+			}
+		}
+
+		UserListItem newItem = new UserListItem(key, value);
+		players.add(newItem);
+	}
+	
+	public void removePlayer(String playerUserId) {
+		if (players != null) {
+			players.remove(playerUserId);
 		}
 	}
 	
@@ -49,14 +80,6 @@ public class CampaignDto {
 	
 	public void setOwnerId(String ownerId) {
 		this.ownerId = ownerId;
-	}
-	
-	public String getOwnerName() {
-		return ownerName;
-	}
-	
-	public void setOwnerName(String ownerName) {
-		this.ownerName = ownerName;
 	}
 	
 	public Campaign getCampaign() {

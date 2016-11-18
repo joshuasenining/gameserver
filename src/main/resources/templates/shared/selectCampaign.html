@@ -34,6 +34,7 @@
 				<label class="input-margin" th:text="#{selectCampaign.campaigns}">Camps</label>
 			</div>
 		</div>
+
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-4">			
@@ -45,6 +46,28 @@
 				</ul>			
 			</div>
 		</div>
+		
+		<div sec:authorize="hasRole('ROLE_USER')">
+			<div class="row">		        	
+				<div class="col-md-1"></div>
+				<div class="col-md-2">
+					<label class="input-margin" th:text="#{selectCampaign.requestAccess}">Camps</label>
+				</div>
+			</div>
+		
+			<div class="row">
+				<div class="col-md-1"></div>
+				<div class="col-md-4">			
+					<ul>
+					  <li class="no-bullets" th:each="campaign : *{inaccessableCampaigns}">
+					    <input type="radio" th:field="*{joinRequestCampaignId}" th:value="${campaign.id}" th:name="${campaign.name}"/>
+					    <label th:for="${#ids.prev('selectedCampaignId')}" th:text="${campaign.name}">Campaign Name</label>
+					  </li>
+					</ul>			
+				</div>
+			</div>
+		</div>
+		
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">

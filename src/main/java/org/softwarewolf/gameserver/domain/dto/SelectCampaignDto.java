@@ -8,6 +8,7 @@ public class SelectCampaignDto {
 	public List<Campaign> accessableCampaigns;
 	public List<Campaign> inaccessableCampaigns;
 	public String selectedCampaignId;
+	public String joinRequestCampaignId;
 	
 	public List<Campaign> getAccessableCampaigns() {
 		return accessableCampaigns;
@@ -31,6 +32,14 @@ public class SelectCampaignDto {
 	
 	public void setSelectedCampaignId(String selectedCampaignId) {
 		this.selectedCampaignId = selectedCampaignId;
+	}
+	
+	public String getJoinRequestCampaignId() {
+		return joinRequestCampaignId;
+	}
+	
+	public void setJoinRequestCampaignId(String joinRequestCampaignId) {
+		this.joinRequestCampaignId = joinRequestCampaignId;
 	}
 	
 	public String getSelectedCampaignName() {

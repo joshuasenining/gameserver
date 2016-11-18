@@ -2,7 +2,7 @@ package org.softwarewolf.gameserver.controller.gamemaster;
 
 import javax.servlet.http.HttpSession;
 
-import org.softwarewolf.gameserver.controller.helper.ControllerHelper;
+import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
 import org.softwarewolf.gameserver.controller.helper.FeFeedback;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.softwarewolf.gameserver.service.CampaignService;
@@ -33,12 +33,11 @@ public class GamemasterController {
 	@RequestMapping(value = "/campaignHome", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
 	public String campaignHome(HttpSession session, FeFeedback feFeedback) {
-		String campaignId = (String)session.getAttribute(ControllerHelper.CAMPAIGN_ID);
+		String campaignId = (String)session.getAttribute(ControllerUtils.CAMPAIGN_ID);
 		if (campaignId == null) {
-			return ControllerHelper.USER_MENU;
+			return ControllerUtils.USER_MENU;
 		}
 
-		return ControllerHelper.CAMPAIGN_HOME;
+		return ControllerUtils.CAMPAIGN_HOME;
 	}
-
 }

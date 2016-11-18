@@ -2,7 +2,8 @@ package org.softwarewolf.gameserver.controller.gamemaster;
 
 import javax.servlet.http.HttpSession;
 
-import org.softwarewolf.gameserver.controller.helper.ControllerHelper;
+import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
+import org.softwarewolf.gameserver.controller.helper.FeFeedback;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.CampaignDto;
@@ -15,7 +16,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @RequestMapping("/gamemaster")
 public class CampaignController {
+	
 	@Autowired
 	protected UserRepository userRepository;
 	
@@ -41,13 +42,9 @@ public class CampaignController {
 	@RequestMapping(value = "/selectCampaign", method = RequestMethod.GET)
 	@Secured({"USER"})
 	public String selectCampaign(final SelectCampaignDto selectCampaignDto) {
-/*		UserDetails userDetails =
-				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		String username = userDetails.getUsername();
-		String userId = userService.getUserIdFromUsername(username);*/
-		campaignService.initSelectCampaignDto(selectCampaignDto);
+		campaignService.initSelectCampaignDto(selectCampaignDto, ControllerUtils.GM_TYPE);
 
-		return "/user/selectCampaign";
+		return ControllerUtils.SELECT_CAMPAIGN;
 	}
 	
 	@RequestMapping(value = "/selectCampaign", method = RequestMethod.POST)
@@ -55,10 +52,10 @@ public class CampaignController {
 	public String selectCampaign(HttpSession session, final SelectCampaignDto selectCampaignDto) {
 		String campaignId = selectCampaignDto.getSelectedCampaignId();
 		Campaign selectedCampaign = campaignService.findOne(campaignId);
-		session.setAttribute(ControllerHelper.CAMPAIGN_ID, campaignId);
+		session.setAttribute(ControllerUtils.CAMPAIGN_ID, campaignId);
 		session.setAttribute("campaignName", selectedCampaign.getName());
 		
-		return ControllerHelper.USER_MENU;
+		return ControllerUtils.USER_MENU;
 	}
 	
 	@RequestMapping(value = "/createCampaign", method = RequestMethod.GET)
@@ -69,19 +66,21 @@ public class CampaignController {
 		String userName = userDetails.getUsername();
 		User user = userRepository.findOneByUsername(userName);
 		
-		campaignService.initCampaignDto(campaignDto, user);
+		campaignService.initCampaignDto(campaignDto, user.getId());
 		
-		return "/gamemaster/createCampaign";		
+		return ControllerUtils.CREATE_CAMPAIGN;
 	}
 	
 	@RequestMapping(value = "/createCampaign", method = RequestMethod.POST)
-	@Secured({"GAMEMASTER"})
-	public String postCampaign(@ModelAttribute CampaignDto campaignDto, BindingResult bindingResult) {
+	@Secured({"GAMEMASTER", "ADMIN"})
+	public String postCampaign(@ModelAttribute CampaignDto campaignDto, FeFeedback feFeedback) {
 		Campaign campaign = campaignDto.getCampaign();
 		String ownerId = campaignDto.getOwnerId();
 		campaign.setOwnerId(ownerId);
 		campaignService.saveCampaign(campaign);
+		campaignService.initCampaignDto(campaignDto, ownerId);
+		feFeedback.setInfo("Campaign " + campaign.getName() + " created.");
 		
-		return "/gamemaster/campaignCreated";
+		return ControllerUtils.CREATE_CAMPAIGN;
 	}
 }

@@ -17,6 +17,8 @@ public interface CampaignUserRepository extends MongoRepository<CampaignUser, St
 	
 	List<CampaignUser> findAllByUserId(String userId);
 	
+	List<CampaignUser> findAllByUserIdAndRole(String userId, String role);
+	
     /// Find by key value pair
     @Query("{?0 : ?1}")
     List<CampaignUser> findAllByKeyValue(String key, Object value);
@@ -24,4 +26,10 @@ public interface CampaignUserRepository extends MongoRepository<CampaignUser, St
     /// Find by key and array of values
     @Query("{?0 : {$in : ?1}}")
     List<CampaignUser> findAllByKeyValues(String key, Object[] value);
+    
+    List<CampaignUser> deleteByCampaignId(String campaignId);
+    
+    List<CampaignUser> deleteByCampaignIdAndUserId(String campaignId, String userId);
+    
+    List<CampaignUser> deleteByUserId(String userId);
 }

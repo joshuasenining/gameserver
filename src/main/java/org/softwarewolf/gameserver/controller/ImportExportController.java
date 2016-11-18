@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.softwarewolf.gameserver.controller.helper.ControllerHelper;
+import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
 import org.softwarewolf.gameserver.controller.helper.FeFeedback;
 import org.softwarewolf.gameserver.controller.helper.ImportExportHelper;
 import org.softwarewolf.gameserver.service.ImportExportService;
@@ -40,10 +40,10 @@ public class ImportExportController {
 
 		boolean isImport = false;
 		try {
-			importExportService.initImportExportHelper(importExportHelper, isImport, ControllerHelper.EXPORT_CAMPAIGN);
+			importExportService.initImportExportHelper(importExportHelper, isImport, ControllerUtils.EXPORT_CAMPAIGN);
 		} catch (IOException e) {
 			feFeedback.setError(e.getMessage());
-			return ControllerHelper.EXPORT_CAMPAIGN;
+			return ControllerUtils.EXPORT_CAMPAIGN;
 		}
 		feFeedback.setUserStatus("You are about to backup a campaign");
 
@@ -63,12 +63,12 @@ public class ImportExportController {
 			feFeedback.setUserStatus("Success");
 		} catch (IOException e) {
 			feFeedback.setError(e.getMessage());
-			return ControllerHelper.EXPORT_CAMPAIGN;
+			return ControllerUtils.EXPORT_CAMPAIGN;
 		}
 		
 		boolean isImport = false;
 		try {
-			importExportService.initImportExportHelper(importExportHelper, isImport, ControllerHelper.EXPORT_CAMPAIGN);
+			importExportService.initImportExportHelper(importExportHelper, isImport, ControllerUtils.EXPORT_CAMPAIGN);
 		} catch (IOException e) {
 			feFeedback.setError(e.getMessage());
 		}
@@ -80,10 +80,10 @@ public class ImportExportController {
 	public String importCampaign(HttpSession session, final ImportExportHelper importExportHelper, final FeFeedback feFeedback) {
 		boolean isImport = true;
 		try {
-			importExportService.initImportExportHelper(importExportHelper, isImport, ControllerHelper.IMPORT_CAMPAIGN);
+			importExportService.initImportExportHelper(importExportHelper, isImport, ControllerUtils.IMPORT_CAMPAIGN);
 		} catch (Exception e) {
 			feFeedback.setError(e.getMessage());
-			return ControllerHelper.IMPORT_CAMPAIGN;
+			return ControllerUtils.IMPORT_CAMPAIGN;
 		}
 
 		feFeedback.setUserStatus("Select a campaign to import");
@@ -120,15 +120,15 @@ public class ImportExportController {
 		  			String fileName = importExportHelper.getImportFilename();
 			        feFeedback.setUserStatus("Select a campaign file to import");
 			        feFeedback.setInfo("You have successfully imported " + fileName);
-			        return ControllerHelper.IMPORT_CAMPAIGN;
+			        return ControllerUtils.IMPORT_CAMPAIGN;
 		  		} catch (Exception e) {
 		  			System.out.println("FAILURE >>>>> File upload failed.");
 			        e.printStackTrace();
-			        return ControllerHelper.IMPORT_CAMPAIGN;
+			        return ControllerUtils.IMPORT_CAMPAIGN;
 		  		}
 		    } else {
 		    	System.out.println("FAILURE >>>>> Upload file is empty");
-			    return ControllerHelper.IMPORT_CAMPAIGN;
+			    return ControllerUtils.IMPORT_CAMPAIGN;
 		    }
 	  }
 
