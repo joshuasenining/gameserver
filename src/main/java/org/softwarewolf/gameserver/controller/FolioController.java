@@ -15,7 +15,6 @@ import org.softwarewolf.gameserver.controller.helper.FeFeedback;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.dto.FolioDto;
 import org.softwarewolf.gameserver.domain.dto.SelectFolioDto;
-import org.softwarewolf.gameserver.domain.dto.ViewFolioDto;
 import org.softwarewolf.gameserver.service.FolioService;
 import org.softwarewolf.gameserver.service.SimpleTagService;
 
@@ -40,7 +39,7 @@ public class FolioController {
 		}		
 
 		Folio nullFolio = null;
-		folioService.initFolioDto(folioDto, nullFolio, campaignId);
+		folioService.initFolioDto(folioDto, nullFolio, campaignId, FolioService.EDIT);
 		folioDto.setForwardingUrl(ControllerUtils.EDIT_FOLIO);
 		feFeedback.setUserStatus(NEW_FOLIO);
 		return ControllerUtils.EDIT_FOLIO;
@@ -55,7 +54,7 @@ public class FolioController {
 			return ControllerUtils.USER_MENU;
 		}		
 
-		folioService.initFolioDto(folioDto, folioId, campaignId);
+		folioService.initFolioDto(folioDto, folioId, campaignId, FolioService.EDIT);
 		folioDto.setForwardingUrl(ControllerUtils.EDIT_FOLIO);
 		feFeedback.setUserStatus(EDITING_FOLIO + "'" + folioDto.getFolio().getTitle() + "'");
 		return ControllerUtils.EDIT_FOLIO;
@@ -73,11 +72,11 @@ public class FolioController {
 		Folio folio = null;
 		try {
 			folio = folioService.saveFolio(folioDto);
-			folioService.initFolioDto(folioDto, folio, campaignId);
+			folioService.initFolioDto(folioDto, folio, campaignId, FolioService.EDIT);
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
-			folioService.initFolioDto(folioDto, folio, campaignId);
+			folioService.initFolioDto(folioDto, folio, campaignId, FolioService.EDIT);
 			feFeedback.setUserStatus("You are editing folio " + folio.getTitle());
 			return ControllerUtils.EDIT_FOLIO;
 		}
@@ -89,23 +88,18 @@ public class FolioController {
 	
 	@RequestMapping(value = "/selectFolio", method = RequestMethod.GET)
 	@Secured({"USER", "GAMEMASTER"})
-	public String selectFolio(HttpSession session, SelectFolioDto selectFolioDto,
-			@RequestParam String from, final FeFeedback feFeedback) {
+	public String selectViewFolio(HttpSession session, @RequestParam("operation") String operation,
+			SelectFolioDto selectFolioDto, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerUtils.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerUtils.USER_MENU;
 		}		
 		
-		folioService.initSelectFolioCreator(campaignId, selectFolioDto);
-		// Need to pick the correct forwarding url, this is just generic
-		if ("edit".equals(from)) {
-			selectFolioDto.setForwardingUrl(ControllerUtils.EDIT_FOLIO);
-		} else if ("view".equals(from)) {
-			selectFolioDto.setForwardingUrl(ControllerUtils.VIEW_FOLIO);
-		}
+		folioService.initSelectFolioDto(campaignId, selectFolioDto, operation);
+
 		return ControllerUtils.SELECT_FOLIO;
 	}
-
+	
 	@RequestMapping(value = "/folio/addTagToSearch", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER"})
 	public String addTagToSearch(HttpSession session, SelectFolioDto selectFolioDto, final FeFeedback feFeedback) {
@@ -114,7 +108,7 @@ public class FolioController {
 			return ControllerUtils.USER_MENU;
 		}		
 		
-		folioService.initSelectFolioCreator(campaignId, selectFolioDto); 
+		folioService.initSelectFolioDto(campaignId, selectFolioDto, selectFolioDto.getOperationType()); 
 		return ControllerUtils.SELECT_FOLIO;
 	}
 
@@ -126,34 +120,35 @@ public class FolioController {
 			return ControllerUtils.USER_MENU;
 		}		
 		
-		folioService.initSelectFolioCreator(campaignId, selectFolioDto); 
+		folioService.initSelectFolioDto(campaignId, selectFolioDto, selectFolioDto.getOperationType()); 
 		return ControllerUtils.SELECT_FOLIO;
 	}
 
 	@RequestMapping(value = "/viewFolio", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
-	public String viewFolio(HttpSession session, ViewFolioDto viewFolioDto, final FeFeedback feFeedback) {
+	public String viewFolio(HttpSession session, FolioDto folioDto, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerUtils.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerUtils.USER_MENU;
 		}		
 		
-		folioService.initViewFolioDto(viewFolioDto, null);
-		viewFolioDto.setForwardingUrl(ControllerUtils.VIEW_FOLIO);
+		String noFolio = null;
+		folioService.initFolioDto(folioDto, noFolio, campaignId, FolioService.VIEW);
+		folioDto.setForwardingUrl(ControllerUtils.VIEW_FOLIO);
 		return ControllerUtils.VIEW_FOLIO;
 	}
 
 	@RequestMapping(value = "/viewFolio/{folioId}", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
-	public String viewFolioWithId(HttpSession session, ViewFolioDto viewFolioDto, 
+	public String viewFolioWithId(HttpSession session, FolioDto folioDto, 
 			@PathVariable String folioId, final FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerUtils.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerUtils.USER_MENU;
 		}		
 		
-		folioService.initViewFolioDto(viewFolioDto, folioId);
-		viewFolioDto.setForwardingUrl(ControllerUtils.VIEW_FOLIO);
+		folioService.initFolioDto(folioDto, folioId, campaignId, FolioService.VIEW);
+		folioDto.setForwardingUrl(ControllerUtils.VIEW_FOLIO);
 		return ControllerUtils.VIEW_FOLIO;
 	}
 
@@ -167,7 +162,7 @@ public class FolioController {
 		String addTagName = folioDto.getAddTag();
 		simpleTagService.save(addTagName, campaignId);
 		
-		folioService.initFolioDto(folioDto, folioDto.getFolio().getId(), campaignId);
+		folioService.initFolioDto(folioDto, folioDto.getFolio().getId(), campaignId, folioDto.getOperationType());
 		String info = null;
 		if (folioDto.getFolio().getTitle() == null || folioDto.getFolio().getTitle() == null) { 
 			info = NEW_FOLIO;

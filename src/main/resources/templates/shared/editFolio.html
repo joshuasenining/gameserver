@@ -83,17 +83,9 @@
 	</script>   
 
 	<script th:inline="javascript">
-		function getFolio(folioId) {
-			var action = $("#getFolioForm").attr("action");
-			action += folioId;
-			document.getElementById("getFolioForm").setAttribute("action", action);
-			document.getElementById("getFolioForm").submit();
-		}
-		
 		function selectFolio() {
-			window.location = "/shared/selectFolio?from=edit";
+			window.location = "/shared/selectFolio?operation=edit";
 		}
-		
 	</script>
 	
 	<style>
@@ -118,9 +110,14 @@
             	   }
                }
             });
-            $( "#createTag" ).click(function() {
+            
+            $("#createTag").click(function() {
                $( "#addTagDialog" ).dialog( "open" );
             });
+            
+            $("#addViewers").click(function() {
+            	alert("in add viewers handler");
+            })
          });
       </script>
 </head>
@@ -151,7 +148,6 @@
 	</div>
  
 	<form id="addTagForm" action="/shared/addTagToFolio" method="get"></form>
-	<form id="getFolioForm" action="/shared/getFolio/" method="get"></form>
 	<form id="removeTagForm" action="/shared/removeTagFromFolio" method="get"></form>
 	<form id="editFolioForm" th:object="${folioDto}" action="#" th:action="@{/shared/editFolio}" method="post">
 		<input type="hidden" id="campaignId" th:field="*{folio.campaignId}"></input>
@@ -160,6 +156,7 @@
 		<input type="hidden" id="addTag" th:field="*{addTag}"></input>
 		<input type="hidden" id="removeTag" th:field="*{removeTag}"></input>
 		<input type="hidden" id="folioId" th:field="*{folio.id}"></input>
+		<input type="hidden" id="operationType" th:field="*{operationType}"></input>
 		<input type="hidden" id="forwardingUrl" th:field="*{forwardingUrl}"></input>
 
 		<div class="row">
@@ -249,6 +246,17 @@
 			</div>
 		</div>
 	
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="input-margin" th:text="#{editFolio.addViewers}">Add</label>
+			</div>
+			<div class="col-md-8">
+				<input type="button" id="addViewers" class="input-margin" th:value="#{editFolio.addViewers}"></input>
+			</div>
+		</div>
+						
+		<br></br>
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-7">

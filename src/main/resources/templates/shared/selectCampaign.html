@@ -16,6 +16,27 @@
     <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
 	
 	<title th:text="#{menu.item.selectCampaign}">Title</title>
+	
+	<script th:inline="javascript">
+	$(document).ready(function() {
+		$( window ).load(function() {
+			$('.cb').change(function() {
+				var newList = "";
+				$('.cb').each(function() {
+					if (this.checked) {
+						if (newList != "") {
+							newList = this.name + "," + newList;
+						} else {
+							newList = this.name;
+						}
+					}
+				});
+				alert(newList);
+			})
+
+		});		
+	});	
+	</script>
 </head>
 <body>
 	<div th:include="/public/navbar :: navbar"></div>
@@ -60,7 +81,7 @@
 				<div class="col-md-4">			
 					<ul>
 					  <li class="no-bullets" th:each="campaign : *{inaccessableCampaigns}">
-					    <input type="radio" th:field="*{joinRequestCampaignId}" th:value="${campaign.id}" th:name="${campaign.name}"/>
+					    <input type="checkbox" class="cb" th:value="${campaign.id}" th:name="${campaign.name}"></input>
 					    <label th:for="${#ids.prev('selectedCampaignId')}" th:text="${campaign.name}">Campaign Name</label>
 					  </li>
 					</ul>			

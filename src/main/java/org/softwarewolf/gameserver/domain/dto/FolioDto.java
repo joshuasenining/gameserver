@@ -11,6 +11,8 @@ public class FolioDto {
 	private String addTag;
 	private String removeTag;
 	private List<FolioDescriptor> folioDescriptorList;
+	private String viewTagList;
+	private String operationType;
 	private String forwardingUrl;
 	
 	public FolioDto() {
@@ -58,7 +60,22 @@ public class FolioDto {
 	public void setFolioDescriptorList(List<FolioDescriptor> folioDescriptorList) {
 		this.folioDescriptorList = folioDescriptorList;
 	}
+	
+	public String getViewTagList() {
+		return viewTagList;
+	}
+	
+	public void setViewTagList(String viewTagList) {
+		this.viewTagList = viewTagList;
+	}
 
+	public String getOperationType() {
+		return operationType;
+	}
+	public void setOperationType(String operationType) {
+		this.operationType = operationType;
+	}
+	
 	public String getForwardingUrl() {
 		return forwardingUrl;
 	}

@@ -16,6 +16,7 @@ public class SelectFolioDto {
 	private String addTagName;
 	private String removeTagName;
 	private String folioDescriptorList;
+	private String operationType;
 	private String forwardingUrl;
 	
 	public SelectFolioDto() {
@@ -90,5 +91,12 @@ public class SelectFolioDto {
 	public void setCampaignId(String campaignId) {
 		this.campaignId = campaignId;
 	}
+	
+	public String getOperationType() {
+		return operationType;
+	}
+	public void setOperationType(String operationType) {
+		this.operationType = operationType;
+	}	
 }
 

@@ -1,6 +1,7 @@
 package org.softwarewolf.gameserver.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +108,6 @@ public class DataSeeder {
 		User userUser = userRepo.findOneByUsername(USER);
 		campaignUserRepo.deleteByUserId(userUser.getId());
 		userRepo.delete(userUser);
-
 	}
 	
 	public void seedData() {
@@ -268,14 +268,19 @@ public class DataSeeder {
 	}
 		
 	private void seedFolios(Map<String, Campaign> campaignMap, Map<String, Map<String, SimpleTag>> tagMap) {
+		User gm = userRepo.findOneByUsername(GM);
+		User user = userRepo.findOneByUsername(USER);
+		
 		String sAndSCampaignId = campaignMap.get(SWORD_AND_SORCERY).getId();
 		Folio goldenRoadFolio = new Folio();
 		goldenRoadFolio.setCampaignId(sAndSCampaignId);
+		goldenRoadFolio.setOwnerId(gm.getId());
 		goldenRoadFolio.setTitle("Golden Road Trading League Intro");
 		goldenRoadFolio.setContent("<H1>The Golden Road Trading League</H1><p>This is a big merchant guild</p>");		
 		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(MERCHANTS_GUILD));
 		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(GOLDEN_ROAD));
 		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
+		goldenRoadFolio.addAllowedUser(user.getId());
 		try {
 			folioService.save(goldenRoadFolio);
 		} catch (Exception e) {
@@ -284,10 +289,12 @@ public class DataSeeder {
 		
 		Folio kindomOfMidlandFolio = new Folio();
 		kindomOfMidlandFolio.setCampaignId(sAndSCampaignId);
+		kindomOfMidlandFolio.setOwnerId(gm.getId());
 		kindomOfMidlandFolio.setTitle("The Kingdom of Midland Geography");
 		kindomOfMidlandFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a big kingdom that stretches from east to west.</p>");		
 		kindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(LOCATION));
 		kindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
+		kindomOfMidlandFolio.addAllowedUser(user.getId());
 		try {
 			folioService.save(kindomOfMidlandFolio);
 		} catch (Exception e) {
@@ -296,6 +303,7 @@ public class DataSeeder {
 		
 		Folio kindomOfMidlandOrgFolio = new Folio();
 		kindomOfMidlandOrgFolio.setCampaignId(sAndSCampaignId);
+		kindomOfMidlandOrgFolio.setOwnerId(gm.getId());
 		kindomOfMidlandOrgFolio.setTitle("The Kingdom of Midland");
 		kindomOfMidlandOrgFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a feudal society.</p>");		
 		kindomOfMidlandOrgFolio.addTag(tagMap.get(sAndSCampaignId).get(ORGANIZATION));
@@ -308,6 +316,7 @@ public class DataSeeder {
 
 		Folio magicCountyFolio = new Folio();
 		magicCountyFolio.setCampaignId(sAndSCampaignId);
+		magicCountyFolio.setOwnerId(gm.getId());
 		magicCountyFolio.setTitle("Magic County");
 		magicCountyFolio.setContent("<H1>A magic county in the Kingdom of Midland</H1><p>This is a county in the Kingdom of Midland.</p>");		
 		magicCountyFolio.addTag(tagMap.get(sAndSCampaignId).get(ORGANIZATION));
@@ -321,6 +330,7 @@ public class DataSeeder {
 
 		Folio oakdaleFolio = new Folio();
 		oakdaleFolio.setCampaignId(sAndSCampaignId);
+		oakdaleFolio.setOwnerId(gm.getId());
 		oakdaleFolio.setTitle("The Town of Oakdale");
 		oakdaleFolio.setContent("<H1>The Town of Oakdale</H1><p>This is a town in the Kindom of Midland.</p>");		
 		oakdaleFolio.addTag(tagMap.get(sAndSCampaignId).get(OAKDALE));
@@ -335,6 +345,7 @@ public class DataSeeder {
 	
 		Folio johnDarteFolio = new Folio();
 		johnDarteFolio.setCampaignId(sAndSCampaignId);
+		johnDarteFolio.setOwnerId(gm.getId());
 		johnDarteFolio.setTitle("John Darte");
 		johnDarteFolio.setContent("<H1>John Darte</H1><p>John Darte is the Mayor of Oakdale.</p>");		
 		johnDarteFolio.addTag(tagMap.get(sAndSCampaignId).get(MAYOR));
@@ -349,6 +360,7 @@ public class DataSeeder {
 		
 		Folio jimBeamFolio = new Folio();
 		jimBeamFolio.setCampaignId(sAndSCampaignId);
+		jimBeamFolio.setOwnerId(gm.getId());
 		jimBeamFolio.setTitle("Jim Beam");
 		jimBeamFolio.setContent("<H1>Jim Beam, Merchant of Oakdale</H1><p>A shopkeeper in Oakdale.</p>");		
 		jimBeamFolio.addTag(tagMap.get(sAndSCampaignId).get(MERCHANTS_GUILD));
@@ -358,6 +370,20 @@ public class DataSeeder {
 		jimBeamFolio.addTag(tagMap.get(sAndSCampaignId).get(OAKDALE));
 		try {
 			folioService.save(jimBeamFolio);
+		} catch (Exception e) {
+			// ignore;
+		}	
+
+		Folio bloodMoonFolio = new Folio();
+		bloodMoonFolio.setCampaignId(sAndSCampaignId);
+		bloodMoonFolio.setOwnerId(gm.getId());
+		bloodMoonFolio.setTitle("Blood Moon Coven");
+		bloodMoonFolio.setContent("<H1>Blood Moon Coven</H1><p>A coven of evil witches and warlocks.</p>");		
+		bloodMoonFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
+		bloodMoonFolio.addTag(tagMap.get(sAndSCampaignId).get(BLOOD_MOON));
+		bloodMoonFolio.addTag(tagMap.get(sAndSCampaignId).get(OAKDALE));
+		try {
+			folioService.save(bloodMoonFolio);
 		} catch (Exception e) {
 			// ignore;
 		}	

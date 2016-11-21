@@ -8,12 +8,12 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
 import org.softwarewolf.gameserver.domain.dto.FolioDto;
 import org.softwarewolf.gameserver.domain.dto.SelectFolioDto;
-import org.softwarewolf.gameserver.domain.dto.ViewFolioDto;
 import org.softwarewolf.gameserver.repository.FolioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,14 +25,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class FolioService implements Serializable {
-	private final String ADD = "add";
-	private final String REMOVE = "remove";
+	private final static String ADD = "add";
+	private final static String REMOVE = "remove";
+	public final static String EDIT = "edit";
+	public final static String VIEW = "view";
 	
 	@Autowired
 	private FolioRepository folioRepository;
 
 	@Autowired
 	private SimpleTagService simpleTagService;
+	
+	@Autowired
+	private UserService userService;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -41,9 +46,6 @@ public class FolioService implements Serializable {
 		ObjectMapper mapper = new ObjectMapper();
 		JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, SimpleTag.class);
 		List<SimpleTag> selectedTagList = mapper.readValue(selectedTagString, type);
-//		if ("[]".equals(selectedTagList)) {
-//			selectedTagList = null;
-//		}
 
 		Folio folio = folioDto.getFolio();
 		folio.setTags(selectedTagList);	
@@ -66,6 +68,11 @@ public class FolioService implements Serializable {
 		if (folio.getTitle() == null || folio.getTitle().isEmpty()) {
 			return folio;
 		}
+		if (folio.getOwnerId() == null || folio.getOwnerId().isEmpty()) {
+			String ownerId = userService.getCurrentUserId();
+			folio.setOwnerId(ownerId);
+			folio.addAllowedUser(ownerId);
+		}
 		return save(folio);
 	}
 	
@@ -73,6 +80,11 @@ public class FolioService implements Serializable {
 		String folioId = folio.getId();
 		if (folioId != null && folioId.isEmpty()) {
 			folio.setId(null);
+		}
+		if (folio.getOwnerId() == null) {
+			String ownerId = userService.getCurrentUserId();
+			folio.setOwnerId(ownerId);
+			folio.addAllowedUser(ownerId);
 		}
 		String errorList = validateFolio(folio);
 		if (errorList.length() > 0) {
@@ -103,18 +115,24 @@ public class FolioService implements Serializable {
 		return folioRepository.findAll();
 	}
 	
-	public void initFolioDto(FolioDto folioDto, String folioId, String campaignId) {
-		Folio folio = folioRepository.findOne(folioId);
-		initFolioDto(folioDto, folio, campaignId);
+	public void initFolioDto(FolioDto folioDto, String folioId, String campaignId, String operationType) {
+		Folio folio = null;
+		if (folioId == null) { 
+			folio = new Folio();
+		} else {
+			folio = folioRepository.findOne(folioId);
+		}
+		initFolioDto(folioDto, folio, campaignId, operationType);
 	}
 	
-	public void initFolioDto(FolioDto folioDto, Folio folio, String campaignId) {
+	public void initFolioDto(FolioDto folioDto, Folio folio, String campaignId, String operationType) {
 		if (folio == null) {
 			folio = new Folio();
 			folio.setCampaignId(campaignId);
 		}
 
 		folioDto.setFolio(folio);
+		folioDto.setOperationType(operationType);
 		List<SimpleTag> selectedTagList = folio.getTags();
 		Collections.sort(selectedTagList, new SimpleTagCompare());
 		String selectedTags = tagListToString(selectedTagList);
@@ -128,7 +146,7 @@ public class FolioService implements Serializable {
 		folioDto.setAddTag(null);
 		folioDto.setRemoveTag(null);
 		
-		folioDto.setFolioDescriptorList(getFolioDescriptorList(folio.getCampaignId(), null));
+		folioDto.setFolioDescriptorList(getFolioDescriptorList(folio.getCampaignId(), null, operationType));
 	}
 
 	private String tagListToString(List<SimpleTag> simpleTagList) {
@@ -191,12 +209,19 @@ public class FolioService implements Serializable {
 		return folio;
 	}
 
-	public List<FolioDescriptor> getFolioDescriptorList(String campaignId, List<SimpleTag> includeTags) {
+	public List<FolioDescriptor> getFolioDescriptorList(String campaignId, List<SimpleTag> includeTags, String operationType) {
 		List<FolioDescriptor> folioDescriptorList = new ArrayList<>();
 		if (includeTags == null) {
 			includeTags = new ArrayList<>();
 		}
-		List<Folio> folioList = folioRepository.findAllByCampaignId(campaignId);
+		
+		String userId = userService.getCurrentUserId();
+		List<Folio> folioList = null;
+		if (EDIT.equals(operationType)) {
+			folioList = folioRepository.findAllByOwnerId(userId);
+		} else {
+			folioList = getAllViewableFolios(campaignId, userId);
+		}
 		if (folioList != null && folioList.size() > 0) {
 			for (Folio folio : folioList) {
 				List<SimpleTag> folioTags = folio.getTags();
@@ -211,6 +236,18 @@ public class FolioService implements Serializable {
 		return folioDescriptorList;
 	}
 	
+	public List<Folio> getAllViewableFolios(String campaignId, String userId) {
+		List<Folio> allowedFolios = folioRepository.findAllByAllowedUsers(userId);
+
+		return allowedFolios;
+	}
+	
+	public List<Folio> getAllEditableFolios(String campaignId, String userId) {
+		List<Folio> allowedFolios = folioRepository.findAllByOwnerId(userId);
+
+		return allowedFolios;
+	}
+	
 	public Folio findOne(String id) {
 		return folioRepository.findOne(id);
 	}
@@ -221,7 +258,7 @@ public class FolioService implements Serializable {
 	 * @param campaignId
 	 * @param selectFolioDto
 	 */ 
-	public void initSelectFolioCreator(String campaignId, SelectFolioDto selectFolioDto) {
+	public void initSelectFolioDto(String campaignId, SelectFolioDto selectFolioDto, String operationType) {
 		selectFolioDto.setCampaignId(campaignId);
 		List<SimpleTag> excludeTags = new ArrayList<>();
 		List<SimpleTag> allTags = simpleTagService.getTagList(campaignId, excludeTags);
@@ -271,10 +308,16 @@ public class FolioService implements Serializable {
 			createTagList(REMOVE, selectFolioDto, removeTag);
 		}
 		
-		
-    	List<FolioDescriptor> folioDescriptorList = getFolioDescriptorList(campaignId, selectFolioDto.getSelectedTagsAsTags());
+    	List<FolioDescriptor> folioDescriptorList = getFolioDescriptorList(campaignId, selectFolioDto.getSelectedTagsAsTags(), operationType);
 		String listAsString = convertFolioDescriptorListToString(folioDescriptorList);
 		selectFolioDto.setFolioDescriptorList(listAsString);
+		
+		// Need to pick the correct forwarding url, this is just generic
+		if (EDIT.equals(operationType)) {
+			selectFolioDto.setForwardingUrl(ControllerUtils.EDIT_FOLIO);
+		} else if ("view".equals(operationType)) {
+			selectFolioDto.setForwardingUrl(ControllerUtils.VIEW_FOLIO);
+		}		
 	}		
 	
 	private String convertFolioDescriptorListToString(List<FolioDescriptor> folioDescriptorList) {
@@ -369,7 +412,7 @@ public class FolioService implements Serializable {
 		List<Folio> folioList = folioRepository.findAllByKeyValues("tags.name", tagNames.toArray());
 		return folioList;
 	}
-	
+/*	
 	public void initViewFolioDto(ViewFolioDto viewFolioDto, String folioId) {
 		Folio folio = null;
 		if (folioId != null) { 
@@ -394,7 +437,7 @@ public class FolioService implements Serializable {
 		}
 		viewFolioDto.setTags(tags);
 	}
-	
+*/	
 	public List<Folio> deleteByCampaignId(String campaignId) {
 		return folioRepository.deleteByCampaignId(campaignId);
 	}

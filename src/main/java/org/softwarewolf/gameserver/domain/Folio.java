@@ -24,8 +24,10 @@ public class Folio implements Serializable {
 	private String id;
 	private String title;
 	private String campaignId;
+	private String ownerId;
 	private String content;
 	private List<SimpleTag> tags;
+	private List<String> allowedUsers;
 	
 	public Folio() { }
 	public Folio(String campaignId) {
@@ -57,6 +59,15 @@ public class Folio implements Serializable {
 		this.campaignId = campaignId;
 	}
 	
+	public String getOwnerId() {
+		return ownerId;
+	}
+	
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
+		addAllowedUser(ownerId);
+	}
+	
 	public String getContent() {
 		return content;
 	}
@@ -76,11 +87,6 @@ public class Folio implements Serializable {
 		this.tags = tags;
 	}
 
-	// TODO: Figure out best way to create tag with/without classname
-	public void addTag(String tagId) {
-		
-	}
-
 	public void addTag(SimpleTag tag) {
 		if (tags == null) {
 			tags = new ArrayList<>();
@@ -97,6 +103,45 @@ public class Folio implements Serializable {
 				SimpleTag currentTag = iter.next();
 				if (currentTag.equals(tag)) {
 					tags.remove(tag);	
+					break;
+				}				
+			}
+		}
+	}
+
+	public List<String> getAllowedUsers() {
+		if (allowedUsers == null) {
+			allowedUsers = new ArrayList<>();
+		}
+		return allowedUsers;
+	}
+	
+	public void setAllowedUsers(List<String> allowedUsers) {
+		this.allowedUsers = allowedUsers;
+		if (!allowedUsers.contains(ownerId)) {
+			addAllowedUser(ownerId);
+		}
+	}
+
+	public void addAllowedUser(String allowedUser) {
+		if (allowedUsers == null) {
+			allowedUsers = new ArrayList<>();
+		}
+		if (!allowedUsers.contains(allowedUser)) {
+			allowedUsers.add(allowedUser);
+		}
+	}
+
+	public void removeAllowedUser(String removeUser) {
+		if (removeUser.equals(ownerId)) {
+			return;
+		}
+		if (allowedUsers != null && allowedUsers.contains(removeUser)) {
+			Iterator<String> iter = allowedUsers.iterator();
+			while (iter.hasNext()) {
+				String currentUser = iter.next();
+				if (removeUser.equals(currentUser)) {
+					allowedUsers.remove(currentUser);	
 					break;
 				}				
 			}

@@ -25,7 +25,7 @@ public class AppAdminController {
 	public String seedDb() {
 		dataSeeder.cleanRepos();
 		dataSeeder.seedData();
-
+		
 		return "user/menu";
 	}
 
