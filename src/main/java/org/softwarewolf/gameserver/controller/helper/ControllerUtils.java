@@ -18,4 +18,9 @@ public class ControllerUtils {
 	
 	public static final String GM_TYPE = "asGm";
 	public static final String PLAYER_TYPE = "asPlayer";
+	
+	public static final String ROLE_OWNER = "ROLE_OWNER";
+	public static final String ROLE_USER = "ROLE_USER";
+	public static final String ROLE_ADMIN = "ROLE_ADMIN";
+	public static final String ROLE_GAMEMASTER = "ROLE_GAMEMASTER";
 }

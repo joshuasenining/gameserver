@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.softwarewolf.gameserver.controller.helper.FeFeedback;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.RoleLists;
 import org.softwarewolf.gameserver.domain.dto.RolesData;
@@ -110,7 +111,8 @@ public class UserAdminController {
 
 	@RequestMapping("/getUserData")
 	@Secured({"ADMIN"})
-	public String getUserDataWithId(@RequestParam(required = false) final String userId, final UserAdminDto userAdminDto) {
+	public String getUserDataWithId(@RequestParam(required = false) final String userId, 
+			final UserAdminDto userAdminDto, FeFeedback feFeedback) {
 		List<UserListItem> userList = userService.getUserList();
 		userAdminDto.setUserList(userList);
 		User user = null;
@@ -144,7 +146,7 @@ public class UserAdminController {
 
 	@RequestMapping(value = "/updateUserData", method = RequestMethod.POST)
 	@Secured({"ADMIN"})
-	public String postUser(final UserAdminDto userAdminDto) {
+	public String postUser(final UserAdminDto userAdminDto, FeFeedback feFeedback) {
 		User user = userAdminDto.getSelectedUser();
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -159,11 +161,20 @@ public class UserAdminController {
 				String encodedPwd = encoder.encode(newPassword);
 				user.setPassword(encodedPwd);
 			} else {
-				userAdminDto.setErrorMessage("Password does not match verify password. Please retry");
+				feFeedback.setError("Password does not match verify password. Please retry");
 				return "/admin/updateUser";
 			}
-			userRepository.save(user);
+		} else {
+			user.setId(null);
+			if (userAdminDto.getPassword() != null && userAdminDto.getPassword().equals(userAdminDto.getVerifyPassword())) {
+				String encodedPwd = encoder.encode(userAdminDto.getPassword());
+				user.setPassword(encodedPwd);
+			} else {
+				feFeedback.setError("Password does not match verify password. Please retry");
+				return "/admin/updateUser";
+			}
 		}
+		userRepository.save(user);
 
 		
 		return "/admin/updatedUser";

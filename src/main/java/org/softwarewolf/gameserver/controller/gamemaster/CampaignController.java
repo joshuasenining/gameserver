@@ -60,7 +60,7 @@ public class CampaignController {
 	
 	@RequestMapping(value = "/createCampaign", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
-	public String getCampaignDto(CampaignDto campaignDto) {
+	public String getCampaignDto(CampaignDto campaignDto, FeFeedback feFeedback) {
 		UserDetails userDetails =
 				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String userName = userDetails.getUsername();

@@ -82,7 +82,7 @@
 					<ul>
 					  <li class="no-bullets" th:each="campaign : *{inaccessableCampaigns}">
 					    <input type="checkbox" class="cb" th:value="${campaign.id}" th:name="${campaign.name}"></input>
-					    <label th:for="${#ids.prev('selectedCampaignId')}" th:text="${campaign.name}">Campaign Name</label>
+					    <label th:text="${campaign.name}">Campaign Name</label>
 					  </li>
 					</ul>			
 				</div>

@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
@@ -412,32 +411,7 @@ public class FolioService implements Serializable {
 		List<Folio> folioList = folioRepository.findAllByKeyValues("tags.name", tagNames.toArray());
 		return folioList;
 	}
-/*	
-	public void initViewFolioDto(ViewFolioDto viewFolioDto, String folioId) {
-		Folio folio = null;
-		if (folioId != null) { 
-			folio = folioRepository.findOne(folioId);
-		}
-		if (folio == null) {
-			folio = new Folio();
-		}
-		viewFolioDto.setFolio(folio);
-		
-		List<SimpleTag> tagList = folio.getTags();
-		String tags = "";
-		if (tagList != null) {
-			Iterator<SimpleTag> tagIter = tagList.iterator();
-			while(tagIter.hasNext()) {
-				SimpleTag tag = tagIter.next();
-				tags += tag.getName();
-				if (tagIter.hasNext()) {
-					tags += ", ";
-				}
-			}
-		}
-		viewFolioDto.setTags(tags);
-	}
-*/	
+
 	public List<Folio> deleteByCampaignId(String campaignId) {
 		return folioRepository.deleteByCampaignId(campaignId);
 	}

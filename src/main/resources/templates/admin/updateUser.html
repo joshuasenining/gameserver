@@ -145,6 +145,20 @@
 			<h1 th:text="#{updateUser.title}">Update</h1>
 		</div>
 	</div>
+	
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<span class="error-message" th:if="${feFeedback.error}" th:text="${feFeedback.error}">Error.</span>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<span class="info-message" th:if="${feFeedback.info}" th:text="${feFeedback.info}">Info.</span>
+		</div>
+	</div>
+	
 	<form id="updateUserForm" th:object="${userAdminDto}" action="#" th:action="@{/admin/updateUserData}" method="post">
 	    <select id="selectedRoles" class="select optional item-hide" multiple="multiple" th:field="*{selectedUser.authorities}" size="1"></select>
 		<div class="row">

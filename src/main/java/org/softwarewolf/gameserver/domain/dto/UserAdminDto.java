@@ -13,7 +13,6 @@ public class UserAdminDto implements Serializable {
 	private User selectedUser;
 	private String password;
 	private String verifyPassword;
-	private String errorMessage;
 	public Map<String, String> allRoles;
 	public Map<String, String> selectedRoles;	
 
@@ -57,14 +56,6 @@ public class UserAdminDto implements Serializable {
 	
 	public void setVerifyPassword(String verifyPassword) {
 		this.verifyPassword = verifyPassword;
-	}
-	
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-	
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
 	}
 	
 	public Map<String, String> getAllRoles() {

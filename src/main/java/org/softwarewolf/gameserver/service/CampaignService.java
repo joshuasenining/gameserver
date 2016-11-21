@@ -35,7 +35,7 @@ public class CampaignService {
 		List<UserListItem> gamemasters = new ArrayList<>();
 		List<User> userList = userRepository.findAll();
 		for (User user : userList) {
-			SimpleGrantedAuthority roleGamemaster = new SimpleGrantedAuthority("ROLE_GAMEMASTER");
+			SimpleGrantedAuthority roleGamemaster = new SimpleGrantedAuthority(ControllerUtils.ROLE_GAMEMASTER);
 			
 			if (user.getAuthorities().contains(roleGamemaster)) {
 				UserListItem item = new UserListItem(user.getId(), user.getUsername());
@@ -52,7 +52,12 @@ public class CampaignService {
 	}
 	
 	public Campaign saveCampaign(Campaign campaign) {
-		return campaignRepository.save(campaign);
+		campaign =  campaignRepository.save(campaign);
+		CampaignUser owner = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_OWNER, userService.getCurrentUserId());
+		campaignUserRepository.save(owner);
+		CampaignUser gm = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_GAMEMASTER, userService.getCurrentUserId());
+		campaignUserRepository.save(gm);
+		return campaign;
 	}
 	
 	public List<Campaign> getAllCampaigns() {
@@ -68,16 +73,16 @@ public class CampaignService {
 		List<Campaign> allCampaigns = campaignRepository.findAll();
 		List<CampaignUser> inCampaignList = new ArrayList<>();
 		if (ControllerUtils.GM_TYPE.equals(asType)) {
-			List<CampaignUser> ownerList = campaignUserRepository.findAllByUserIdAndRole(userId, "ROLE_OWNER");
+			List<CampaignUser> ownerList = campaignUserRepository.findAllByUserIdAndRole(userId, ControllerUtils.ROLE_OWNER);
 			if (!ownerList.isEmpty()) {
 				inCampaignList.addAll(ownerList);
 			}
-			List<CampaignUser> gmList = campaignUserRepository.findAllByUserIdAndRole(userId, "ROLE_GM");
+			List<CampaignUser> gmList = campaignUserRepository.findAllByUserIdAndRole(userId, ControllerUtils.ROLE_GAMEMASTER);
 			if (!gmList.isEmpty()) {
 				inCampaignList.addAll(gmList);
 			}
 		} else if (ControllerUtils.PLAYER_TYPE.equals(asType)) {
-			List<CampaignUser> playerList = campaignUserRepository.findAllByUserIdAndRole(userId, "ROLE_USER");
+			List<CampaignUser> playerList = campaignUserRepository.findAllByUserIdAndRole(userId, ControllerUtils.ROLE_USER);
 			if (!playerList.isEmpty()) {
 				inCampaignList.addAll(playerList);
 			}

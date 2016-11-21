@@ -13,9 +13,16 @@
     <!-- Bootstrap & JQuery -->
 	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"></link>
 	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css}"></link>
+	<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" th:src="@{/webjars/jquery-ui-themes/1.11.4/smoothness/jquery-ui.min.css}"></link>
     <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js" th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
     <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
-   
+	<script type="application/javascript" src="https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js" th:src="@{/webjars/jquery-ui/1.11.4/jquery-ui.min.js}"></script>
+    
+	<script type="application/javascript" src="/ckeditor/ckeditor.js"></script> <!--  th:src="@{/webjars/ckeditor/4.5.8/standard/ckeditor.js}"></script> -->
+	<script src="/ckeditor/gameserver/js/sample.js"></script>
+	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/css/samples.css"></link>
+	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/toolbarconfigurator/lib/codemirror/neo.css"></link>
+	
     <title th:text="#{createCampaign.title}">Title</title>
     
 	<script th:inline="javascript">
@@ -30,33 +37,35 @@
 	<div th:include="/public/navbar :: navbar"></div>
 	
 	<br></br>
+	<br></br>
+	<br></br>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-11">
+			<h1 th:text="#{createCampaign.title}">Create</h1>
+		</div>
+	</div>
 
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-10">
-			<div>
-				<h1 th:text="#{createCampaign.title}">Create</h1>
-			</div>
+			<span class="error-message" th:if="${feFeedback.error}" th:text="${feFeedback.error}">Error.</span>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-10">
-			<div th:if="${error}" th:text="${error}">Error.</div>
+			<span class="info-message" th:if="${feFeedback.info}" th:text="${feFeedback.info}">Info.</span>
 		</div>
 	</div>
+
+
+	<div th:include="/public/navbar :: navbar"></div>
+	
 	<br></br>
 	<form id="updateOwnerForm" th:object="${campaignDto}" action="#" th:action="@{/gamemaster/createCampaign}" method="post">
 		<input id="ownerId" type="hidden" th:field="*{ownerId}"></input>
-		<div class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-1">
-				<label th:text="#{createCampaign.owner}">Owner</label>
-			</div>
-			<div class="col-md-10">
-  				<input th:field="*{ownerName}" th:disabled="disabled"></input>			 
-			</div>
-		</div>		 
+	 
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
@@ -71,17 +80,27 @@
 			<div class="col-md-1">
 				<label class="input-margin">Description</label>
 			</div>
-			<div class="col-md-8">
-				<textarea rows="8" cols="100" class="input-margin" th:field="*{campaign.description}"></textarea>
+		</div>
+		<div class="input-margin">
+			<div class="grid-container">
+				<div class="grid-width-100">
+					<textarea id="editor" th:field="*{campaign.description}"></textarea>
+				</div>
 			</div>
 		</div>
-
+		
 		<div class="row">
-			<div class="col-md-2"></div>
+			<div class="col-md-1"></div>
 			<div class="col-md-2">
-           		<input type="submit" value="Submit" />
+           		<input class="basic-margin" type="submit" value="Submit" />
 			</div>
 		</div>
 	</form>
+	
+	<script>
+		<!-- ckeditor js code -->
+		initSample();
+	</script>
+	
 </body>
 </html>
