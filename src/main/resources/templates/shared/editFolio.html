@@ -74,7 +74,58 @@
 				  .attr('name', name)
 				  .appendTo($("#selectedTagSpan"));
 			});
+		
+  			var users = $("#users")[0].value;
+ 			var userList = null;
+ 			if (users.length > 0) {
+ 				userList = jQuery.parseJSON(users);
+ 			}
+ 			
+			$.each(userList, function(i, item) {
+				var name = item["userName"];
+				var id = item["id"];
+				var rowDiv = $('<div class="row"/>');
+				var spacerDiv = $('<div class="col-md-1"/>');
+				spacerDiv.appendTo(rowDiv);
+				var buttonDiv = $('<div class="col-md-1"/>');
+				var access;
+				if (item["permission"] == "ROLE_OWNER") {
+					access = "Owner";
+				} else if (item["permission"] == "ROLE_USER") {
+					access = "Read";
+				} else {
+					access = "No Access";
+				}
+				var button = $('<input id="'+id+'" type="button" class="permission" onclick="modifyPermission(&quot;'+id+'&quot;)"/>')
+					.prop("value", access);
+				button.appendTo(buttonDiv);
+				buttonDiv.appendTo(rowDiv);
+				var labelDiv = $('<div class="col-md-3"/>');
+				var label = $('<label class="input-margin"/>')
+					.text(name);
+				label.appendTo(labelDiv);
+				labelDiv.appendTo(rowDiv);
+				
+				rowDiv.appendTo("#permissionList")
+			}); 			
 		});	
+		
+		$("#editFolioForm").submit(function(event) {
+			var jsonObj = [];
+			$('.permission').each(function(i, btn) {
+			    var value = $(this).attr("value");
+			    var id = $(this).attr("id");
+			    
+			    item = {};
+			    item["id"] = id;
+			    item["value"] = value;
+				
+				jsonObj.push(item);	
+			});
+			console.log(jsonObj);
+			var jsonString = JSON.stringify(jsonObj);
+			$("#users").val(jsonString);
+		});
 		
 		$(function() {
 			$( "#selectable" ).selectable();
@@ -86,6 +137,19 @@
 		function selectFolio() {
 			window.location = "/shared/selectFolio?operation=edit";
 		}
+	
+		function modifyPermission(buttonId) {
+			var button = $("#"+buttonId);
+			var selection = button.attr("value");
+			if (selection == "No Access") {
+				button.prop("value", "Read");
+			} else if (selection == "Read") {
+				button.prop("value", "Owner");
+			} else {
+				button.prop("value", "No Access");
+			}
+		}
+		
 	</script>
 	
 	<style>
@@ -114,10 +178,7 @@
             $("#createTag").click(function() {
                $( "#addTagDialog" ).dialog( "open" );
             });
-            
-            $("#addViewers").click(function() {
-            	alert("in add viewers handler");
-            })
+
          });
       </script>
 </head>
@@ -157,6 +218,7 @@
 		<input type="hidden" id="removeTag" th:field="*{removeTag}"></input>
 		<input type="hidden" id="folioId" th:field="*{folio.id}"></input>
 		<input type="hidden" id="operationType" th:field="*{operationType}"></input>
+		<input type="hidden" id="users" th:field="*{users}"></input>
 		<input type="hidden" id="forwardingUrl" th:field="*{forwardingUrl}"></input>
 
 		<div class="row">
@@ -210,7 +272,7 @@
 				<input type="button" id="createTag" class="input-margin" th:value="#{editFolio.createTagText}"></input>
 			</div>
 		</div>
-						
+
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-3">
@@ -248,19 +310,18 @@
 	
 		<div class="row">
 			<div class="col-md-1"></div>
-			<div class="col-md-1">
-				<label class="input-margin" th:text="#{editFolio.addViewers}">Add</label>
-			</div>
-			<div class="col-md-8">
-				<input type="button" id="addViewers" class="input-margin" th:value="#{editFolio.addViewers}"></input>
+			<div class="col-md-2">
+				<label class="input-margin" th:text="#{editFolio.setPermissions}">Set</label>
 			</div>
 		</div>
+		
+		<span id="permissionList"></span>
 						
 		<br></br>
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-7">
-				<input class="basic-margin" type="submit" value="Submit" />
+				<input id="submitBtn" class="basic-margin" type="submit" value="Submit" />
 			</div>
 		</div>
 

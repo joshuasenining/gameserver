@@ -23,4 +23,7 @@ public class ControllerUtils {
 	public static final String ROLE_USER = "ROLE_USER";
 	public static final String ROLE_ADMIN = "ROLE_ADMIN";
 	public static final String ROLE_GAMEMASTER = "ROLE_GAMEMASTER";
+	public static final String OWNER = "Owner";
+	public static final String READ = "Read";
+	public static final String NO_ACCESS = "No Access";
 }

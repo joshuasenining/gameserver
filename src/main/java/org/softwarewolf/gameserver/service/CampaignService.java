@@ -53,9 +53,11 @@ public class CampaignService {
 	
 	public Campaign saveCampaign(Campaign campaign) {
 		campaign =  campaignRepository.save(campaign);
-		CampaignUser owner = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_OWNER, userService.getCurrentUserId());
+		CampaignUser owner = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_OWNER, 
+				userService.getCurrentUserId(), userService.getCurrentUserName());
 		campaignUserRepository.save(owner);
-		CampaignUser gm = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_GAMEMASTER, userService.getCurrentUserId());
+		CampaignUser gm = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_GAMEMASTER, 
+				userService.getCurrentUserId(), userService.getCurrentUserName());
 		campaignUserRepository.save(gm);
 		return campaign;
 	}
@@ -119,14 +121,26 @@ public class CampaignService {
 		return campaignRepository.findOne(id);
 	}
 	
+	public Campaign findOneByName(String name) {
+		return campaignRepository.findOneByName(name);
+	}
+	
+	public void deleteByName(String name) {
+		campaignRepository.deleteByName(name);
+	}
+	
+	public Campaign save(Campaign campaign) {
+		return campaignRepository.save(campaign);
+	}
+	
 	public void createCampaign(CampaignDto campaignDto) {
 		Campaign campaign = campaignDto.getCampaign();
 		String ownerId = campaignDto.getOwnerId();
 		campaign.setOwnerId(ownerId);
 		campaign = saveCampaign(campaign);
-		CampaignUser ownerCu = new CampaignUser(campaign.getId(), "ROLE_OWNER", ownerId);
+		CampaignUser ownerCu = new CampaignUser(campaign.getId(), "ROLE_OWNER", ownerId, userService.getCurrentUserName());
 		campaignUserRepository.save(ownerCu);
-		CampaignUser gmCu = new CampaignUser(campaign.getId(), "ROLE_GAMEMASTER", ownerId);
+		CampaignUser gmCu = new CampaignUser(campaign.getId(), "ROLE_GAMEMASTER", ownerId, userService.getCurrentUserName());
 		campaignUserRepository.save(gmCu);		
 	}
 

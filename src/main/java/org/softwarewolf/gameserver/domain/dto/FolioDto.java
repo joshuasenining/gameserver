@@ -13,6 +13,7 @@ public class FolioDto {
 	private List<FolioDescriptor> folioDescriptorList;
 	private String viewTagList;
 	private String operationType;
+	private String users;
 	private String forwardingUrl;
 	
 	public FolioDto() {
@@ -76,6 +77,13 @@ public class FolioDto {
 		this.operationType = operationType;
 	}
 	
+	public String getUsers() {
+		return users;
+	}
+	public void setUsers(String users) {
+		this.users = users;
+	}
+
 	public String getForwardingUrl() {
 		return forwardingUrl;
 	}

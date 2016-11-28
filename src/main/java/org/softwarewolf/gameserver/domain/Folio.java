@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
 import org.springframework.data.annotation.Id;
@@ -24,13 +25,17 @@ public class Folio implements Serializable {
 	private String id;
 	private String title;
 	private String campaignId;
-	private String ownerId;
 	private String content;
 	private List<SimpleTag> tags;
-	private List<String> allowedUsers;
+	private List<String> owners;
+	private List<String> users;
 	
-	public Folio() { }
+	public Folio() { 
+		owners = new ArrayList<>();
+		users = new ArrayList<>();
+	}
 	public Folio(String campaignId) {
+		this();
 		this.campaignId = campaignId;
 		this.id = UUID.randomUUID().toString();
 	}
@@ -57,15 +62,6 @@ public class Folio implements Serializable {
 	
 	public void setCampaignId(String campaignId) {
 		this.campaignId = campaignId;
-	}
-	
-	public String getOwnerId() {
-		return ownerId;
-	}
-	
-	public void setOwnerId(String ownerId) {
-		this.ownerId = ownerId;
-		addAllowedUser(ownerId);
 	}
 	
 	public String getContent() {
@@ -109,44 +105,90 @@ public class Folio implements Serializable {
 		}
 	}
 
-	public List<String> getAllowedUsers() {
-		if (allowedUsers == null) {
-			allowedUsers = new ArrayList<>();
+	public List<String> getOwners() {
+		if (owners == null) {
+			owners = new ArrayList<>();
 		}
-		return allowedUsers;
+		return owners;
 	}
 	
-	public void setAllowedUsers(List<String> allowedUsers) {
-		this.allowedUsers = allowedUsers;
-		if (!allowedUsers.contains(ownerId)) {
-			addAllowedUser(ownerId);
+	public void setOwners(List<String> owners) {
+		this.owners = owners;
+	}
+
+	public void addOwner(String owner) {
+		if (owners == null) {
+			owners = new ArrayList<>();
+		}
+		if (!owners.contains(owner)) {
+			owners.add(owner);
+		}
+		if (users != null && users.contains(owner)) {
+			removeUser(owner);
 		}
 	}
 
-	public void addAllowedUser(String allowedUser) {
-		if (allowedUsers == null) {
-			allowedUsers = new ArrayList<>();
+	public void removeOwner(String removeOwner) {
+		if (owners != null && owners.size() == 1 && owners.get(0).equals(removeOwner)) {
+			throw new RuntimeException("You can't remove the last owner");
 		}
-		if (!allowedUsers.contains(allowedUser)) {
-			allowedUsers.add(allowedUser);
-		}
-	}
-
-	public void removeAllowedUser(String removeUser) {
-		if (removeUser.equals(ownerId)) {
-			return;
-		}
-		if (allowedUsers != null && allowedUsers.contains(removeUser)) {
-			Iterator<String> iter = allowedUsers.iterator();
+		if (owners != null && owners.contains(removeOwner)) {
+			Iterator<String> iter =owners.iterator();
 			while (iter.hasNext()) {
-				String currentUser = iter.next();
-				if (removeUser.equals(currentUser)) {
-					allowedUsers.remove(currentUser);	
+				String currentOwner = iter.next();
+				if (removeOwner.equals(currentOwner)) {
+					owners.remove(currentOwner);	
 					break;
 				}				
 			}
 		}
 	}
+
+	public List<String> getUsers() {
+		if (users == null) {
+			users = new ArrayList<>();
+		}
+		return users;
+	}
+	
+	public void setUsers(List<String> users) {
+		this.users = users;
+	}
+	
+	public void addUser(String user) {
+		if (users == null) {
+			users = new ArrayList<>();
+		}
+		if (!users.contains(user)) {
+			users.add(user);
+		}
+		if (owners != null && owners.contains(user)) {
+			removeOwner(user);
+		}
+	}
+	
+	public String getUserPermission(String userId) {
+		if (owners.contains(userId)) { 
+			return ControllerUtils.ROLE_OWNER;
+		} else if (users.contains(userId)) {
+			return ControllerUtils.ROLE_USER;
+		} else {
+			return "";
+		}
+	}
+
+	public void removeUser(String removeUser) {
+		if (users != null && users.contains(removeUser)) {
+			Iterator<String> iter =users.iterator();
+			while (iter.hasNext()) {
+				String currentUser = iter.next();
+				if (removeUser.equals(currentUser)) {
+					users.remove(currentUser);	
+					break;
+				}				
+			}
+		}
+	}	
 	
 	public FolioDescriptor createDescriptor() {
 		return new FolioDescriptor(title, id, tags);

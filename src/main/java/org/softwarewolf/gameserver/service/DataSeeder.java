@@ -1,7 +1,6 @@
 package org.softwarewolf.gameserver.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +65,7 @@ public class DataSeeder {
 	private SimpleGrantedAuthorityRepository sgaRepo;
 	
 	@Autowired 
-	private CampaignRepository campaignRepo;
+	private CampaignService campaignService;
 	
 	@Autowired
 	private SimpleTagService simpleTagService;
@@ -75,39 +74,54 @@ public class DataSeeder {
 	private FolioService folioService;
 	
 	@Autowired
-	private CampaignUserRepository campaignUserRepo;
+	private CampaignUserService campaignUserService;
 	
 	public void cleanRepos() {
-		Campaign sAndSCampaign = campaignRepo.findOneByName(SWORD_AND_SORCERY);
+		Campaign sAndSCampaign = campaignService.findOneByName(SWORD_AND_SORCERY);
 		if (sAndSCampaign != null) {
 			folioService.deleteByCampaignId(sAndSCampaign.getId());
 			simpleTagService.deleteByCampaignId(sAndSCampaign.getId());
+			campaignUserService.deleteByCampaignId(sAndSCampaign.getId());
+			campaignService.deleteByName(SWORD_AND_SORCERY);
 		}
-		Campaign modernCampaign  = campaignRepo.findOneByName(MODERN);
+		Campaign modernCampaign  = campaignService.findOneByName(MODERN);
 		if (modernCampaign != null) {
 			folioService.deleteByCampaignId(modernCampaign.getId());
 			simpleTagService.deleteByCampaignId(modernCampaign.getId());
+			campaignUserService.deleteByCampaignId(modernCampaign.getId());
+			campaignService.deleteByName(MODERN);
 		}
-		Campaign spaceCampaign = campaignRepo.findOneByName(SPACE_OPERA);
+		Campaign spaceCampaign = campaignService.findOneByName(SPACE_OPERA);
 		if (spaceCampaign != null) {
 			folioService.deleteByCampaignId(spaceCampaign.getId());
 			simpleTagService.deleteByCampaignId(spaceCampaign.getId());
+			campaignUserService.deleteByCampaignId(spaceCampaign.getId());
+			campaignService.deleteByName(SPACE_OPERA);
 		}
-		campaignRepo.deleteByName(SWORD_AND_SORCERY);
-		campaignRepo.deleteByName(MODERN);
-		campaignRepo.deleteByName(SPACE_OPERA);
-		roleRepo.deleteByRole(ROLE_ADMIN);
-		roleRepo.deleteByRole(ROLE_GAMEMASTER);
-		roleRepo.deleteByRole(ROLE_USER);
+		campaignUserService.deleteAll();
+		
+		try {
+			roleRepo.deleteByRole(ROLE_ADMIN);
+		} catch (Exception e) {	}
+		try {
+			roleRepo.deleteByRole(ROLE_GAMEMASTER);
+		} catch (Exception e) {	}
+		try {
+			roleRepo.deleteByRole(ROLE_USER);
+		} catch (Exception e) {	}
+
 		User adminUser = userRepo.findOneByUsername(ADMIN);
-		campaignUserRepo.deleteByUserId(adminUser.getId());
-		userRepo.delete(adminUser);
+		if (adminUser != null) {
+			userRepo.delete(adminUser);
+		}		
 		User gmUser = userRepo.findOneByUsername(GM);
-		campaignUserRepo.deleteByUserId(gmUser.getId());
-		userRepo.delete(gmUser);
+		if (gmUser != null) {
+			userRepo.delete(gmUser);
+		}
 		User userUser = userRepo.findOneByUsername(USER);
-		campaignUserRepo.deleteByUserId(userUser.getId());
-		userRepo.delete(userUser);
+		if (userUser != null) {
+			userRepo.delete(userUser);
+		}
 	}
 	
 	public void seedData() {
@@ -146,8 +160,8 @@ public class DataSeeder {
 	
 	private Map<String, User> seedUsers(Map<String, SimpleGrantedAuthority> roleMap) {
 		Map<String, User> userMap = new HashMap<>();
-
 		List<SimpleGrantedAuthority> roleList = new ArrayList<>();
+
 		roleList.add(roleMap.get(ROLE_USER));
 		saveUser(USER, roleList, userMap);
 		
@@ -156,7 +170,6 @@ public class DataSeeder {
 		
 		roleList.add(roleMap.get(ROLE_ADMIN));
 		saveUser(ADMIN, roleList, userMap);
-
 
 		return userMap;
 	}
@@ -170,7 +183,7 @@ public class DataSeeder {
 			user.setFirstName(name);
 			String userPwd = encoder.encode(name);
 			user.setPassword(userPwd);
-			user.setEmail("dm_tim@yahoo.com");
+			user.setEmail("noSpam@yahoo.com");
 			user.setAccountNonExpired(true);
 			user.setAccountNonLocked(true);
 			user.setCredentialsNonExpired(true);
@@ -195,25 +208,23 @@ public class DataSeeder {
 		
 		User playerUser = userMap.get(USER);
 		Campaign sAs = campaignMap.get(SWORD_AND_SORCERY);
-		CampaignUser player = new CampaignUser(sAs.getId(), "ROLE_USER", playerUser.getId());
-		campaignUserRepo.save(player);
+		CampaignUser player = new CampaignUser(sAs.getId(), ROLE_USER, playerUser.getId(), USER);
+		campaignUserService.save(player);
 		
 		return campaignMap;
 	}
 	
 	private void saveCampaign(String name, String description, String ownerId, Map<String, Campaign> campaignMap) {
-		Campaign campaign = campaignRepo.findOneByName(name);
+		Campaign campaign = campaignService.findOneByName(name);
 		if (campaign == null) {
 			campaign = new Campaign();
 			campaign.setName(name);
 			campaign.setDescription(description);
 			campaign.setOwnerId(ownerId);
-			campaign = campaignRepo.save(campaign);
+			campaign = campaignService.save(campaign);
 			campaignMap.put(name, campaign);
-			CampaignUser ownerCu = new CampaignUser(campaign.getId(), ROLE_OWNER, ownerId);
-			campaignUserRepo.save(ownerCu);
-			CampaignUser gmCu = new CampaignUser(campaign.getId(), ROLE_GAMEMASTER, ownerId);
-			campaignUserRepo.save(gmCu);
+			CampaignUser ownerCu = new CampaignUser(campaign.getId(), ROLE_OWNER, ownerId, GM);
+			campaignUserService.save(ownerCu);
 		}
 	}
 	
@@ -274,13 +285,13 @@ public class DataSeeder {
 		String sAndSCampaignId = campaignMap.get(SWORD_AND_SORCERY).getId();
 		Folio goldenRoadFolio = new Folio();
 		goldenRoadFolio.setCampaignId(sAndSCampaignId);
-		goldenRoadFolio.setOwnerId(gm.getId());
+		goldenRoadFolio.addOwner(gm.getId());
 		goldenRoadFolio.setTitle("Golden Road Trading League Intro");
 		goldenRoadFolio.setContent("<H1>The Golden Road Trading League</H1><p>This is a big merchant guild</p>");		
 		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(MERCHANTS_GUILD));
 		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(GOLDEN_ROAD));
 		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
-		goldenRoadFolio.addAllowedUser(user.getId());
+		goldenRoadFolio.addUser(user.getId());
 		try {
 			folioService.save(goldenRoadFolio);
 		} catch (Exception e) {
@@ -289,12 +300,12 @@ public class DataSeeder {
 		
 		Folio kindomOfMidlandFolio = new Folio();
 		kindomOfMidlandFolio.setCampaignId(sAndSCampaignId);
-		kindomOfMidlandFolio.setOwnerId(gm.getId());
+		kindomOfMidlandFolio.addOwner(gm.getId());
 		kindomOfMidlandFolio.setTitle("The Kingdom of Midland Geography");
 		kindomOfMidlandFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a big kingdom that stretches from east to west.</p>");		
 		kindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(LOCATION));
 		kindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
-		kindomOfMidlandFolio.addAllowedUser(user.getId());
+		kindomOfMidlandFolio.addUser(user.getId());
 		try {
 			folioService.save(kindomOfMidlandFolio);
 		} catch (Exception e) {
@@ -303,7 +314,7 @@ public class DataSeeder {
 		
 		Folio kindomOfMidlandOrgFolio = new Folio();
 		kindomOfMidlandOrgFolio.setCampaignId(sAndSCampaignId);
-		kindomOfMidlandOrgFolio.setOwnerId(gm.getId());
+		kindomOfMidlandOrgFolio.addOwner(gm.getId());
 		kindomOfMidlandOrgFolio.setTitle("The Kingdom of Midland");
 		kindomOfMidlandOrgFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a feudal society.</p>");		
 		kindomOfMidlandOrgFolio.addTag(tagMap.get(sAndSCampaignId).get(ORGANIZATION));
@@ -316,7 +327,7 @@ public class DataSeeder {
 
 		Folio magicCountyFolio = new Folio();
 		magicCountyFolio.setCampaignId(sAndSCampaignId);
-		magicCountyFolio.setOwnerId(gm.getId());
+		magicCountyFolio.addOwner(gm.getId());
 		magicCountyFolio.setTitle("Magic County");
 		magicCountyFolio.setContent("<H1>A magic county in the Kingdom of Midland</H1><p>This is a county in the Kingdom of Midland.</p>");		
 		magicCountyFolio.addTag(tagMap.get(sAndSCampaignId).get(ORGANIZATION));
@@ -330,7 +341,7 @@ public class DataSeeder {
 
 		Folio oakdaleFolio = new Folio();
 		oakdaleFolio.setCampaignId(sAndSCampaignId);
-		oakdaleFolio.setOwnerId(gm.getId());
+		oakdaleFolio.addOwner(gm.getId());
 		oakdaleFolio.setTitle("The Town of Oakdale");
 		oakdaleFolio.setContent("<H1>The Town of Oakdale</H1><p>This is a town in the Kindom of Midland.</p>");		
 		oakdaleFolio.addTag(tagMap.get(sAndSCampaignId).get(OAKDALE));
@@ -345,7 +356,7 @@ public class DataSeeder {
 	
 		Folio johnDarteFolio = new Folio();
 		johnDarteFolio.setCampaignId(sAndSCampaignId);
-		johnDarteFolio.setOwnerId(gm.getId());
+		johnDarteFolio.addOwner(gm.getId());
 		johnDarteFolio.setTitle("John Darte");
 		johnDarteFolio.setContent("<H1>John Darte</H1><p>John Darte is the Mayor of Oakdale.</p>");		
 		johnDarteFolio.addTag(tagMap.get(sAndSCampaignId).get(MAYOR));
@@ -360,7 +371,7 @@ public class DataSeeder {
 		
 		Folio jimBeamFolio = new Folio();
 		jimBeamFolio.setCampaignId(sAndSCampaignId);
-		jimBeamFolio.setOwnerId(gm.getId());
+		jimBeamFolio.addOwner(gm.getId());
 		jimBeamFolio.setTitle("Jim Beam");
 		jimBeamFolio.setContent("<H1>Jim Beam, Merchant of Oakdale</H1><p>A shopkeeper in Oakdale.</p>");		
 		jimBeamFolio.addTag(tagMap.get(sAndSCampaignId).get(MERCHANTS_GUILD));
@@ -376,7 +387,7 @@ public class DataSeeder {
 
 		Folio bloodMoonFolio = new Folio();
 		bloodMoonFolio.setCampaignId(sAndSCampaignId);
-		bloodMoonFolio.setOwnerId(gm.getId());
+		bloodMoonFolio.addOwner(gm.getId());
 		bloodMoonFolio.setTitle("Blood Moon Coven");
 		bloodMoonFolio.setContent("<H1>Blood Moon Coven</H1><p>A coven of evil witches and warlocks.</p>");		
 		bloodMoonFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));

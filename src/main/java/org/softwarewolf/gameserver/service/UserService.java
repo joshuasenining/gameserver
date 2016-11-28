@@ -152,9 +152,16 @@ public class UserService {
 	}
 	
 	public String getCurrentUserId() {
-		UserDetails userDetails =
-				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User userDetails =
+				 (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username = userDetails.getUsername();
 		return getUserIdFromUsername(username);
 	}
+
+	public String getCurrentUserName() {
+		UserDetails userDetails =
+				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return userDetails.getUsername();
+	}
+
 }

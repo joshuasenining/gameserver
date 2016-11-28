@@ -74,12 +74,10 @@ public class CampaignController {
 	@RequestMapping(value = "/createCampaign", method = RequestMethod.POST)
 	@Secured({"GAMEMASTER", "ADMIN"})
 	public String postCampaign(@ModelAttribute CampaignDto campaignDto, FeFeedback feFeedback) {
-		Campaign campaign = campaignDto.getCampaign();
 		String ownerId = campaignDto.getOwnerId();
-		campaign.setOwnerId(ownerId);
-		campaignService.saveCampaign(campaign);
+		campaignService.createCampaign(campaignDto);
 		campaignService.initCampaignDto(campaignDto, ownerId);
-		feFeedback.setInfo("Campaign " + campaign.getName() + " created.");
+		feFeedback.setInfo("Campaign " + campaignDto.getCampaign().getName() + " created.");
 		
 		return ControllerUtils.CREATE_CAMPAIGN;
 	}

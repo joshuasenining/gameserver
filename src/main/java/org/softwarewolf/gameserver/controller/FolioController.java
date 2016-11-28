@@ -77,7 +77,7 @@ public class FolioController {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
 			folioService.initFolioDto(folioDto, folio, campaignId, FolioService.EDIT);
-			feFeedback.setUserStatus("You are editing folio " + folio.getTitle());
+			feFeedback.setUserStatus("You are editing folio " + (folio == null ? "" : folio.getTitle()));
 			return ControllerUtils.EDIT_FOLIO;
 		}
 		

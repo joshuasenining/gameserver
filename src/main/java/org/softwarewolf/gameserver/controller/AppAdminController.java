@@ -21,7 +21,7 @@ public class AppAdminController {
 	private GameMailService gameMailService;
 	
 	@RequestMapping(value="/seedData", method = RequestMethod.GET)
-	@Secured({"ADMIN"})
+//	@Secured({"ADMIN"})
 	public String seedDb() {
 		dataSeeder.cleanRepos();
 		dataSeeder.seedData();
