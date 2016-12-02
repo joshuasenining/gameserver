@@ -102,6 +102,10 @@ hr {
 	margin-bottom: 5px;	
 }
 
+.fullWidth {
+	width: 100%;
+}
+
 .gs-accordian-panel {
 	border: 1px, solid, transparent;
 	border0radius: 4px;

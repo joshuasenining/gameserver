@@ -2,7 +2,7 @@ package org.softwarewolf.gameserver.controller;
 
 import javax.servlet.http.HttpSession;
 
-import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
+import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
 import org.softwarewolf.gameserver.repository.UserRepository;

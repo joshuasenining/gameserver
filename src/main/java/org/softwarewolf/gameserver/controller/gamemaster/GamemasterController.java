@@ -2,8 +2,8 @@ package org.softwarewolf.gameserver.controller.gamemaster;
 
 import javax.servlet.http.HttpSession;
 
-import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
-import org.softwarewolf.gameserver.controller.helper.FeFeedback;
+import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
+import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.softwarewolf.gameserver.service.CampaignService;
 import org.softwarewolf.gameserver.service.FolioService;

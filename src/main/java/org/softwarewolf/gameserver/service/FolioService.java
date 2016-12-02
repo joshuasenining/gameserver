@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
+import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
+import org.softwarewolf.gameserver.controller.utils.GetPermissionsFrom;
 import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
@@ -61,10 +62,21 @@ public class FolioService implements Serializable {
 
 		Folio folio = folioDto.getFolio();
 		folio.setTags(selectedTagList);
-		
+
 		// Put the values for the use permissions from the dto into the folio
-		convertFolioDtoUsers(folioDto);
+		usersFromDtoIntoFolio(folioDto);
 		
+		addRemoveTagsToFolio(folioDto);
+		
+		if (folio.getTitle() == null || folio.getTitle().isEmpty()) {
+			return folio;
+		}
+		
+		return save(folio);
+	}
+	
+	public void addRemoveTagsToFolio(FolioDto folioDto) {
+		Folio folio = folioDto.getFolio();
 		String addTagId = folioDto.getAddTag();
 		if (addTagId != null && !addTagId.isEmpty()) {
 			SimpleTag newTag = simpleTagService.findOne(addTagId);
@@ -79,16 +91,8 @@ public class FolioService implements Serializable {
 				folio.removeTag(oldTag);
 			}
 		}
-		
-		if (folio.getOwners() == null || folio.getOwners().isEmpty()) {
-			String ownerId = userService.getCurrentUserId();
-			folio.addOwner(ownerId);
-		}
-		if (folio.getTitle() == null || folio.getTitle().isEmpty()) {
-			return folio;
-		}
-
-		return save(folio);
+		folioDto.setAddTag(null);
+		folioDto.setRemoveTag(null);
 	}
 	
 	public Folio save(Folio folio) throws Exception {
@@ -96,7 +100,7 @@ public class FolioService implements Serializable {
 		if (folioId != null && folioId.isEmpty()) {
 			folio.setId(null);
 		}
-		if (folio.getOwners() == null) {
+		if (folio.getOwners() == null || folio.getOwners().isEmpty()) {
 			String ownerId = userService.getCurrentUserId();
 			folio.addOwner(ownerId);
 		}
@@ -129,47 +133,153 @@ public class FolioService implements Serializable {
 		return folioRepository.findAll();
 	}
 	
-	public void initFolioDto(FolioDto folioDto, String folioId, String campaignId, String operationType) {
-		Folio folio = null;
-		if (folioId == null) { 
-			folio = new Folio();
-		} else {
-			folio = folioRepository.findOne(folioId);
+	public FolioDto initFolioDto(String folioId, FolioDto folioDto, String campaignId, String operationType) {
+		Folio folio = initFolio(folioId, campaignId);
+		if (folioDto == null) {
+			folioDto = new FolioDto();
 		}
-		initFolioDto(folioDto, folio, campaignId, operationType);
+		folioDto.setFolio(folio);
+		
+		return initFolioDto(folioDto, campaignId, operationType, GetPermissionsFrom.FOLIO);
 	}
 	
-	public void initFolioDto(FolioDto folioDto, Folio folio, String campaignId, String operationType) {
-		if (folio == null) {
-			folio = new Folio();
-			folio.setCampaignId(campaignId);
-			folio.addOwner(userService.getCurrentUserId());
-		} else {
-			List<SimpleTag> selectedTagList = folio.getTags();
+	public FolioDto initFolioDto(FolioDto folioDto, String campaignId, String operationType, GetPermissionsFrom getPermissionsFrom) {
+		Folio folio = folioDto.getFolio();
+		if (folio == null || folio.getId() == null) {
+			folio = initFolio(null, campaignId);
+			folioDto.setFolio(folio);
+		} 
+
+		List<SimpleTag> selectedTagList = folio.getTags();
+		if (selectedTagList.size() > 0) {
 			Collections.sort(selectedTagList, new SimpleTagCompare());
 			String selectedTags = tagListToString(selectedTagList);
 			folioDto.setSelectedTags(selectedTags);
 		}
 		List<SimpleTag> unselectedTagList = simpleTagService.getUnassignedTags(folio);
-		Collections.sort(unselectedTagList, new SimpleTagCompare());
-		String unselectedTags = tagListToString(unselectedTagList);
-		folioDto.setUnselectededTags(unselectedTags);
-		folioDto.setFolio(folio);
+		if (unselectedTagList.size() > 0) {
+			Collections.sort(unselectedTagList, new SimpleTagCompare());
+			String unselectedTags = tagListToString(unselectedTagList);
+			folioDto.setUnselectededTags(unselectedTags);
+		}
 		folioDto.setOperationType(operationType);
 		folioDto.setAddTag(null);
 		folioDto.setRemoveTag(null);
 		
-		List<CampaignUser> userList = getFolioUsers(folio);
+		if (GetPermissionsFrom.FOLIO.equals(getPermissionsFrom) ||
+				GetPermissionsFrom.INIT.equals(getPermissionsFrom)) {
+			this.usersFromFolioIntoDto(folioDto);
+		} else if (GetPermissionsFrom.FOLIO_DTO.equals(getPermissionsFrom)){
+			usersFromDtoIntoFolio(folioDto);
+		}
+		
+		folioDto.setFolioDescriptorList(getFolioDescriptorList(folio.getCampaignId(), null, operationType));
+		return folioDto;
+	}
+
+	private Folio initFolio(String folioId, String campaignId) {
+		Folio folio = null;
+		if (folioId != null) {
+			folio = folioRepository.findOne(folioId);
+		}
+		if (folio == null) {
+			folio = new Folio();
+			folio.setCampaignId(campaignId);
+			folio.addOwner(userService.getCurrentUserId());
+		}
+		return folio;
+	}
+
+	// This method takes the values for user permissions from the FolioDto and
+	// puts them into the Folio
+	private void usersFromDtoIntoFolio(FolioDto folioDto) {
+		String usersString = folioDto.getUsers();
+		ObjectMapper mapper = new ObjectMapper();
+		List<Map<String, String>> idValueList = null;
+		try {
+			idValueList = mapper.readValue(usersString, new TypeReference<List<Map<String, String>>>() {});
+		} catch (Exception e) {
+			
+		}
+		Folio folio = folioDto.getFolio();
+		folio.setOwners(null);
+		folio.setUsers(null);
+		// put values from FolioDto into folio
+		if (idValueList != null) {
+			List<String> ownerIdList = new ArrayList<>();
+			List<String> userIdList = new ArrayList<>();
+			for (Map<String, String> cu : idValueList) {
+				String id = cu.get("id");
+				String permission = cu.get("value");
+				if (ControllerUtils.OWNER.equals(permission)) {
+					// Folio.owners is the list of users with owner authority 
+					folio.addOwner(id);
+					ownerIdList.add(id);
+				} else if (ControllerUtils.READ.equals(permission)) {
+					// Folio.users is the list of users with read authority
+					folio.addUser(id);
+					userIdList.add(id);
+				}
+			}
+			resetUsers(folioDto, ownerIdList, userIdList);
+		} else {
+			// No values, get all users from db
+			List<CampaignUser> allCampaignUsers = campaignUserService.findAllByCampaignId(folio.getCampaignId());
+			String ownerId = userService.getCurrentUserId();
+
+ 			for (CampaignUser user : allCampaignUsers){
+ 				if (ownerId.equals(user.getUserId())) {
+ 					user.setRole(ControllerUtils.ROLE_OWNER);
+ 				} else {
+ 					user.setRole(ControllerUtils.NO_ACCESS);
+ 				}
+			}
+			String newValueList = "";
+			try {
+				newValueList = mapper.writeValueAsString(allCampaignUsers); //folioDtoUserList);
+			} catch (Exception e) {
+				
+			}
+			folioDto.setUsers(newValueList);
+		}
+	}
+	
+	private void resetUsers(FolioDto folioDto, List<String> ownerIdList, List<String> userIdList) {
+		// No values, get all users from db
+		List<CampaignUser> allCampaignUsers = campaignUserService.findAllByCampaignId(folioDto.getFolio().getCampaignId());
+		
+		for (CampaignUser user : allCampaignUsers){
+			if (ownerIdList.contains(user.getId())) {
+				user.setPermission(ControllerUtils.ROLE_OWNER);
+			} else if (userIdList.contains(user.getId())) { 
+				user.setPermission(ControllerUtils.ROLE_USER);
+			} else {
+				user.setPermission(ControllerUtils.NO_ACCESS);
+			}
+		}
+		String newValueList = "";
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			newValueList = mapper.writeValueAsString(allCampaignUsers);
+		} catch (Exception e) {
+			
+		}
+		folioDto.setUsers(newValueList);		
+	}
+	
+	private void usersFromFolioIntoDto(FolioDto folioDto) {
+		Folio folio = folioDto.getFolio();
+		List<CampaignUser> folioUserList = getFolioUsers(folio);
+		
 		ObjectMapper mapper = new ObjectMapper();
 		String users = null;
 		try {
-			users = mapper.writeValueAsString(userList);
+			users = mapper.writeValueAsString(folioUserList);
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		folioDto.setUsers(users);
-		folioDto.setFolioDescriptorList(getFolioDescriptorList(folio.getCampaignId(), null, operationType));
 	}
 	
 	private List<CampaignUser> getFolioUsers(Folio folio) {
@@ -184,31 +294,6 @@ public class FolioService implements Serializable {
 		}
 
 	    return allCampaignUsers;
-	}
-
-	// This method takes the values for user permissions from the FolioDto and
-	// put them into the Folio
-	private void convertFolioDtoUsers(FolioDto folioDto) {
-		String usersString = folioDto.getUsers();
-		ObjectMapper mapper = new ObjectMapper();
-		List<Map<String, String>> idValueList = null;
-		try {
-			idValueList = mapper.readValue(usersString, new TypeReference<List<Map<String, String>>>() {});
-		} catch (Exception e) {
-			
-		}
-		Folio folio = folioDto.getFolio();
-		folio.setOwners(null);
-		folio.setUsers(null);
-		for (Map<String, String> cu : idValueList) {
-			String id = cu.get("id");
-			String value = cu.get("value");
-			if (ControllerUtils.OWNER.equals(value)) {
-				folio.addOwner(id);
-			} else if (ControllerUtils.READ.equals(value)) {
-				folio.addUser(id);
-			}
-		}
 	}
 	
 	private String tagListToString(List<SimpleTag> simpleTagList) {

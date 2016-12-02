@@ -1,7 +1,7 @@
 package org.softwarewolf.gameserver.controller;
 
-import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
-import org.softwarewolf.gameserver.controller.helper.FeFeedback;
+import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
+import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.service.EncodingService;
 import org.softwarewolf.gameserver.service.GameMailService;
 import org.springframework.beans.factory.annotation.Autowired;

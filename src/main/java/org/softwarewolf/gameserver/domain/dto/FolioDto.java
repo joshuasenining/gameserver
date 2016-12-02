@@ -13,6 +13,13 @@ public class FolioDto {
 	private List<FolioDescriptor> folioDescriptorList;
 	private String viewTagList;
 	private String operationType;
+	/**
+	 * Serialized form of List<Map<String, String>> where each map contains:
+	 * id (a CampaignUser.userId)
+	 * userName (a CampaignUser.userName)
+	 * permission (a CampaignUser.permission - "ROLE_OWNER", "ROLE_USER", or "No Access") 
+	 * this is derived from Folo.owners and Folio.users (lists of user.id's)
+	 */
 	private String users;
 	private String forwardingUrl;
 	

@@ -1,4 +1,4 @@
-package org.softwarewolf.gameserver.controller.helper;
+package org.softwarewolf.gameserver.controller.utils;
 
 public class ControllerUtils {
 	public static final String CAMPAIGN_ID = "campaignId";

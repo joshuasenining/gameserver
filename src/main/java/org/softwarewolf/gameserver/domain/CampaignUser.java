@@ -6,6 +6,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * This class maps users onto campaigns. The user has a given role in the campaign
+ * ("ROLE_OWNER", "ROLE_GAMEMASTER", or "ROLE_USER" for player)
+ * in additon, in the context where a campaign player is used, it also has a permission
+ * that reflects the authority that the CampaignUser has over the object in question
+ * currently only used for Folio objects and could also be any of the roles above
+ */
 @Document
 public class CampaignUser implements Serializable, Comparable<Object> {
 	private static final long serialVersionUID = 1L;

@@ -3,7 +3,7 @@ package org.softwarewolf.gameserver.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
+import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.User;

@@ -11,7 +11,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.softwarewolf.gameserver.controller.helper.FeFeedback;
+import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.domain.EmailSettings;
 import org.softwarewolf.gameserver.repository.EmailSettingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;

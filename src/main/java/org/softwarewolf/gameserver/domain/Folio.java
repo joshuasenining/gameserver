@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import org.softwarewolf.gameserver.controller.helper.ControllerUtils;
+import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
 import org.springframework.data.annotation.Id;
@@ -170,10 +170,10 @@ public class Folio implements Serializable {
 	public String getUserPermission(String userId) {
 		if (owners.contains(userId)) { 
 			return ControllerUtils.ROLE_OWNER;
-		} else if (users.contains(userId)) {
+		} else if (users != null && users.contains(userId)) {
 			return ControllerUtils.ROLE_USER;
 		} else {
-			return "";
+			return ControllerUtils.NO_ACCESS;
 		}
 	}
 

@@ -1,6 +1,6 @@
 package org.softwarewolf.gameserver.controller;
 
-import org.softwarewolf.gameserver.controller.helper.FeFeedback;
+import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.domain.EmailSettings;
 import org.softwarewolf.gameserver.service.DataSeeder;
 import org.softwarewolf.gameserver.service.GameMailService;

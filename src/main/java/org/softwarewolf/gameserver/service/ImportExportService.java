@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
-import org.softwarewolf.gameserver.controller.helper.ImportExportHelper;
+import org.softwarewolf.gameserver.controller.utils.ImportExportHelper;
 //import org.softwarewolf.gameserver.controller.helper.ImportExportHelper;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.CampaignUser;
