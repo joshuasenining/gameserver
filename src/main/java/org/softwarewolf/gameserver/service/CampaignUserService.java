@@ -36,4 +36,8 @@ public class CampaignUserService {
 	public void deleteAll() {
 		campaignUserRepository.deleteAll();
 	}
+	
+	public List<CampaignUser> findAllByKeyValues(String key, Object[] value) {
+		return campaignUserRepository.findAllByKeyValues(key, value);
+	}	
 }

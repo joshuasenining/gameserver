@@ -143,5 +143,4 @@ public class CampaignService {
 		CampaignUser gmCu = new CampaignUser(campaign.getId(), "ROLE_GAMEMASTER", ownerId, userService.getCurrentUserName());
 		campaignUserRepository.save(gmCu);		
 	}
-
 }

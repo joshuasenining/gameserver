@@ -50,6 +50,7 @@ public class FolioService implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public Folio saveFolio(FolioDto folioDto) throws Exception {
+		convertUserMapToCampaignUsers(folioDto);
 		String selectedTagString = folioDto.getSelectedTags();
 		ObjectMapper mapper = new ObjectMapper();
 		JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, SimpleTag.class);
@@ -73,6 +74,49 @@ public class FolioService implements Serializable {
 		}
 		
 		return save(folio);
+	}
+	
+	public void convertUserMapToCampaignUsers(FolioDto folioDto) {
+		String usersString = folioDto.getUsers();
+		ObjectMapper mapper = new ObjectMapper();
+		List<Map<String, String>> idValueList = null;
+		try {
+			idValueList = mapper.readValue(usersString, new TypeReference<List<Map<String, String>>>() {});
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		Map<String, Map<String, String>> idMap = new HashMap<>();
+		for(Map<String, String> userData : idValueList) {
+			String userId = userData.get("id");
+			Map<String, String> inner = new HashMap<>();
+			inner.put("value", userData.get("value"));
+			idMap.put(userId, inner);
+		}
+		//List<CampaignUser> campaignUserList = campaignUserService.findAllByKeyValues("userId", idList.toArray());
+		List<CampaignUser> allUsersList = campaignUserService.findAllByCampaignId(folioDto.getFolio().getCampaignId());
+		Map<String, CampaignUser> campaignUserMap = new HashMap<>();
+		for (CampaignUser campaignUser : allUsersList) {
+			Map<String, String> idValue = idMap.get(campaignUser.getUserId());
+			if (idMap != null) {
+				if ("Owner".equals(idValue.get("value"))) {
+					campaignUser.setPermission("ROLE_OWNER");
+					campaignUserMap.put(campaignUser.getUserId(), campaignUser);
+				} else if ("Read".equals(idValue.get("value"))) {
+					campaignUser.setPermission("ROLE_USER");
+					campaignUserMap.put(campaignUser.getUserId(), campaignUser);
+				}
+			}
+		}
+		List<CampaignUser> campaignUserList = new ArrayList<CampaignUser>(campaignUserMap.values());
+		
+		String newList = null;
+		try {
+			newList = mapper.writeValueAsString(campaignUserList);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		folioDto.setUsers(newList);
 	}
 	
 	public void addRemoveTagsToFolio(FolioDto folioDto) {
@@ -195,76 +239,39 @@ public class FolioService implements Serializable {
 	private void usersFromDtoIntoFolio(FolioDto folioDto) {
 		String usersString = folioDto.getUsers();
 		ObjectMapper mapper = new ObjectMapper();
-		List<Map<String, String>> idValueList = null;
+		List<CampaignUser> campaignUserList = null;
 		try {
-			idValueList = mapper.readValue(usersString, new TypeReference<List<Map<String, String>>>() {});
+			campaignUserList = mapper.readValue(usersString, new TypeReference<List<CampaignUser>>() {});
 		} catch (Exception e) {
-			
+			throw new RuntimeException(e.getMessage());
 		}
 		Folio folio = folioDto.getFolio();
 		folio.setOwners(null);
 		folio.setUsers(null);
 		// put values from FolioDto into folio
-		if (idValueList != null) {
+		if (campaignUserList != null) {
 			List<String> ownerIdList = new ArrayList<>();
 			List<String> userIdList = new ArrayList<>();
-			for (Map<String, String> cu : idValueList) {
-				String id = cu.get("id");
-				String permission = cu.get("value");
-				if (ControllerUtils.OWNER.equals(permission)) {
+			for (CampaignUser cu : campaignUserList) {
+				String id = cu.getUserId();
+				String permission = cu.getPermission();
+				if (ControllerUtils.ROLE_OWNER.equals(permission)) {
 					// Folio.owners is the list of users with owner authority 
 					folio.addOwner(id);
 					ownerIdList.add(id);
-				} else if (ControllerUtils.READ.equals(permission)) {
+				} else if (ControllerUtils.ROLE_USER.equals(permission)) {
 					// Folio.users is the list of users with read authority
 					folio.addUser(id);
 					userIdList.add(id);
 				}
 			}
-			resetUsers(folioDto, ownerIdList, userIdList);
+			folio.setOwners(ownerIdList);
+			folio.setUsers(userIdList);
 		} else {
-			// No values, get all users from db
-			List<CampaignUser> allCampaignUsers = campaignUserService.findAllByCampaignId(folio.getCampaignId());
+			// No values, current user = owner
 			String ownerId = userService.getCurrentUserId();
-
- 			for (CampaignUser user : allCampaignUsers){
- 				if (ownerId.equals(user.getUserId())) {
- 					user.setRole(ControllerUtils.ROLE_OWNER);
- 				} else {
- 					user.setRole(ControllerUtils.NO_ACCESS);
- 				}
-			}
-			String newValueList = "";
-			try {
-				newValueList = mapper.writeValueAsString(allCampaignUsers); //folioDtoUserList);
-			} catch (Exception e) {
-				
-			}
-			folioDto.setUsers(newValueList);
+			folio.addOwner(ownerId);
 		}
-	}
-	
-	private void resetUsers(FolioDto folioDto, List<String> ownerIdList, List<String> userIdList) {
-		// No values, get all users from db
-		List<CampaignUser> allCampaignUsers = campaignUserService.findAllByCampaignId(folioDto.getFolio().getCampaignId());
-		
-		for (CampaignUser user : allCampaignUsers){
-			if (ownerIdList.contains(user.getId())) {
-				user.setPermission(ControllerUtils.ROLE_OWNER);
-			} else if (userIdList.contains(user.getId())) { 
-				user.setPermission(ControllerUtils.ROLE_USER);
-			} else {
-				user.setPermission(ControllerUtils.NO_ACCESS);
-			}
-		}
-		String newValueList = "";
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			newValueList = mapper.writeValueAsString(allCampaignUsers);
-		} catch (Exception e) {
-			
-		}
-		folioDto.setUsers(newValueList);		
 	}
 	
 	private void usersFromFolioIntoDto(FolioDto folioDto) {
@@ -284,16 +291,22 @@ public class FolioService implements Serializable {
 	
 	private List<CampaignUser> getFolioUsers(Folio folio) {
 		List<CampaignUser> allCampaignUsers = campaignUserService.findAllByCampaignId(folio.getCampaignId());
+		List<CampaignUser> folioUserList = new ArrayList<>();
 		
-		if (folio.getOwners().isEmpty()) {
-			String userId = userService.getCurrentUserId();
-			folio.addOwner(userId);
-		}
-		for (CampaignUser user : allCampaignUsers) {
-			user.setPermission(folio.getUserPermission(user.getUserId()));
+		for (CampaignUser campaignUser : allCampaignUsers) {
+			if (folio.getOwners().contains(campaignUser.getUserId())) {
+				campaignUser.setPermission(ControllerUtils.ROLE_OWNER);
+				folioUserList.add(campaignUser);
+			} else if (folio.getUsers().contains(campaignUser.getUserId())) {
+				campaignUser.setPermission(ControllerUtils.ROLE_USER);
+				folioUserList.add(campaignUser);
+			} else {
+				campaignUser.setPermission(ControllerUtils.NO_ACCESS);
+				folioUserList.add(campaignUser);
+			}
 		}
 
-	    return allCampaignUsers;
+	    return folioUserList;
 	}
 	
 	private String tagListToString(List<SimpleTag> simpleTagList) {

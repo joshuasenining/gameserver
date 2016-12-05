@@ -83,7 +83,7 @@
  			
 			$.each(userList, function(i, item) {
 				var name = item["userName"];
-				var id = item["id"];
+				var id = item["userId"];
 				var rowDiv = $('<div class="row"/>');
 				var spacerDiv = $('<div class="col-md-1"/>');
 				spacerDiv.appendTo(rowDiv);
@@ -111,7 +111,7 @@
 		});	
 		
 		$("#editFolioForm").submit(function(event) {
-			var jsonObj = [];
+			var buttonData = [];
 			$('.permission').each(function(i, btn) {
 			    var value = $(this).attr("value");
 			    var id = $(this).attr("id");
@@ -120,10 +120,10 @@
 			    item["id"] = id;
 			    item["value"] = value;
 				
-				jsonObj.push(item);	
+				buttonData.push(item);	
 			});
-			console.log(jsonObj);
-			var jsonString = JSON.stringify(jsonObj);
+			console.log(buttonData);
+			var jsonString = JSON.stringify(buttonData);
 			$("#users").val(jsonString);
 		});
 		

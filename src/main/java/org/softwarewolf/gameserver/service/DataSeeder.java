@@ -78,6 +78,7 @@ public class DataSeeder {
 	
 	public void cleanRepos() {
 		Campaign sAndSCampaign = campaignService.findOneByName(SWORD_AND_SORCERY);
+		campaignUserService.deleteByCampaignId(sAndSCampaign.getId());
 		if (sAndSCampaign != null) {
 			folioService.deleteByCampaignId(sAndSCampaign.getId());
 			simpleTagService.deleteByCampaignId(sAndSCampaign.getId());
@@ -85,6 +86,7 @@ public class DataSeeder {
 			campaignService.deleteByName(SWORD_AND_SORCERY);
 		}
 		Campaign modernCampaign  = campaignService.findOneByName(MODERN);
+		campaignUserService.deleteByCampaignId(modernCampaign.getId());
 		if (modernCampaign != null) {
 			folioService.deleteByCampaignId(modernCampaign.getId());
 			simpleTagService.deleteByCampaignId(modernCampaign.getId());
@@ -92,6 +94,7 @@ public class DataSeeder {
 			campaignService.deleteByName(MODERN);
 		}
 		Campaign spaceCampaign = campaignService.findOneByName(SPACE_OPERA);
+		campaignUserService.deleteByCampaignId(spaceCampaign.getId());
 		if (spaceCampaign != null) {
 			folioService.deleteByCampaignId(spaceCampaign.getId());
 			simpleTagService.deleteByCampaignId(spaceCampaign.getId());

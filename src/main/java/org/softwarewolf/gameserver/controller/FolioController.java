@@ -71,14 +71,12 @@ public class FolioController {
 		Folio folio = null;
 		try {
 			folio = folioService.saveFolio(folioDto);
-			folioDto.setFolio(folio);
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
 			feFeedback.setUserStatus("You are editing folio " + (folio == null ? "" : folio.getTitle()));
-			return ControllerUtils.EDIT_FOLIO;
-		} finally {
 			folioDto = folioService.initFolioDto(folioDto, campaignId, FolioService.EDIT, GetPermissionsFrom.FOLIO_DTO);
+			return ControllerUtils.EDIT_FOLIO;
 		}
 		
 		feFeedback.setInfo("You have modified folio " + folio.getTitle());
