@@ -97,7 +97,7 @@ public class FolioController {
 
 		return ControllerUtils.SELECT_FOLIO;
 	}
-	
+	/*
 	@RequestMapping(value = "/changeFolioPermissions", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER"})
 	public String changeFolioPermissions(HttpSession session, FolioDto folioDto, 
@@ -121,7 +121,7 @@ public class FolioController {
 		feFeedback.setUserStatus("You are editing folio " + folioDto.getFolio().getTitle());
 		return ControllerUtils.EDIT_FOLIO;
 	}
-	
+	*/
 	@RequestMapping(value = "/folio/addTagToSearch", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER"})
 	public String addTagToSearch(HttpSession session, SelectFolioDto selectFolioDto, final FeFeedback feFeedback) {

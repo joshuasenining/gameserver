@@ -50,7 +50,6 @@ public class FolioService implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public Folio saveFolio(FolioDto folioDto) throws Exception {
-		convertUserMapToCampaignUsers(folioDto);
 		String selectedTagString = folioDto.getSelectedTags();
 		ObjectMapper mapper = new ObjectMapper();
 		JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, SimpleTag.class);
@@ -74,49 +73,6 @@ public class FolioService implements Serializable {
 		}
 		
 		return save(folio);
-	}
-	
-	public void convertUserMapToCampaignUsers(FolioDto folioDto) {
-		String usersString = folioDto.getUsers();
-		ObjectMapper mapper = new ObjectMapper();
-		List<Map<String, String>> idValueList = null;
-		try {
-			idValueList = mapper.readValue(usersString, new TypeReference<List<Map<String, String>>>() {});
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		Map<String, Map<String, String>> idMap = new HashMap<>();
-		for(Map<String, String> userData : idValueList) {
-			String userId = userData.get("id");
-			Map<String, String> inner = new HashMap<>();
-			inner.put("value", userData.get("value"));
-			idMap.put(userId, inner);
-		}
-		//List<CampaignUser> campaignUserList = campaignUserService.findAllByKeyValues("userId", idList.toArray());
-		List<CampaignUser> allUsersList = campaignUserService.findAllByCampaignId(folioDto.getFolio().getCampaignId());
-		Map<String, CampaignUser> campaignUserMap = new HashMap<>();
-		for (CampaignUser campaignUser : allUsersList) {
-			Map<String, String> idValue = idMap.get(campaignUser.getUserId());
-			if (idMap != null) {
-				if ("Owner".equals(idValue.get("value"))) {
-					campaignUser.setPermission("ROLE_OWNER");
-					campaignUserMap.put(campaignUser.getUserId(), campaignUser);
-				} else if ("Read".equals(idValue.get("value"))) {
-					campaignUser.setPermission("ROLE_USER");
-					campaignUserMap.put(campaignUser.getUserId(), campaignUser);
-				}
-			}
-		}
-		List<CampaignUser> campaignUserList = new ArrayList<CampaignUser>(campaignUserMap.values());
-		
-		String newList = null;
-		try {
-			newList = mapper.writeValueAsString(campaignUserList);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		folioDto.setUsers(newList);
 	}
 	
 	public void addRemoveTagsToFolio(FolioDto folioDto) {

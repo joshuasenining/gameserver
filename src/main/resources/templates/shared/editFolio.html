@@ -111,6 +111,8 @@
 		});	
 		
 		$("#editFolioForm").submit(function(event) {
+			var permissionMap = {};
+			var buttonMap = {};
 			var buttonData = [];
 			$('.permission').each(function(i, btn) {
 			    var value = $(this).attr("value");
@@ -120,11 +122,26 @@
 			    item["id"] = id;
 			    item["value"] = value;
 				
-				buttonData.push(item);	
+				buttonData.push(item);
+				
+				buttonMap[id] = value;
 			});
 			console.log(buttonData);
-			var jsonString = JSON.stringify(buttonData);
-			$("#users").val(jsonString);
+
+			var usersObject = JSON.parse($("#users").val());
+			$.each(usersObject, function(i, item) { 
+				var userId = item["userId"];
+				var newPermission = buttonMap[userId];
+				if (newPermission == "Owner") {
+					item["permission"] = "ROLE_OWNER";
+				} else if (newPermission == "Read") {
+					item["permission"] = "ROLE_USER";
+				} else {
+					item["permission"] = "NO_ACCESS";
+				}
+			});
+			var newUserString = JSON.stringify(usersObject)
+			$("#users").val(newUserString);
 		});
 		
 		$(function() {
