@@ -20,21 +20,14 @@
 	<script th:inline="javascript">
 	$(document).ready(function() {
 		$( window ).load(function() {
-			$('.cb').change(function() {
-				var newList = "";
-				$('.cb').each(function() {
-					if (this.checked) {
-						if (newList != "") {
-							newList = this.name + "," + newList;
-						} else {
-							newList = this.name;
-						}
-					}
-				});
-				alert(newList);
-			})
+			// placeholder
 		});		
 	});	
+	
+	function viewCampaign(id) {
+		alert(id);
+		window.location.replace("/view")
+	}
 	</script>
 </head>
 <body>
@@ -81,7 +74,7 @@
 					<ul>
 					  <li class="no-bullets" th:each="campaign : *{inaccessableCampaigns}">
 					    <input type="checkbox" class="cb" th:value="${campaign.id}" th:name="${campaign.name}"></input>
-					    <label th:text="${campaign.name}">Campaign Name</label>
+					    <span th:id="${campaign.id}" class="bold-no-box" th:text="${campaign.name}" th:onclick="'javascript:viewCampaign(\''+${campaign.id}+'\');'"></span>
 					  </li>
 					</ul>			
 				</div>

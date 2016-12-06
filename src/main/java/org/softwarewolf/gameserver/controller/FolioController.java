@@ -97,19 +97,17 @@ public class FolioController {
 
 		return ControllerUtils.SELECT_FOLIO;
 	}
-	/*
-	@RequestMapping(value = "/changeFolioPermissions", method = RequestMethod.POST)
-	@Secured({"USER","GAMEMASTER"})
-	public String changeFolioPermissions(HttpSession session, FolioDto folioDto, 
-			final FeFeedback feFeedback) {
+	
+	@RequestMapping(value = "/viewCampaignInfo", method = RequestMethod.GET)
+	public String viewCampaignInfo(HttpSession session, @RequestParam("campaignId") String selectedCampaignId,
+			Folio folio, FeFeedback feFeedback) {
 		String campaignId = (String)session.getAttribute(ControllerUtils.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerUtils.USER_MENU;
 		}		
 
-		Folio folio = null;
 		try {
-			folioDto = folioService.initFolioDto(folioDto, campaignId, FolioService.EDIT, GetPermissionsFrom.FOLIO_DTO);
+//			folio = folioService.find;
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
@@ -117,11 +115,9 @@ public class FolioController {
 			return ControllerUtils.EDIT_FOLIO;
 		}
 		
-		feFeedback.setInfo("You have modified folio " + folioDto.getFolio().getTitle());
-		feFeedback.setUserStatus("You are editing folio " + folioDto.getFolio().getTitle());
 		return ControllerUtils.EDIT_FOLIO;
 	}
-	*/
+	
 	@RequestMapping(value = "/folio/addTagToSearch", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER"})
 	public String addTagToSearch(HttpSession session, SelectFolioDto selectFolioDto, final FeFeedback feFeedback) {

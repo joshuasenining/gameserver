@@ -178,6 +178,12 @@ hr {
 	margin-right: 5px;	
 }
 
+.bold-no-box {
+	font-weight: bold;
+	border-width:0px;
+	border:none;
+}
+
 .no-bullets {
 	list-style-type: none;
 }
