@@ -148,6 +148,7 @@ public class CampaignService {
 	
 	public void createCampaign(CampaignDto campaignDto) {
 		Campaign campaign = campaignDto.getCampaign();
+		validateCampaign(campaign);
 		String ownerId = campaignDto.getOwnerId();
 		campaign.setOwnerId(ownerId);
 		campaign = saveCampaign(campaign);
@@ -155,6 +156,40 @@ public class CampaignService {
 		campaignUserRepository.save(ownerCu);
 		CampaignUser gmCu = new CampaignUser(campaign.getId(), "ROLE_GAMEMASTER", ownerId, userService.getCurrentUserName());
 		campaignUserRepository.save(gmCu);		
+	}
+	
+	private void validateCampaign(Campaign campaign) {
+		StringBuilder errors = new StringBuilder();
+		if (campaign.getName() == null) {
+			errors.append("The campaign must have a name.");
+		} else {
+			List<Campaign> existingCampaigns = campaignRepository.findAll();
+			for (Campaign existingCampaign : existingCampaigns) {
+				if (existingCampaign.getName().toUpperCase().equals(campaign.getName().toUpperCase()) && 
+						!existingCampaign.getId().equals(campaign.getId())) {
+					if (errors.length() > 0) {
+						errors.append(" ");
+					}
+					errors.append("Campaign names can not be duplicates.");
+				}
+			}
+			if (campaign.getDescription() == null || campaign.getDescription().isEmpty()) {
+				
+				if (errors.length() > 0) {
+					errors.append(" ");
+				}
+				errors.append("A description is required.");
+			}
+			if (campaign.getOwnerId() == null) {
+				if (errors.length() > 0) {
+					errors.append(" ");
+				}
+				errors.append("A campaign must have an owner.");
+			}
+		}
+		if (errors.length() > 0) {
+			throw new RuntimeException(errors.toString());
+		}
 	}
 	
 	public String deleteCampaign(String campaignId) {

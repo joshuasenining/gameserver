@@ -75,10 +75,13 @@ public class CampaignController {
 	@Secured({"GAMEMASTER", "ADMIN"})
 	public String postCampaign(@ModelAttribute CampaignDto campaignDto, FeFeedback feFeedback) {
 		String ownerId = campaignDto.getOwnerId();
-		campaignService.createCampaign(campaignDto);
+		try {
+			campaignService.createCampaign(campaignDto);
+			feFeedback.setInfo("Campaign " + campaignDto.getCampaign().getName() + " created.");
+		} catch (Exception e) {
+			feFeedback.setError(e.getMessage());
+		}
 		campaignService.initCampaignDto(campaignDto, ownerId);
-		feFeedback.setInfo("Campaign " + campaignDto.getCampaign().getName() + " created.");
-		
 		return ControllerUtils.CREATE_CAMPAIGN;
 	}
 }
