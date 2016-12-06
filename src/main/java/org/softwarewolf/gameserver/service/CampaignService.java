@@ -31,6 +31,15 @@ public class CampaignService {
 	@Autowired
 	CampaignUserRepository campaignUserRepository;
 	
+	@Autowired
+	SimpleTagService simpleTagService;
+	
+	@Autowired
+	CampaignUserService campaignUserService;
+	
+	@Autowired
+	FolioService folioService;
+	
 	public List<UserListItem> getGamemasters() {
 		List<UserListItem> gamemasters = new ArrayList<>();
 		List<User> userList = userRepository.findAll();
@@ -90,21 +99,25 @@ public class CampaignService {
 			}
 		}
 
-		List<String> campaignIdList = new ArrayList<>();
-		for (CampaignUser player : inCampaignList) {
-			campaignIdList.add(player.getCampaignId());
+		if (ControllerUtils.ADMIN_TYPE.equals(asType)) {
+			selectCampaignDto.setAccessableCampaigns(allCampaigns);
+		} else {
+			List<String> campaignIdList = new ArrayList<>();
+			for (CampaignUser player : inCampaignList) {
+				campaignIdList.add(player.getCampaignId());
+			}
+			Object[] campaignArray = new Object[campaignIdList.size()];
+			campaignArray = campaignIdList.toArray(campaignArray);
+			List<Campaign> campaignList = campaignRepository.findAllByKeyValues("id", campaignArray);
+			
+			List<Campaign> inaccessableCampaigns = new ArrayList<Campaign>(allCampaigns);
+			inaccessableCampaigns.removeAll(campaignList);
+			
+			selectCampaignDto.setAccessableCampaigns(campaignList);
+			selectCampaignDto.setInaccessableCampaigns(inaccessableCampaigns);
+
 		}
-		Object[] campaignArray = new Object[campaignIdList.size()];
-		campaignArray = campaignIdList.toArray(campaignArray);
-		List<Campaign> campaignList = campaignRepository.findAllByKeyValues("id", campaignArray);
-		
-		List<Campaign> inaccessableCampaigns = new ArrayList<Campaign>(allCampaigns);
-		inaccessableCampaigns.removeAll(campaignList);
-		
-		selectCampaignDto.setAccessableCampaigns(campaignList);
-		selectCampaignDto.setInaccessableCampaigns(inaccessableCampaigns);
 	}
-	
 	public List<Campaign> getAllCampaignsByGM(String ownerId) {
 		return campaignRepository.findByOwnerId(ownerId);		
 	}
@@ -142,5 +155,19 @@ public class CampaignService {
 		campaignUserRepository.save(ownerCu);
 		CampaignUser gmCu = new CampaignUser(campaign.getId(), "ROLE_GAMEMASTER", ownerId, userService.getCurrentUserName());
 		campaignUserRepository.save(gmCu);		
+	}
+	
+	public String deleteCampaign(String campaignId) {
+		Campaign selectedCampaign = findOne(campaignId);
+		if (selectedCampaign == null) {
+			throw new RuntimeException("Could not locate a campaign for id " + campaignId);
+		}
+		String campaignName = selectedCampaign.getName();
+		simpleTagService.deleteByCampaignId(campaignId);
+		campaignUserService.deleteByCampaignId(campaignId);
+		folioService.deleteByCampaignId(campaignId);
+		campaignRepository.delete(selectedCampaign);
+		
+		return campaignName;
 	}
 }

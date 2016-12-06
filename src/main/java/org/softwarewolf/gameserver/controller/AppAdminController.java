@@ -1,7 +1,13 @@
 package org.softwarewolf.gameserver.controller;
 
+import javax.servlet.http.HttpSession;
+
+import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
+import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.EmailSettings;
+import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
+import org.softwarewolf.gameserver.service.CampaignService;
 import org.softwarewolf.gameserver.service.DataSeeder;
 import org.softwarewolf.gameserver.service.GameMailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +26,11 @@ public class AppAdminController {
 	@Autowired
 	private GameMailService gameMailService;
 	
+	@Autowired
+	private CampaignService campaignService;
+	
 	@RequestMapping(value="/seedData", method = RequestMethod.GET)
-//	@Secured({"ADMIN"})
+	@Secured({"ADMIN"})
 	public String seedDb() {
 		dataSeeder.cleanRepos();
 		dataSeeder.seedData();
@@ -49,5 +58,31 @@ public class AppAdminController {
 		gameMailService.updateEmailSettings(emailSettings, feFeedback);
 
 		return "admin/emailSettings";
+	}	
+	
+	@RequestMapping(value="/deleteCampaign", method = RequestMethod.GET)
+	@Secured({"ADMIN"})
+	public String deleteCampaign(final SelectCampaignDto selectCampaignDto, final FeFeedback feFeedback) {
+		campaignService.initSelectCampaignDto(selectCampaignDto, ControllerUtils.ADMIN_TYPE);
+
+		return ControllerUtils.DELETE_CAMPAIGN;
+	}
+	
+	@RequestMapping(value="/deleteCampaign", method = RequestMethod.POST)
+	@Secured({"ADMIN"})
+	public String deleteCampaign(HttpSession session, final SelectCampaignDto selectCampaignDto,
+			final FeFeedback feFeedback) {
+		String campaignId = selectCampaignDto.getSelectedCampaignId();
+		
+		String campaignName = null;
+		try {
+			campaignName = campaignService.deleteCampaign(campaignId);
+			feFeedback.setInfo("You have deleted campaign '"+campaignName+"'");
+		} catch (RuntimeException e) {
+			feFeedback.setError(e.getMessage());
+		}
+		campaignService.initSelectCampaignDto(selectCampaignDto, ControllerUtils.ADMIN_TYPE);
+		
+		return ControllerUtils.DELETE_CAMPAIGN;
 	}	
 }

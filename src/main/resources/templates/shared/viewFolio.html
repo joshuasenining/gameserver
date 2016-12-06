@@ -75,17 +75,30 @@
 			<div class="col-md-1">
 				<label class="input-margin" th:text="#{viewFolio.tags}">Ta</label>
 			</div>
-			<div class="col-md-8">
-				<span id="tagList" class="input-margin" th:field="*{selectedtags}"></span>
+			<div class="col-md-8 input-margin">
+				<span id="tagList" th:field="*{selectedtags}"></span>
 			</div>
 		</div>
 
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
-				<label class="input-margin" th:text="#{viewFolio.content}">Cont</label>
+				<label class="input-margin" th:text="#{viewFolio.folioTitle}">Ta</label>
 			</div>
 			<div class="col-md-8">
+				<label class="input-margin fullWidth" th:text="*{folio.title}"></label>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="folio-margin" th:text="#{viewFolio.content}">Cont</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1"></div>			
+			<div class="col-md-11">
 				<span th:utext="*{folio.content}"></span>
 			</div>
 		</div>
