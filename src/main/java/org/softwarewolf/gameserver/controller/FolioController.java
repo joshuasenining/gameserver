@@ -106,11 +106,10 @@ public class FolioController {
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
-			feFeedback.setUserStatus("You are editing folio " + (folio == null ? "" : folio.getTitle()));
-			return ControllerUtils.EDIT_FOLIO;
+			return ControllerUtils.SELECT_CAMPAIGN;
 		}
 		
-		return ControllerUtils.EDIT_FOLIO;
+		return ControllerUtils.SELECT_CAMPAIGN;
 	}
 	
 	@RequestMapping(value = "/folio/addTagToSearch", method = RequestMethod.POST)
