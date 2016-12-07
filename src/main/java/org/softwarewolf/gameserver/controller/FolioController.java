@@ -101,11 +101,6 @@ public class FolioController {
 	@RequestMapping(value = "/viewCampaignInfo", method = RequestMethod.GET)
 	public String viewCampaignInfo(HttpSession session, @RequestParam("campaignId") String selectedCampaignId,
 			Folio folio, FeFeedback feFeedback) {
-		String campaignId = (String)session.getAttribute(ControllerUtils.CAMPAIGN_ID);
-		if (campaignId == null) {
-			return ControllerUtils.USER_MENU;
-		}		
-
 		try {
 //			folio = folioService.find;
 		} catch (Exception e) {
