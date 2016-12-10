@@ -74,7 +74,7 @@
 					<ul>
 					  <li class="no-bullets" th:each="campaign : *{inaccessableCampaigns}">
 					    <input type="checkbox" class="cb" th:value="${campaign.id}" th:name="${campaign.name}"></input>
-					    <span th:id="${campaign.id}" class="bold-no-box" th:text="${campaign.name}" th:onclick="'javascript:viewCampaign(\''+${campaign.id}+'\');'"></span>
+					    <span th:id="${campaign.id}" class="bold underline-pointer" th:text="${campaign.name}" th:onclick="'javascript:viewCampaign(\''+${campaign.id}+'\');'"></span>
 					  </li>
 					</ul>			
 				</div>

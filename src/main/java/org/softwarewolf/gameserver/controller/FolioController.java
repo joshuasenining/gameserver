@@ -1,5 +1,8 @@
 package org.softwarewolf.gameserver.controller;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +12,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.controller.utils.GetPermissionsFrom;
 import org.softwarewolf.gameserver.domain.Folio;
+import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDto;
 import org.softwarewolf.gameserver.domain.dto.SelectFolioDto;
+import org.softwarewolf.gameserver.service.CampaignService;
 import org.softwarewolf.gameserver.service.FolioService;
 import org.softwarewolf.gameserver.service.SimpleTagService;
 
@@ -26,6 +32,9 @@ public class FolioController {
 	
 	@Autowired
 	protected SimpleTagService simpleTagService;
+	
+	@Autowired
+	protected CampaignService campaignService;
 	
 	private static final String NEW_FOLIO = "You are creating a new folio";
 	private static final String EDITING_FOLIO = "You are editing folio '";
@@ -100,16 +109,20 @@ public class FolioController {
 	
 	@RequestMapping(value = "/viewCampaignInfo", method = RequestMethod.GET)
 	public String viewCampaignInfo(HttpSession session, @RequestParam("campaignId") String selectedCampaignId,
-			Folio folio, FeFeedback feFeedback) {
+			FolioDto folioDto, FeFeedback feFeedback) {
 		try {
-//			folio = folioService.find;
+			SimpleTag campaignDescTag = campaignService.getCampaignDescriptionTag(selectedCampaignId);
+			List<SimpleTag> tagList = Arrays.asList(campaignDescTag);
+			Folio folio = folioService.findFoliosByTags(tagList).get(0);
+			folioDto.setFolio(folio);
+			folioDto.setForwardingUrl(ControllerUtils.SELECT_CAMPAIGN);
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
 			return ControllerUtils.SELECT_CAMPAIGN;
 		}
 		
-		return ControllerUtils.SELECT_CAMPAIGN;
+		return ControllerUtils.VIEW_FOLIO;
 	}
 	
 	@RequestMapping(value = "/folio/addTagToSearch", method = RequestMethod.POST)

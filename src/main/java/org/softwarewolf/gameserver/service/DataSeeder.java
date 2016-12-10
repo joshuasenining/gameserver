@@ -10,6 +10,7 @@ import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.User;
+import org.softwarewolf.gameserver.domain.dto.CampaignDto;
 import org.softwarewolf.gameserver.repository.CampaignUserRepository;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
 import org.softwarewolf.gameserver.repository.DeleteableRoleRepository;
@@ -78,28 +79,34 @@ public class DataSeeder {
 	
 	public void cleanRepos() {
 		Campaign sAndSCampaign = campaignService.findOneByName(SWORD_AND_SORCERY);
-		campaignUserService.deleteByCampaignId(sAndSCampaign.getId());
 		if (sAndSCampaign != null) {
-			folioService.deleteByCampaignId(sAndSCampaign.getId());
-			simpleTagService.deleteByCampaignId(sAndSCampaign.getId());
 			campaignUserService.deleteByCampaignId(sAndSCampaign.getId());
-			campaignService.deleteByName(SWORD_AND_SORCERY);
+			if (sAndSCampaign != null) {
+				folioService.deleteByCampaignId(sAndSCampaign.getId());
+				simpleTagService.deleteByCampaignId(sAndSCampaign.getId());
+				campaignUserService.deleteByCampaignId(sAndSCampaign.getId());
+				campaignService.deleteByName(SWORD_AND_SORCERY);
+			}
 		}
 		Campaign modernCampaign  = campaignService.findOneByName(MODERN);
-		campaignUserService.deleteByCampaignId(modernCampaign.getId());
 		if (modernCampaign != null) {
-			folioService.deleteByCampaignId(modernCampaign.getId());
-			simpleTagService.deleteByCampaignId(modernCampaign.getId());
 			campaignUserService.deleteByCampaignId(modernCampaign.getId());
-			campaignService.deleteByName(MODERN);
+			if (modernCampaign != null) {
+				folioService.deleteByCampaignId(modernCampaign.getId());
+				simpleTagService.deleteByCampaignId(modernCampaign.getId());
+				campaignUserService.deleteByCampaignId(modernCampaign.getId());
+				campaignService.deleteByName(MODERN);
+			}
 		}
 		Campaign spaceCampaign = campaignService.findOneByName(SPACE_OPERA);
-		campaignUserService.deleteByCampaignId(spaceCampaign.getId());
 		if (spaceCampaign != null) {
-			folioService.deleteByCampaignId(spaceCampaign.getId());
-			simpleTagService.deleteByCampaignId(spaceCampaign.getId());
 			campaignUserService.deleteByCampaignId(spaceCampaign.getId());
-			campaignService.deleteByName(SPACE_OPERA);
+			if (spaceCampaign != null) {
+				folioService.deleteByCampaignId(spaceCampaign.getId());
+				simpleTagService.deleteByCampaignId(spaceCampaign.getId());
+				campaignUserService.deleteByCampaignId(spaceCampaign.getId());
+				campaignService.deleteByName(SPACE_OPERA);
+			}
 		}
 		campaignUserService.deleteAll();
 		
@@ -220,14 +227,22 @@ public class DataSeeder {
 	private void saveCampaign(String name, String description, String ownerId, Map<String, Campaign> campaignMap) {
 		Campaign campaign = campaignService.findOneByName(name);
 		if (campaign == null) {
+			CampaignDto campaignDto = new CampaignDto();
 			campaign = new Campaign();
 			campaign.setName(name);
-			campaign.setDescription(description);
-			campaign.setOwnerId(ownerId);
-			campaign = campaignService.save(campaign);
+			campaignDto.setOwnerId(ownerId);
+			campaignDto.setCampaign(campaign);
+			Folio campaignFolio = new Folio();
+			campaignFolio.setContent(description);
+			campaignDto.setCampaignFolio(campaignFolio);
+			try {
+				campaignService.saveCampaign(campaignDto);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			campaign = campaignDto.getCampaign();
 			campaignMap.put(name, campaign);
-			CampaignUser ownerCu = new CampaignUser(campaign.getId(), ROLE_OWNER, ownerId, GM);
-			campaignUserService.save(ownerCu);
 		}
 	}
 	

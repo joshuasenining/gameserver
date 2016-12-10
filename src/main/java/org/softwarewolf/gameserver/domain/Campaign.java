@@ -12,7 +12,7 @@ public class Campaign implements Serializable {
 	@Id
 	private String id;
 	private String name;
-	private String description;
+	private String campaignFolioId;
 	private String ownerId;
 	private List<String> gameMasterIdList;
 
@@ -38,12 +38,12 @@ public class Campaign implements Serializable {
 		this.name = name;
 	}
 	
-	public String getDescription() {
-		return description;
+	public String getCampaignFolioId() {
+		return campaignFolioId;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setCampaignFolioId(String campaignFolioId) {
+		this.campaignFolioId = campaignFolioId;
 	}
 		
 	public String getOwnerId() {
@@ -66,7 +66,7 @@ public class Campaign implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((campaignFolioId == null) ? 0 : campaignFolioId.hashCode());
 		result = prime * result + ((gameMasterIdList == null) ? 0 : gameMasterIdList.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -83,10 +83,10 @@ public class Campaign implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Campaign other = (Campaign) obj;
-		if (description == null) {
-			if (other.description != null)
+		if (campaignFolioId == null) {
+			if (other.campaignFolioId != null)
 				return false;
-		} else if (!description.equals(other.description))
+		} else if (!campaignFolioId.equals(other.campaignFolioId))
 			return false;
 		if (gameMasterIdList == null) {
 			if (other.gameMasterIdList != null)

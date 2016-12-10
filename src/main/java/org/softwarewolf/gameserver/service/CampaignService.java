@@ -2,10 +2,14 @@ package org.softwarewolf.gameserver.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.CampaignUser;
+import org.softwarewolf.gameserver.domain.Folio;
+import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.CampaignDto;
 import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
@@ -14,31 +18,35 @@ import org.softwarewolf.gameserver.repository.CampaignUserRepository;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CampaignService {
 	@Autowired
-	UserService userService;
+	private UserService userService;
 	
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 	
 	@Autowired
-	CampaignRepository campaignRepository;
+	private CampaignRepository campaignRepository;
 	
 	@Autowired
-	CampaignUserRepository campaignUserRepository;
+	private CampaignUserRepository campaignUserRepository;
 	
 	@Autowired
-	SimpleTagService simpleTagService;
+	private SimpleTagService simpleTagService;
 	
 	@Autowired
-	CampaignUserService campaignUserService;
+	private CampaignUserService campaignUserService;
 	
 	@Autowired
-	FolioService folioService;
+	private FolioService folioService;
+	
+	@Autowired
+	private MessageSource messageSource;
 	
 	public List<UserListItem> getGamemasters() {
 		List<UserListItem> gamemasters = new ArrayList<>();
@@ -60,15 +68,81 @@ public class CampaignService {
 		campaignDto.setCampaign(new Campaign(ownerId));
 	}
 	
-	public Campaign saveCampaign(Campaign campaign) {
+	public Campaign saveCampaign(CampaignDto campaignDto) throws Exception {
+		Campaign campaign = campaignDto.getCampaign();
+		// Do we need to set the campaign owner?
+		if (campaign.getOwnerId() == null) {
+			if (campaignDto.getOwnerId() == null) {
+				campaignDto.setOwnerId(userService.getCurrentUserId());
+			}
+			String campaignOwnerId = campaignDto.getOwnerId();
+			campaign.setOwnerId(campaignOwnerId);
+		}
+		// Set the gms
+		List<UserListItem> gamemasters = campaignDto.getGamemasters();
+		if (gamemasters != null && !gamemasters.isEmpty()) {
+			List<String> gmIdList = new ArrayList<>();
+			gamemasters.forEach(gm -> gmIdList.add(gm.getId()));  
+			campaign.setGameMasterIdList(gmIdList);
+		}
+		
+		// We need the campaign id for the folio, if we haven't saved the campaign ever
+		// we don't have an id, so we need to do this...
+		boolean saveFolio = false;
+		boolean createOwnerAndUsers = false;
+		Folio campaignFolio = saveCampaignFolio(campaignDto);
+		if (campaignFolio == null) {
+			saveFolio = true;
+			createOwnerAndUsers = true;
+		}
 		campaign =  campaignRepository.save(campaign);
-		CampaignUser owner = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_OWNER, 
-				userService.getCurrentUserId(), userService.getCurrentUserName());
-		campaignUserRepository.save(owner);
-		CampaignUser gm = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_GAMEMASTER, 
-				userService.getCurrentUserId(), userService.getCurrentUserName());
-		campaignUserRepository.save(gm);
+		if (saveFolio) {
+			saveCampaignFolio(campaignDto);
+		}
+		
+		// We may need to create some CampaignUsers
+		if (createOwnerAndUsers) {
+			User userOwner = userService.getUser(campaign.getOwnerId());
+			CampaignUser owner = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_OWNER, 
+					userOwner.getId(), userOwner.getUsername());
+			campaignUserRepository.save(owner);
+			CampaignUser gm = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_GAMEMASTER, 
+					userOwner.getId(), userOwner.getUsername());
+			campaignUserRepository.save(gm);
+		}
 		return campaign;
+	}
+	
+	private Folio saveCampaignFolio(CampaignDto campaignDto) throws Exception {
+		String campaignId = campaignDto.getCampaign().getId();
+		if (campaignId == null || campaignId.isEmpty()) {
+			return null;
+		}
+		Folio campaignFolio = campaignDto.getCampaignFolio();
+		if (campaignFolio.getCampaignId() == null) {
+			campaignFolio.setCampaignId(campaignId);
+		}
+		if (campaignFolio.getTitle() == null) {
+			campaignFolio.setTitle(campaignDto.getCampaign().getName());
+		}
+		if (campaignFolio.getOwners().isEmpty()) {
+			campaignFolio.addOwner(campaignDto.ownerId);
+		}
+		try {
+			// The folio that describes a campaign has a special tag
+			SimpleTag campaignDescriptionTag = getCampaignDescriptionTag(campaignId);
+			List<SimpleTag> tags = campaignFolio.getTags();
+			if (!tags.contains(campaignDescriptionTag)) {
+				campaignFolio.addTag(campaignDescriptionTag);
+			}
+
+			campaignFolio = folioService.save(campaignFolio);
+			campaignDto.setCampaignFolio(campaignFolio);
+			return campaignFolio;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			throw new Exception("Could not save folio: " + e.getMessage());
+		}
 	}
 	
 	public List<Campaign> getAllCampaigns() {
@@ -146,19 +220,24 @@ public class CampaignService {
 		return campaignRepository.save(campaign);
 	}
 	
-	public void createCampaign(CampaignDto campaignDto) {
+	public void editCampaign(CampaignDto campaignDto) throws Exception {
 		Campaign campaign = campaignDto.getCampaign();
-		validateCampaign(campaign);
-		String ownerId = campaignDto.getOwnerId();
-		campaign.setOwnerId(ownerId);
-		campaign = saveCampaign(campaign);
-		CampaignUser ownerCu = new CampaignUser(campaign.getId(), "ROLE_OWNER", ownerId, userService.getCurrentUserName());
-		campaignUserRepository.save(ownerCu);
-		CampaignUser gmCu = new CampaignUser(campaign.getId(), "ROLE_GAMEMASTER", ownerId, userService.getCurrentUserName());
-		campaignUserRepository.save(gmCu);		
+		Folio campaignFolio = campaignDto.getCampaignFolio();
+		validateCampaign(campaign, campaignFolio);
+		campaign = saveCampaign(campaignDto);
 	}
 	
-	private void validateCampaign(Campaign campaign) {
+	public SimpleTag getCampaignDescriptionTag(String campaignId) {
+		String desc = messageSource.getMessage("createCampaign.description", null, Locale.US);
+		SimpleTag descTag = simpleTagService.findOneByNameAndCampaignId(desc, campaignId);
+		if (descTag == null) {
+			descTag = new SimpleTag(desc, campaignId);
+			descTag = simpleTagService.save(descTag);
+		}
+		return descTag;
+	}
+	
+	private void validateCampaign(Campaign campaign, Folio campaignFolio) {
 		StringBuilder errors = new StringBuilder();
 		if (campaign.getName() == null) {
 			errors.append("The campaign must have a name.");
@@ -173,8 +252,7 @@ public class CampaignService {
 					errors.append("Campaign names can not be duplicates.");
 				}
 			}
-			if (campaign.getDescription() == null || campaign.getDescription().isEmpty()) {
-				
+			if (campaignFolio.getContent() == null) {
 				if (errors.length() > 0) {
 					errors.append(" ");
 				}

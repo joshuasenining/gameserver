@@ -178,6 +178,10 @@ hr {
 	margin-right: 5px;	
 }
 
+.bold {
+	font-weight: bold;	
+}
+
 .bold-no-box {
 	font-weight: bold;
 	border-width:0px;
@@ -280,6 +284,11 @@ hr {
     white-space:nowrap;
     top:17px;
     left: 0px;
+}
+
+.underline-pointer {
+	text-decoration: underline;
+	cursor: pointer;	
 }
 
 .width-125 {

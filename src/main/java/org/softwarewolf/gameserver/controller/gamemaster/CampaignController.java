@@ -76,7 +76,7 @@ public class CampaignController {
 	public String postCampaign(@ModelAttribute CampaignDto campaignDto, FeFeedback feFeedback) {
 		String ownerId = campaignDto.getOwnerId();
 		try {
-			campaignService.createCampaign(campaignDto);
+			campaignService.editCampaign(campaignDto);
 			feFeedback.setInfo("Campaign " + campaignDto.getCampaign().getName() + " created.");
 		} catch (Exception e) {
 			feFeedback.setError(e.getMessage());

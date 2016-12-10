@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.softwarewolf.gameserver.domain.Campaign;
+import org.softwarewolf.gameserver.domain.Folio;
 
 public class CampaignDto {
 	public List<UserListItem> gamemasters;
 	public List<UserListItem> players;
+	public Folio campaignFolio;
 	public String ownerId;
 	public Campaign campaign;
 	
@@ -88,5 +90,13 @@ public class CampaignDto {
 	
 	public void setCampaign(Campaign campaign) {
 		this.campaign = campaign;
+	}
+	
+	public Folio getCampaignFolio() {
+		return campaignFolio;
+	}
+	
+	public void setCampaignFolio(Folio campaignFolio) {
+		this.campaignFolio = campaignFolio;
 	}
 }
