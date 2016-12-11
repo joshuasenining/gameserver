@@ -154,6 +154,7 @@ public class CampaignService {
 	}
 	
 	public void initSelectCampaignDto(SelectCampaignDto selectCampaignDto, String asType) {
+		selectCampaignDto.setAsType(asType);
 		String userId = userService.getCurrentUserId();
 		List<Campaign> allCampaigns = campaignRepository.findAll();
 		List<CampaignUser> inCampaignList = new ArrayList<>();
@@ -189,9 +190,9 @@ public class CampaignService {
 			
 			selectCampaignDto.setAccessableCampaigns(campaignList);
 			selectCampaignDto.setInaccessableCampaigns(inaccessableCampaigns);
-
 		}
 	}
+	
 	public List<Campaign> getAllCampaignsByGM(String ownerId) {
 		return campaignRepository.findByOwnerId(ownerId);		
 	}

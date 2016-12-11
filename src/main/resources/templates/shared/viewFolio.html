@@ -37,7 +37,11 @@
 			
 			$("#selectFolioBtn").click(function() { 
 				window.location = "/shared/selectFolio?operation=view";
-		  })			
+		  	});
+			
+			$("#returnBtn").click(function() {
+				window.location = $("#forwardingUrl").val();
+			});
 		});
 	});
 	</script>	
@@ -57,6 +61,7 @@
 	<form id="viewFolioForm" th:object="${folioDto}" action="#" th:action="@{/shared/viewFolio}" method="get">
 		<input type="hidden" id="selectedTags" th:field="*{selectedTags}"></input>
 		<input type="hidden" id="displayTags"></input>
+		<input type="hidden" id="forwardingUrl" th:field="*{forwardingUrl}"></input>
 						
 		<div class="row">
 			<div class="col-md-1"></div>
@@ -103,6 +108,14 @@
 			</div>
 		</div>
 	 
+		<div class="row">
+		<div class="col-md-1"></div>	
+			<div class="col-md-8">
+				<div class="btn-group submit">
+  					<button type="button" id="returnBtn" class="btn btn-default" th:text="Return"></button>
+				</div>				
+			</div>
+		</div>	 
 	</form>	
 </body>
 </html>

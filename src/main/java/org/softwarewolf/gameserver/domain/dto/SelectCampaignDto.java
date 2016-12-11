@@ -9,6 +9,7 @@ public class SelectCampaignDto {
 	public List<Campaign> inaccessableCampaigns;
 	public String selectedCampaignId;
 	public String joinRequestCampaignId;
+	public String asType;
 	
 	public List<Campaign> getAccessableCampaigns() {
 		return accessableCampaigns;
@@ -53,6 +54,14 @@ public class SelectCampaignDto {
 			}
 		}
 		return campaignName;
+	}
+	
+	public String getAsType() {
+		return asType;
+	}
+	
+	public void setAsType(String asType) {
+		this.asType = asType;
 	}
 
 }

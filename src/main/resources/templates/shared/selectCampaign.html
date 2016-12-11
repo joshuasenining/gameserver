@@ -25,8 +25,7 @@
 	});	
 	
 	function viewCampaign(id) {
-		alert(id);
-		window.location.replace("/shared/viewCampaignInfo?campaignId="+id);
+		window.location.replace("/shared/viewCampaignInfo/"+$("#asType").val()+"?campaignId="+id);
 	}
 	</script>
 </head>
@@ -40,7 +39,8 @@
 			<h1 th:text="#{menu.item.selectCampaign}">Select</h1>
 		</div>
 	</div>
-	<form id="updateUserForm" th:object="${selectCampaignDto}" action="#" th:action="@{/user/selectCampaign}" method="post">
+	<form id="selectCampaignForm" th:object="${selectCampaignDto}" action="#" th:action="@{/user/selectCampaign}" method="post">
+		<input id="asType" type="hidden" th:field="*{asType}"></input>
 		<div class="row">		        	
 			<div class="col-md-1"></div>
 			<div class="col-md-2">

@@ -4,9 +4,9 @@ public class ControllerUtils {
 	public static final String CAMPAIGN_ID = "campaignId";
 	public static final String CAMPAIGN_HOME = "/gamemaster/campaignHome";
 	public static final String CREATE_CAMPAIGN = "/gamemaster/createCampaign";
-	public static final String SELECT_GM_CAMPAIGN = "/gamemaster/selectCampaign";
-	public static final String SELECT_PLAYER_CAMPAIGN = "/user/selectCampaign";
 	public static final String SELECT_CAMPAIGN = "/shared/selectCampaign";
+	public static final String SELECT_CAMPAIGN_GM = "/shared/selectCampaign/gm";
+	public static final String SELECT_CAMPAIGN_PLAYER = "/shared/selectCampaign/player";
 	public static final String DELETE_CAMPAIGN = "/admin/deleteCampaign";
 	public static final String GET_FOLIO = "/shared/getFolio";
 	public static final String EDIT_FOLIO = "/shared/editFolio";
@@ -17,9 +17,9 @@ public class ControllerUtils {
 	public static final String USER_MENU = "/user/menu";
 	public static final String LOGIN = "/login";
 	
-	public static final String ADMIN_TYPE = "asAdmin";
-	public static final String GM_TYPE = "asGm";
-	public static final String PLAYER_TYPE = "asPlayer";
+	public static final String ADMIN_TYPE = "admin";
+	public static final String GM_TYPE = "gm";
+	public static final String PLAYER_TYPE = "player";
 	
 	public static final String ROLE_OWNER = "ROLE_OWNER";
 	public static final String ROLE_USER = "ROLE_USER";

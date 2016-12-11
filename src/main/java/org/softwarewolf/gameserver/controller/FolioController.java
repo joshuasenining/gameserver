@@ -1,8 +1,5 @@
 package org.softwarewolf.gameserver.controller;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +14,6 @@ import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.controller.utils.GetPermissionsFrom;
 import org.softwarewolf.gameserver.domain.Folio;
-import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDto;
 import org.softwarewolf.gameserver.domain.dto.SelectFolioDto;
 import org.softwarewolf.gameserver.service.CampaignService;
@@ -105,24 +101,6 @@ public class FolioController {
 		folioService.initSelectFolioDto(campaignId, selectFolioDto, operation);
 
 		return ControllerUtils.SELECT_FOLIO;
-	}
-	
-	@RequestMapping(value = "/viewCampaignInfo", method = RequestMethod.GET)
-	public String viewCampaignInfo(HttpSession session, @RequestParam("campaignId") String selectedCampaignId,
-			FolioDto folioDto, FeFeedback feFeedback) {
-		try {
-			SimpleTag campaignDescTag = campaignService.getCampaignDescriptionTag(selectedCampaignId);
-			List<SimpleTag> tagList = Arrays.asList(campaignDescTag);
-			Folio folio = folioService.findFoliosByTags(tagList).get(0);
-			folioDto.setFolio(folio);
-			folioDto.setForwardingUrl(ControllerUtils.SELECT_CAMPAIGN);
-		} catch (Exception e) {
-			String errorMessage = e.getMessage();
-			feFeedback.setError(errorMessage);
-			return ControllerUtils.SELECT_CAMPAIGN;
-		}
-		
-		return ControllerUtils.VIEW_FOLIO;
 	}
 	
 	@RequestMapping(value = "/folio/addTagToSearch", method = RequestMethod.POST)

@@ -9,12 +9,14 @@ import java.util.List;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.GetPermissionsFrom;
+import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
 import org.softwarewolf.gameserver.domain.dto.FolioDto;
 import org.softwarewolf.gameserver.domain.dto.SelectFolioDto;
+import org.softwarewolf.gameserver.repository.CampaignRepository;
 import org.softwarewolf.gameserver.repository.FolioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,9 @@ public class FolioService implements Serializable {
 	
 	@Autowired
 	private CampaignUserService campaignUserService;
+	
+	@Autowired
+	private CampaignRepository campaignRepository;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -529,6 +534,11 @@ public class FolioService implements Serializable {
 		return folioList;
 	}
 
+	public Folio findOneByCampaignIdAndTitle(String campaignId) {
+		Campaign campaign = campaignRepository.findOne(campaignId);
+		return folioRepository.findOneByCampaignIdAndTitle(campaignId, campaign.getName());
+	}
+	
 	public List<Folio> deleteByCampaignId(String campaignId) {
 		return folioRepository.deleteByCampaignId(campaignId);
 	}

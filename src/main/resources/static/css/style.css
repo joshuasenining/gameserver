@@ -246,6 +246,10 @@ hr {
   text-align: center;
 }
 
+.submit {
+	padding-top: 15px;	
+}
+
 .tooltip{
     position:relative;
 }
