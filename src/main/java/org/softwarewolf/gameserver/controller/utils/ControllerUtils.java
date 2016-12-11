@@ -12,6 +12,7 @@ public class ControllerUtils {
 	public static final String EDIT_FOLIO = "/shared/editFolio";
 	public static final String SELECT_FOLIO = "/shared/selectFolio";
 	public static final String VIEW_FOLIO = "/shared/viewFolio";
+	public static final String VIEW_CAMPAIGN_INFO = "/shared/viewCampaignInfo";
 	public static final String EXPORT_CAMPAIGN = "/admin/exportCampaign";
 	public static final String IMPORT_CAMPAIGN = "/admin/importCampaign";
 	public static final String USER_MENU = "/user/menu";

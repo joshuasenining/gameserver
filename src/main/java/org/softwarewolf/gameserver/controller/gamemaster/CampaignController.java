@@ -4,6 +4,7 @@ import javax.servlet.http.HttpSession;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
+import org.softwarewolf.gameserver.controller.utils.GetPermissionsFrom;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.User;
@@ -69,9 +70,11 @@ public class CampaignController {
 	@RequestMapping(value = "/shared/viewCampaignInfo/{asType}", method = RequestMethod.GET)
 	public String viewCampaignInfo(HttpSession session, @RequestParam("campaignId") String selectedCampaignId,
 			@PathVariable String asType, FolioDto folioDto, FeFeedback feFeedback) {
+		
 		try {
 			Folio folio = folioService.findOneByCampaignIdAndTitle(selectedCampaignId);
 			folioDto.setFolio(folio);
+			folioDto = folioService.initFolioDto(folioDto, selectedCampaignId, FolioService.VIEW, GetPermissionsFrom.INIT);
 			folioDto.setForwardingUrl(getForwardingUrl(asType));
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
@@ -79,7 +82,7 @@ public class CampaignController {
 			return getForwardingUrl(asType);
 		}
 		
-		return ControllerUtils.VIEW_FOLIO;
+		return ControllerUtils.VIEW_CAMPAIGN_INFO;
 	}
 
 	private String getForwardingUrl(String asType) {
