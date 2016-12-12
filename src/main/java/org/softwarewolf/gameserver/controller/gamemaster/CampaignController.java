@@ -48,24 +48,35 @@ public class CampaignController {
 	 * @return
 	 */
 	@RequestMapping(value = "/shared/selectCampaign/{asType}", method = RequestMethod.GET)
-	@Secured({"USER"})
-	public String selectCampaign(final SelectCampaignDto selectCampaignDto, @PathVariable String asType) {
+	@Secured({"USER","GAMEMASTER"})
+	public String selectCampaign(final SelectCampaignDto selectCampaignDto, @PathVariable String asType,
+			FeFeedback feFeedback) {
 		campaignService.initSelectCampaignDto(selectCampaignDto, asType);
 
 		return ControllerUtils.SELECT_CAMPAIGN;
 	}
 	
-	@RequestMapping(value = "/shared/selectCampaign", method = RequestMethod.POST)
-	@Secured({"USER"})
-	public String selectCampaign(HttpSession session, final SelectCampaignDto selectCampaignDto) {
+	@RequestMapping(value = "/shared/selectCampaign/{asType}", method = RequestMethod.POST)
+	@Secured({"USER","GAMEMASTER"})
+	public String selectCampaign(HttpSession session, final SelectCampaignDto selectCampaignDto,
+			FeFeedback feFeedback, @PathVariable String asType) {
 		String campaignId = selectCampaignDto.getSelectedCampaignId();
-		Campaign selectedCampaign = campaignService.findOne(campaignId);
-		session.setAttribute(ControllerUtils.CAMPAIGN_ID, campaignId);
-		session.setAttribute("campaignName", selectedCampaign.getName());
-		
+		campaignService.initSelectCampaignDto(selectCampaignDto, asType);
+		if (campaignId == null) {
+			feFeedback.setError("You must select a campaign");
+			return ControllerUtils.SELECT_CAMPAIGN;
+		} else {
+			Campaign selectedCampaign = campaignService.findOne(campaignId);
+			if (selectedCampaign == null) { 
+				feFeedback.setError("Could not locate selected campaign");
+				return ControllerUtils.SELECT_CAMPAIGN;
+			} else {
+				session.setAttribute(ControllerUtils.CAMPAIGN_ID, campaignId);
+				session.setAttribute("campaignName", selectedCampaign.getName());
+			}
+		}
 		return ControllerUtils.USER_MENU;
 	}
-	
 	
 	@RequestMapping(value = "/shared/viewCampaignInfo/{asType}", method = RequestMethod.GET)
 	public String viewCampaignInfo(HttpSession session, @RequestParam("campaignId") String selectedCampaignId,
@@ -92,6 +103,7 @@ public class CampaignController {
 			return ControllerUtils.SELECT_CAMPAIGN_PLAYER;
 		}
 	}
+	
 	@RequestMapping(value = "/gamemaster/createCampaign", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
 	public String getCampaignDto(CampaignDto campaignDto, FeFeedback feFeedback) {

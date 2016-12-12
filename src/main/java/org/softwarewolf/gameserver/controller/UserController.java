@@ -20,25 +20,5 @@ public class UserController {
 	@Autowired
 	protected UserRepository userRepository;
 	
-	@Autowired
-	protected CampaignService campaignService;
-	
-	@RequestMapping(value = "/selectCampaign", method = RequestMethod.GET)
-	@Secured({"USER"})
-	public String getCampaign(SelectCampaignDto selectCampaignDto) {
-		campaignService.initSelectCampaignDto(selectCampaignDto, ControllerUtils.PLAYER_TYPE);
-		return ControllerUtils.SELECT_CAMPAIGN;
-	}
-	
-	@RequestMapping(value = "/selectCampaign", method = RequestMethod.POST)
-	@Secured({"USER"})
-	public String postCampaign(HttpSession session, final SelectCampaignDto selectCampaignDto) {
-		String campaignId = selectCampaignDto.getSelectedCampaignId(); 
-		Campaign selectedCampaign = campaignService.findOne(campaignId);
-		session.setAttribute("campaignId", campaignId);
-		session.setAttribute("campaignName", selectedCampaign.getName());
-		
-		return ControllerUtils.USER_MENU;
-	}
 
 }
