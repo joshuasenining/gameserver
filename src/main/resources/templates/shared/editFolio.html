@@ -155,8 +155,29 @@
 		});
 		
 		$(function() {
-			$( "#selectable" ).selectable();
+			$("#selectable").selectable();
 		});
+		
+        $("#changeView").click(function() {
+        	var cvValue = $("#changeView").attr("value");
+        	if (cvValue == "View as HTML") {
+        		var data = CKEDITOR.instances.editor.getData();
+        		$("#viewContainer").html(data);
+        		$("#viewContainer").removeClass("hide");
+        		$("#editorContainer").addClass("hide");
+        		$("#changeView").attr("value", "Edit");
+        		$("#permissionLabel").addClass("hide");
+        		$("#permissionList").addClass("hide");
+        		$("#submitBtn").addClass("hide");
+        	} else {
+        		$("#viewContainer").addClass("hide");
+        		$("#editorContainer").removeClass("hide");
+        		$("#changeView").attr("value", "View as HTML");
+        		$("#permissionLabel").removeClass("hide");
+        		$("#permissionList").removeClass("hide");
+        		$("#submitBtn").removeClass("hide");
+        	}
+        });
 	});		
 	</script>   
 
@@ -190,7 +211,7 @@
       <!-- Javascript -->
       <script>
          $(function() {
-            $( "#addTagDialog" ).dialog({
+            $("#addTagDialog" ).dialog({
                autoOpen: false,  
                buttons: {
             	   OK: function() {
@@ -203,9 +224,8 @@
             });
             
             $("#createTag").click(function() {
-               $( "#addTagDialog" ).dialog( "open" );
+               $("#addTagDialog").dialog( "open" );
             });
-
          });
       </script>
 </head>
@@ -327,15 +347,28 @@
 			</div>	
 		</div>	  		
 
-		<div class="folio-margin">
+		<div id="editorContainer" class="folio-margin">
 			<div class="grid-container">
 				<div class="grid-width-100">
 					<textarea id="editor" th:field="*{folio.content}"></textarea>
 				</div>
 			</div>
 		</div>
-	
 		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<div id="viewContainer" class="hide folio-margin"></div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<input type="button" id="changeView" class="basic-margin" value="View as HTML"></input>
+			</div>
+		</div>
+			
+		<div id="permissionLabel" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
 				<label class="input-margin" th:text="#{editFolio.setPermissions}">Set</label>

@@ -56,7 +56,7 @@ public class FolioController {
 		String campaignId = (String)session.getAttribute(ControllerUtils.CAMPAIGN_ID);
 		if (campaignId == null) {
 			return ControllerUtils.USER_MENU;
-		}		
+		}
 
 		folioService.initFolioDto(folioId, folioDto, campaignId, FolioService.EDIT);
 		folioDto.setForwardingUrl(ControllerUtils.EDIT_FOLIO);

@@ -366,8 +366,8 @@ public class FolioService implements Serializable {
 	}
 	
 	public List<Folio> getAllViewableFolios(String campaignId, String userId) {
-		List<Folio> allowedFolios = folioRepository.findAllByUsers(userId);
-		List<Folio> ownerFolios = folioRepository.findAllByOwners(userId);
+		List<Folio> allowedFolios = folioRepository.findAllByUsersAndCampaignId(userId, campaignId);
+		List<Folio> ownerFolios = folioRepository.findAllByOwnersAndCampaignId(userId, campaignId);
 		allowedFolios.addAll(ownerFolios);
 
 		return allowedFolios;

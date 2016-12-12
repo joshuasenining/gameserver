@@ -120,6 +120,10 @@ hr {
 	width: 45%;
 }
 
+.hide {
+	display: none;	
+}
+
 .horizontal-button {
 	display: inline-block;
 }

@@ -35,6 +35,20 @@
 				$("#tagList").text(listString);
 			}
 			
+			if ($("#forwardingUrl").val() == "/shared/viewFolio") {
+				$("#returnBtn").addClass("hide");
+			}
+			if ($("#selectedTags").val() == "") {
+				$("#tagsDiv").addClass("hide");
+			}
+			if ($("#titleText").val() == "") {
+				$("#titleDiv").addClass("hide");	
+			}
+			if ($("#content").val() == "") {
+				$("#contentLabel").addClass("hide");
+				$("#contentDiv").addClass("hide");
+			}
+				
 			$("#selectFolioBtn").click(function() { 
 				window.location = "/shared/selectFolio?operation=view";
 		  	});
@@ -61,6 +75,8 @@
 	<form id="viewFolioForm" th:object="${folioDto}" action="#" th:action="@{/shared/viewFolio}" method="get">
 		<input type="hidden" id="selectedTags" th:field="*{selectedTags}"></input>
 		<input type="hidden" id="displayTags"></input>
+		<input type="hidden" id="titleText" th:field="*{folio.title}"></input>
+		<input type="hidden" id="content" th:field="*{folio.content}"></input>
 		<input type="hidden" id="forwardingUrl" th:field="*{forwardingUrl}"></input>
 						
 		<div class="row">
@@ -75,7 +91,7 @@
 			</div>
 		</div>
  
-		<div class="row">
+		<div id="tagsDiv" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
 				<label class="input-margin" th:text="#{viewFolio.tags}">Ta</label>
@@ -85,7 +101,7 @@
 			</div>
 		</div>
 
-		<div class="row">
+		<div id="titleDiv" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
 				<label class="input-margin" th:text="#{viewFolio.folioTitle}">Ta</label>
@@ -95,13 +111,13 @@
 			</div>
 		</div>
 
-		<div class="row">
+		<div id="contentLabel" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
 				<label class="folio-margin" th:text="#{viewFolio.content}">Cont</label>
 			</div>
 		</div>
-		<div class="row">
+		<div id="contentDiv" class="row">
 			<div class="col-md-1"></div>			
 			<div class="col-md-11">
 				<span th:utext="*{folio.content}"></span>

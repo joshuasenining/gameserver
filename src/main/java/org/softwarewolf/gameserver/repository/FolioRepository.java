@@ -12,13 +12,13 @@ public interface FolioRepository extends MongoRepository<Folio, String> {
 	
 	public List<Folio> findAllByCampaignId(String campaignId);
 	
-	public List<Folio> findAllByCampaignIdAndOwners(String campaignId, String ownerId);
-	
 	public List<Folio> findAllByUsers(String userId);
 	
 	public List<Folio> findAllByOwners(String ownerId);
 	
 	public List<Folio> findAllByOwnersAndCampaignId(String ownerId, String CampaignId);
+
+	public List<Folio> findAllByUsersAndCampaignId(String userId, String CampaignId);
 
     /// Find by key value pair
     @Query("{?0 : ?1}")
