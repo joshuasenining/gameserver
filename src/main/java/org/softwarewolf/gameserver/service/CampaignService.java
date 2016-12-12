@@ -106,9 +106,6 @@ public class CampaignService {
 			CampaignUser owner = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_OWNER, 
 					userOwner.getId(), userOwner.getUsername());
 			campaignUserRepository.save(owner);
-			CampaignUser gm = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_GAMEMASTER, 
-					userOwner.getId(), userOwner.getUsername());
-			campaignUserRepository.save(gm);
 		}
 		return campaign;
 	}

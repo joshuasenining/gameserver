@@ -63,16 +63,26 @@
 			$.each(selectedTagList, function(i, item) {
 				var name = item["name"];
 				var id = item["id"];
-				var newButton = $('<button type="button"/>')
-				  .text(name)
-				  .click( function() { 
-						$("#removeTag").val(id);
-						$("#editFolioForm").submit();
-				  })
-				  .addClass("btn btn-default add-btn")
-				  .attr('id', id)
-				  .attr('name', name)
-				  .appendTo($("#selectedTagSpan"));
+				if (name == "Campaign Description") {
+					var newButton = $('<button type="button"/>')
+					  .text(name)
+					  .attr("disabled", "true")
+					  .addClass("btn btn-default add-btn")
+					  .attr('id', id)
+					  .attr('name', name)
+					  .appendTo($("#selectedTagSpan"));
+				} else {
+					var newButton = $('<button type="button"/>')
+					  .text(name)
+					  .click( function() { 
+							$("#removeTag").val(id);
+							$("#editFolioForm").submit();
+					  })
+					  .addClass("btn btn-default add-btn")
+					  .attr('id', id)
+					  .attr('name', name)
+					  .appendTo($("#selectedTagSpan"));
+				}
 			});
 		
   			var users = $("#users")[0].value;

@@ -28,7 +28,11 @@ public class SimpleTagService {
 		return tagList;
 	}
 		
-	public SimpleTag save(String simpleTagName, String campaignId) {
+	public SimpleTag save(String simpleTagName, String campaignId) throws Exception {
+		simpleTagName = simpleTagName.trim();
+		if (simpleTagName.isEmpty()) {
+			throw new Exception("A tag must have a name");
+		}
 		SimpleTag newTag = new SimpleTag();
 		newTag.setCampaignId(campaignId);
 		newTag.setName(simpleTagName);

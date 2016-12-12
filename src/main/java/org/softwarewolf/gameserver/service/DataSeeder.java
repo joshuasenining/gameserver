@@ -11,8 +11,6 @@ import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.CampaignDto;
-import org.softwarewolf.gameserver.repository.CampaignUserRepository;
-import org.softwarewolf.gameserver.repository.CampaignRepository;
 import org.softwarewolf.gameserver.repository.DeleteableRoleRepository;
 import org.softwarewolf.gameserver.repository.SimpleGrantedAuthorityRepository;
 import org.softwarewolf.gameserver.repository.UserRepository;

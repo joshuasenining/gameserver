@@ -17,6 +17,8 @@ public interface FolioRepository extends MongoRepository<Folio, String> {
 	public List<Folio> findAllByUsers(String userId);
 	
 	public List<Folio> findAllByOwners(String ownerId);
+	
+	public List<Folio> findAllByOwnersAndCampaignId(String ownerId, String CampaignId);
 
     /// Find by key value pair
     @Query("{?0 : ?1}")

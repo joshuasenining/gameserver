@@ -161,17 +161,29 @@ public class FolioController {
 		if (campaignId == null) {
 			return ControllerUtils.USER_MENU;
 		}		
-		String addTagName = folioDto.getAddTag();
-		simpleTagService.save(addTagName, campaignId);
+
+		try {
+			simpleTagService.save(folioDto.getAddTag(), campaignId);
+		} catch (Exception e) {
+			feFeedback.setError("You must have a name for a tag");
+			feFeedback.setInfo(getFeInfo(folioDto));
+			return folioDto.getForwardingUrl();
+		}
 		
 		folioDto = folioService.initFolioDto(folioDto, campaignId, folioDto.getOperationType(), GetPermissionsFrom.DONT);
-		String info = null;
+		String info = getFeInfo(folioDto);
+		feFeedback.setUserStatus(info);
+		return folioDto.getForwardingUrl();
+	}
+
+	private String getFeInfo(FolioDto folioDto) {
+		String info;
 		if (folioDto.getFolio().getTitle() == null || folioDto.getFolio().getTitle() == null) { 
 			info = NEW_FOLIO;
 		} else {
 			info = EDITING_FOLIO + folioDto.getFolio().getTitle() + "'";
 		}
-		feFeedback.setUserStatus(info);
-		return folioDto.getForwardingUrl();
+		return info;
+		
 	}
 }

@@ -3,6 +3,7 @@ package org.softwarewolf.gameserver.service;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -160,6 +161,7 @@ public class FolioService implements Serializable {
 			folioDto.setSelectedTags(selectedTags);
 		}
 		List<SimpleTag> unselectedTagList = simpleTagService.getUnassignedTags(folio);
+		filterTagList(unselectedTagList, campaignId);
 		if (unselectedTagList.size() > 0) {
 			Collections.sort(unselectedTagList, new SimpleTagCompare());
 			String unselectedTags = tagListToString(unselectedTagList);
@@ -178,6 +180,14 @@ public class FolioService implements Serializable {
 		
 		folioDto.setFolioDescriptorList(getFolioDescriptorList(folio.getCampaignId(), null, operationType));
 		return folioDto;
+	}
+
+	private List<SimpleTag> filterTagList(List<SimpleTag> tagList, String campaignId) {
+		// Don't allow the selection of this tag
+		SimpleTag campaignDescriptionTag = simpleTagService.findOneByNameAndCampaignId("Campaign Description", campaignId);
+		tagList.remove(campaignDescriptionTag);
+		
+		return tagList;
 	}
 
 	private Folio initFolio(String folioId, String campaignId) {
@@ -337,7 +347,7 @@ public class FolioService implements Serializable {
 		String userId = userService.getCurrentUserId();
 		List<Folio> folioList = null;
 		if (EDIT.equals(operationType)) {
-			folioList = folioRepository.findAllByOwners(userId);
+			folioList = folioRepository.findAllByOwnersAndCampaignId(userId, campaignId);
 		} else {
 			folioList = getAllViewableFolios(campaignId, userId);
 		}
@@ -440,6 +450,17 @@ public class FolioService implements Serializable {
 			selectFolioDto.setForwardingUrl(ControllerUtils.VIEW_FOLIO);
 		}		
 	}		
+	
+	private List<SimpleTag> getFilteredTagsList(List<String> removeTags, String campaignId) {
+		List<SimpleTag> excludeTags = new ArrayList<>();
+		removeTags.forEach((tagName) -> {
+			SimpleTag tag = simpleTagService.findOneByNameAndCampaignId(tagName, campaignId);
+			if (tag != null) {
+				excludeTags.add(tag);
+			}
+		});
+		return simpleTagService.getTagList(campaignId, excludeTags);
+	}
 	
 	private String convertFolioDescriptorListToString(List<FolioDescriptor> folioDescriptorList) {
 		String listAsString = "";
