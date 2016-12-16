@@ -3,7 +3,6 @@ package org.softwarewolf.gameserver.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Campaign;
