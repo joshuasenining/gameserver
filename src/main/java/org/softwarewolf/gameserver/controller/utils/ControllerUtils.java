@@ -3,7 +3,7 @@ package org.softwarewolf.gameserver.controller.utils;
 public class ControllerUtils {
 	public static final String CAMPAIGN_ID = "campaignId";
 	public static final String CAMPAIGN_HOME = "/gamemaster/campaignHome";
-	public static final String CREATE_CAMPAIGN = "/gamemaster/createCampaign";
+	public static final String EDIT_CAMPAIGN = "/gamemaster/editCampaign";
 	public static final String SELECT_CAMPAIGN = "/shared/selectCampaign";
 	public static final String SELECT_CAMPAIGN_GM = "/shared/selectCampaign/gm";
 	public static final String SELECT_CAMPAIGN_PLAYER = "/shared/selectCampaign/player";

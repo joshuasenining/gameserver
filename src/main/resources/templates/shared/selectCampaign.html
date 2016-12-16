@@ -92,7 +92,7 @@
 			</div>
 		</div>
 		
-		<div sec:authorize="hasRole('ROLE_USER')" id="requestCampaignDiv">
+		<div sec:authorize="hasRole('ROLE_USER')" th:if="${asType} == 'player'" id="requestCampaignDiv">
 			<div class="row">		        	
 				<div class="col-md-1"></div>
 				<div class="col-md-2">

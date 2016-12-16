@@ -104,7 +104,7 @@ public class CampaignController {
 		}
 	}
 	
-	@RequestMapping(value = "/gamemaster/createCampaign", method = RequestMethod.GET)
+	@RequestMapping(value = "/gamemaster/editCampaign", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
 	public String getCampaignDto(CampaignDto campaignDto, FeFeedback feFeedback) {
 		UserDetails userDetails =
@@ -114,10 +114,10 @@ public class CampaignController {
 		
 		campaignService.initCampaignDto(campaignDto, user.getId());
 		
-		return ControllerUtils.CREATE_CAMPAIGN;
+		return ControllerUtils.EDIT_CAMPAIGN;
 	}
 	
-	@RequestMapping(value = "/gamemaster/createCampaign", method = RequestMethod.POST)
+	@RequestMapping(value = "/gamemaster/editCampaign", method = RequestMethod.POST)
 	@Secured({"GAMEMASTER", "ADMIN"})
 	public String postCampaign(@ModelAttribute CampaignDto campaignDto, FeFeedback feFeedback) {
 		String ownerId = campaignDto.getOwnerId();
@@ -128,6 +128,6 @@ public class CampaignController {
 			feFeedback.setError(e.getMessage());
 		}
 		campaignService.initCampaignDto(campaignDto, ownerId);
-		return ControllerUtils.CREATE_CAMPAIGN;
+		return ControllerUtils.EDIT_CAMPAIGN;
 	}
 }
