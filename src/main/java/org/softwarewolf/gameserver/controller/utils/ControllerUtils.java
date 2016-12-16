@@ -17,6 +17,7 @@ public class ControllerUtils {
 	public static final String IMPORT_CAMPAIGN = "/admin/importCampaign";
 	public static final String USER_MENU = "/user/menu";
 	public static final String LOGIN = "/login";
+	public static final String RESET_PASSWORD = "/shared/resetPassword";
 	
 	public static final String ADMIN_TYPE = "admin";
 	public static final String GM_TYPE = "gm";
