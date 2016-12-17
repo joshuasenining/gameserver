@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.softwarewolf.gameserver.domain.DeleteableRole;
 import org.softwarewolf.gameserver.domain.User;
+import org.softwarewolf.gameserver.domain.dto.ResetPasswordDto;
 import org.softwarewolf.gameserver.domain.dto.RoleLists;
 import org.softwarewolf.gameserver.domain.dto.RolesData;
 import org.softwarewolf.gameserver.domain.dto.UserListItem;
@@ -17,21 +20,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 	@Autowired 
-	protected SimpleGrantedAuthorityRepository authRepository;
+	private SimpleGrantedAuthorityRepository authRepository;
 	
 	@Autowired
-	protected DeleteableRoleRepository deletableRoleRepository;
+	private DeleteableRoleRepository deletableRoleRepository;
 	
 	@Autowired
-	protected UserRepository userRepository;
+	private UserRepository userRepository;
 	
 	@Autowired
-	protected SimpleGrantedAuthorityRepository simpleGrantedAuthorityRepository;
+	private SimpleGrantedAuthorityRepository simpleGrantedAuthorityRepository;
+	
+	@Autowired
+	private SimpleGrantedAuthorityService authService;
+	
+	private static final String EMAIL_PATTERN =
+			"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 	
 	public RolesData getRolesData() {
 		RolesData rolesData = new RolesData();
@@ -163,5 +174,52 @@ public class UserService {
 				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		return userDetails.getUsername();
 	}
-
+	
+	public String getCurrentUserEmail() {
+		UserDetails userDetails =
+				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User user = userRepository.findOneByUsername(userDetails.getUsername());
+		return user.getEmail();
+	}
+	
+	public User getCurrentUser() {
+		User user =
+				 (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return user;
+	}
+	
+	public void resetPassword(ResetPasswordDto resetPasswordDto) {
+		User user = getCurrentUser();
+		String currentPassword = resetPasswordDto.getCurrentPassword();
+		if (currentPassword == null) {
+			throw new RuntimeException("You must pass a valid password.");
+		}
+		PasswordEncoder encoder = authService.getPasswordEncoder();
+		if (!encoder.matches(currentPassword, user.getPassword())) {
+			throw new RuntimeException("Current password does not match.");
+		}
+	    String newPassword = resetPasswordDto.getNewPassword();
+	    String verifyPassword = resetPasswordDto.getVerifyPassword();
+	    if (newPassword == null || newPassword.length() < 2) {
+	    	throw new RuntimeException("Invalid new password");
+	    }
+	    if (!newPassword.equals(verifyPassword)) {
+	    	throw new RuntimeException("New password does not equal verify password");
+	    }
+	    
+	    String encodedNewPassword = encoder.encode(newPassword);
+	    user.setPassword(encodedNewPassword);
+	    userRepository.save(user);
+	}
+	
+	public void changeEmail(String email) {
+		User user = getCurrentUser();
+		Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+		Matcher matcher = pattern.matcher(email);
+		if(matcher.matches()) {
+			user.setEmail(email);
+		} else {
+			throw new RuntimeException("Invaild email.");
+		}
+	}
 }

@@ -8,6 +8,8 @@ import org.softwarewolf.gameserver.repository.SimpleGrantedAuthorityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class SimpleGrantedAuthorityService {
@@ -27,5 +29,9 @@ public class SimpleGrantedAuthorityService {
 			}
 		}
 		return availableRoles;
+	}
+	
+	public PasswordEncoder getPasswordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 }

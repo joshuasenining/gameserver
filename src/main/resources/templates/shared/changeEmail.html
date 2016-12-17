@@ -16,7 +16,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
-	<title th:text="#{resetPassword.title}">Title</title>
+	<title th:text="#{changeEmail.title}">Title</title>
 
 <script th:inline="javascript">
 	$(document).ready(function() {
@@ -31,7 +31,7 @@
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-11">
-			<h1 th:text="#{resetPassword.title}">Update</h1>
+			<h1 th:text="#{changeEmail.title}">Update</h1>
 		</div>
 	</div>
 	
@@ -48,38 +48,14 @@
 		</div>
 	</div>
 	
-	<form id="resetPasswordForm" th:object="${resetPasswordDto}" action="#" th:action="@{/shared/resetPassword}" method="post">
+	<form id="changeEmailForm" th:object="${changeEmailDto}" action="#" th:action="@{/shared/changeEmail}" method="post">
 		<div class="row">		        	
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
-				<label class="input-margin" th:text="#{resetPassword.currentPassword}">Pass</label>
+				<label class="input-margin" th:text="#{changeEmail.email}">Pass</label>
 			</div>
 			<div class="col-md-9">
-				<input type="password" id="currentPassword" class="input-margin" th:field="*{currentPassword}" ></input>
-			</div>
-		</div>
-		<div class="row">		        	
-			<div class="col-md-1"></div>
-			<div class="col-md-1">
-				<label class="input-margin" th:text="#{resetPassword.newPassword}">Pass</label>
-			</div>
-			<div class="col-md-9">
-				<input type="password" id="newPassword" class="input-margin" th:field="*{newPassword}" ></input>
-			</div>
-		</div>
-		<div class="row">		        	
-			<div class="col-md-1"></div>
-			<div class="col-md-1">
-				<label class="input-margin" th:text="#{resetPassword.verifyPassword}">Pass</label>
-			</div>
-			<div class="col-md-9">
-				<input type="password" id="verifyPassword" class="input-margin" th:field="*{verifyPassword}" ></input>
-			</div>
-		</div>
-		<div class="row">		        	
-			<div class="col-md-1"></div>
-			<div class="col-md-10">
-				<a th:href="@{/shared/adminReset}" class="input-margin" th:text="#{resetPassword.requestAdminReset}"></a>
+				<input id="email" class="input-margin" th:field="*{email}" ></input>
 			</div>
 		</div>
 		
