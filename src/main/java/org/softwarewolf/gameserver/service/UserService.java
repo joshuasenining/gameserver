@@ -5,6 +5,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -191,6 +192,12 @@ public class UserService {
 		User user =
 				 (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		return user;
+	}
+	
+	public Locale getCurrentUserLocale() {
+		User user =
+				 (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return user.getLocale();
 	}
 	
 	public void resetPassword(ResetPasswordDto resetPasswordDto) {

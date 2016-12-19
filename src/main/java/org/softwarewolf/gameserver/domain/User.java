@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,6 +23,7 @@ public class User implements UserDetails, Serializable {
 	private String lastName;
 	private String password;
 	private String email;
+	private Locale locale;
 	private List<GrantedAuthority> authorities;
 	private boolean accountNonExpired;
 	private boolean accountNonLocked;
@@ -34,6 +36,7 @@ public class User implements UserDetails, Serializable {
 		credentialsNonExpired = false;
 		enabled = false;
 		authorities = new ArrayList<>();
+		locale = Locale.US;
 	}
 	
 	public String getId() {
@@ -82,6 +85,14 @@ public class User implements UserDetails, Serializable {
 	
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public Locale getLocale() {
+		return locale;
+	}
+	
+	public void setLocale(Locale locale) {
+		this.locale = locale;
 	}
 	
 	@Override

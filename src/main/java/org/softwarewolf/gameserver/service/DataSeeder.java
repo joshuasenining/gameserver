@@ -3,6 +3,7 @@ package org.softwarewolf.gameserver.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.softwarewolf.gameserver.domain.Campaign;
@@ -192,6 +193,7 @@ public class DataSeeder {
 			String userPwd = encoder.encode(name);
 			user.setPassword(userPwd);
 			user.setEmail("noSpam@yahoo.com");
+			user.setLocale(Locale.US);
 			user.setAccountNonExpired(true);
 			user.setAccountNonLocked(true);
 			user.setCredentialsNonExpired(true);

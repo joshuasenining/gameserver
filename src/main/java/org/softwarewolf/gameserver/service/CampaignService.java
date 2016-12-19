@@ -136,8 +136,9 @@ public class CampaignService {
 			campaignDto.setCampaignFolio(campaignFolio);
 			return campaignFolio;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			throw new Exception("Could not save folio: " + e.getMessage());
+			Locale locale = userService.getCurrentUserLocale();
+			String message = messageSource.getMessage("editCampaign.error.couldNotSave" + " " + e.getMessage(), null, locale);
+			throw new Exception(message);
 		}
 	}
 	
@@ -196,7 +197,9 @@ public class CampaignService {
 	public String getCampaignName(String campaignId) {
 		Campaign campaign = campaignRepository.findOne(campaignId);
 		if (campaign == null) {
-			throw new IllegalArgumentException("No campaign exists for id " + campaignId);
+			Locale locale = userService.getCurrentUserLocale(); 
+			String message = messageSource.getMessage("editCampaign.error.noCampaignName", null, locale);
+			throw new IllegalArgumentException(message + " " + campaignId);
 		}
 		return campaign.getName();
 	}
@@ -225,7 +228,8 @@ public class CampaignService {
 	}
 	
 	public SimpleTag getCampaignDescriptionTag(String campaignId) {
-		String desc = messageSource.getMessage("createCampaign.description", null, Locale.US);
+		Locale locale = userService.getCurrentUserLocale();
+		String desc = messageSource.getMessage("createCampaign.description", null, locale);
 		SimpleTag descTag = simpleTagService.findOneByNameAndCampaignId(desc, campaignId);
 		if (descTag == null) {
 			descTag = new SimpleTag(desc, campaignId);
@@ -237,29 +241,34 @@ public class CampaignService {
 	private void validateCampaign(Campaign campaign, Folio campaignFolio) {
 		StringBuilder errors = new StringBuilder();
 		if (campaign.getName() == null) {
-			errors.append("The campaign must have a name.");
+			errors.append("");
 		} else {
 			List<Campaign> existingCampaigns = campaignRepository.findAll();
+			Locale locale = userService.getCurrentUserLocale();
 			for (Campaign existingCampaign : existingCampaigns) {
 				if (existingCampaign.getName().toUpperCase().equals(campaign.getName().toUpperCase()) && 
 						!existingCampaign.getId().equals(campaign.getId())) {
 					if (errors.length() > 0) {
-						errors.append(" ");
+						String message = messageSource.getMessage("editCampaign.error.noCampaignName", null, locale);
+						errors.append(message);
 					}
-					errors.append("Campaign names can not be duplicates.");
+					String message = messageSource.getMessage("editCampaign.error.noDuplicateNames", null, locale);
+					errors.append(message);
 				}
 			}
 			if (campaignFolio.getContent() == null) {
 				if (errors.length() > 0) {
 					errors.append(" ");
 				}
-				errors.append("A description is required.");
+				String message = messageSource.getMessage("editCampaign.error.noDescription", null, locale);
+				errors.append(message);
 			}
 			if (campaign.getOwnerId() == null) {
 				if (errors.length() > 0) {
 					errors.append(" ");
 				}
-				errors.append("A campaign must have an owner.");
+				String message = messageSource.getMessage("editCampaign.error.noOwner", null, locale);
+				errors.append(message);
 			}
 		}
 		if (errors.length() > 0) {
@@ -270,7 +279,9 @@ public class CampaignService {
 	public String deleteCampaign(String campaignId) {
 		Campaign selectedCampaign = findOne(campaignId);
 		if (selectedCampaign == null) {
-			throw new RuntimeException("Could not locate a campaign for id " + campaignId);
+			Locale locale = userService.getCurrentUserLocale();
+			String message = messageSource.getMessage("editCampaign.error.noCampaignExistsForId", null, locale);
+			throw new RuntimeException(message + " " + campaignId);
 		}
 		String campaignName = selectedCampaign.getName();
 		simpleTagService.deleteByCampaignId(campaignId);
