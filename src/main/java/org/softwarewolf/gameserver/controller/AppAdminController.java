@@ -4,7 +4,6 @@ import javax.servlet.http.HttpSession;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
-import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.EmailSettings;
 import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
 import org.softwarewolf.gameserver.service.CampaignService;
@@ -35,21 +34,21 @@ public class AppAdminController {
 		dataSeeder.cleanRepos();
 		dataSeeder.seedData();
 		
-		return "user/menu";
+		return ControllerUtils.USER_MENU;
 	}
 
 	@RequestMapping(value="/getSettings", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
 	public String changeAppSettings() {
 		
-		return "admin/settings";
+		return ControllerUtils.SETTINGS;
 	}
 
 	@RequestMapping(value="/emailSettings", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
 	public String getEmailSettings(final EmailSettings emailSettings, final FeFeedback feFeedback) {
 		gameMailService.initEmailSettings(emailSettings);
-		return "admin/emailSettings";
+		return ControllerUtils.EMAIL_SETTINGS;
 	}
 	
 	@RequestMapping(value="/emailSettings", method = RequestMethod.POST)
@@ -57,7 +56,7 @@ public class AppAdminController {
 	public String changeEmailSettings(EmailSettings emailSettings, FeFeedback feFeedback) {
 		gameMailService.updateEmailSettings(emailSettings, feFeedback);
 
-		return "admin/emailSettings";
+		return ControllerUtils.EMAIL_SETTINGS;
 	}	
 	
 	@RequestMapping(value="/deleteCampaign", method = RequestMethod.GET)

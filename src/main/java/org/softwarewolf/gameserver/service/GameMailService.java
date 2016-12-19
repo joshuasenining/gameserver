@@ -13,6 +13,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.domain.EmailSettings;
+import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.repository.EmailSettingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -144,5 +145,38 @@ public class GameMailService {
 			emailSettings = new EmailSettings();
 		}	
 		return emailSettings;
+	}
+	
+	public void adminResetPassword(User user, String unencryptedTempPassword) {
+		Properties props = getEmailProperties();
+		String encryptedPassword = props.getProperty("mail.password");
+		String decryptedPassword = null;
+		try {
+			decryptedPassword = encodingService.decrypt(encryptedPassword);
+			props.put("mail.password.decrypted", decryptedPassword);
+		} catch (Exception e1) {
+			throw new RuntimeException(e1.getMessage());
+		}
+		
+		Session session = Session.getDefaultInstance(props,
+			new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(props.getProperty("mail.login"), props.getProperty("mail.password.decrypted"));
+				}
+			});
+
+		try {
+			Message message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(props.getProperty("mail.test.from")));
+			message.setRecipients(Message.RecipientType.TO,
+					InternetAddress.parse(user.getEmail()));
+			message.setSubject("Game Server Password Reset");
+			message.setText("Dear " + user.getFirstName() + " " + user.getLastName() + ","
+					+ "\n\nYour temporary password is " + unencryptedTempPassword);
+
+			Transport.send(message);
+		} catch (MessagingException e) {
+			throw new RuntimeException(e);
+		}				
 	}
 }

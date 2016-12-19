@@ -38,6 +38,20 @@ public class UserController {
 		feFeedback.setInfo("You have reset your password");
 		return ControllerUtils.RESET_PASSWORD;
 	}
+
+	@RequestMapping(value = "/adminResetPassword", method = RequestMethod.POST)
+	@Secured({"USER","GAMEMASTER","ADMIN"})
+	public String postAdminResetPassword(ResetPasswordDto resetPasswordDto, FeFeedback feFeedback) {
+		try {
+			userService.adminResetPassword(resetPasswordDto);
+		} catch (Exception e) {
+			feFeedback.setError(e.getMessage());
+			return ControllerUtils.RESET_PASSWORD;
+		}
+		
+		feFeedback.setInfo("A temporary password has been assigned to you. Please check your email.");
+		return ControllerUtils.RESET_PASSWORD;
+	}
 	
 	@RequestMapping(value = "/changeEmail", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER","ADMIN"})

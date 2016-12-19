@@ -1,5 +1,7 @@
 package org.softwarewolf.gameserver.service;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +41,9 @@ public class UserService {
 	
 	@Autowired
 	private SimpleGrantedAuthorityService authService;
+	
+	@Autowired
+	private GameMailService gameMailService;
 	
 	private static final String EMAIL_PATTERN =
 			"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
@@ -210,6 +215,20 @@ public class UserService {
 	    String encodedNewPassword = encoder.encode(newPassword);
 	    user.setPassword(encodedNewPassword);
 	    userRepository.save(user);
+	}
+	
+	public void adminResetPassword(ResetPasswordDto resetPasswordDto) {
+		User user = getCurrentUser();
+
+		SecureRandom random = new SecureRandom();
+		String tempPassword = new BigInteger(50, random).toString(32);
+		  
+		PasswordEncoder encoder = authService.getPasswordEncoder();
+	    String encodedNewPassword = encoder.encode(tempPassword);
+	    user.setPassword(encodedNewPassword);
+	    user = userRepository.save(user);
+	    
+	    gameMailService.adminResetPassword(user, tempPassword);
 	}
 	
 	public void changeEmail(String email) {

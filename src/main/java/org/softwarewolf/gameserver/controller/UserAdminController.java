@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.RoleLists;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,35 +42,39 @@ public class UserAdminController {
 	public User getUser() {
 		return new User();
 	}
-	
-	@RequestMapping("/app")
-	public String changeAppSettings(ModelMap model) {
-		model.addAttribute("msg", "hello world");
- 
-		return "/admin/settings";
-	}
-	
-	@RequestMapping("/users")
-	@Secured({"ADMIN"})
-	public String updateUsers() {
-		
-		return "useradmin.jsp";
-	}
 
 	@RequestMapping("/createRole")
 	@Secured({"ADMIN"})
-	public String getRoles(final RolesData rolesData) {
+	public String getRoles(final RolesData rolesData, FeFeedback feFeedback) {
 		userService.setRolesData(rolesData);
-		return "/admin/createRole";
+		return ControllerUtils.CREATE_ROLE;
+	}
+
+	@RequestMapping(value = "/createRole", method = RequestMethod.POST)
+	@Secured({"ADMIN"})
+	public String createRole(@ModelAttribute RolesData rolesData, FeFeedback feFeedback) {
+		userService.createRoles(rolesData);
+		feFeedback.setInfo("New Role created");
+		userService.setRolesData(rolesData);
+		return ControllerUtils.CREATE_ROLE;
 	}
 	
 	@RequestMapping("/deleteRole")
 	@Secured({"ADMIN"})
-	public String getRolesForDelete(final RolesData rolesData) {
+	public String getRolesForDelete(final RolesData rolesData, FeFeedback feFeedback) {
 		userService.setRolesData(rolesData);
-		return "/admin/deleteRole";
+		return ControllerUtils.DELETE_ROLE;
 	}
 
+	@RequestMapping(value = "/deleteRole", method = RequestMethod.POST)
+	@Secured({"ADMIN"})
+	public String postRoles(@ModelAttribute RolesData rolesData, FeFeedback feFeeback) {
+		userService.deleteRoles(rolesData);
+		feFeeback.setInfo("You have successfully deleted a role");
+		userService.setRolesData(rolesData);
+		return ControllerUtils.DELETE_ROLE;
+	}
+	
 	/**
 	 * This method is called when a user is selected. It returns a list of roles 
 	 * possessed by the user in question
@@ -95,20 +99,6 @@ public class UserAdminController {
 		return jsonStr;
 	}
 
-	@RequestMapping(value = "/createRole", method = RequestMethod.POST)
-	@Secured({"ADMIN"})
-	public String createRole(@ModelAttribute RolesData rolesData) {
-		userService.createRoles(rolesData);
-		return "/admin/createdRole";
-	}
-
-	@RequestMapping(value = "/deleteRole", method = RequestMethod.POST)
-	@Secured({"ADMIN"})
-	public String postRoles(@ModelAttribute RolesData rolesData) {
-		userService.deleteRoles(rolesData);
-		return "/admin/deletedRole";
-	}
-
 	@RequestMapping("/getUserData")
 	@Secured({"ADMIN"})
 	public String getUserDataWithId(@RequestParam(required = false) final String userId, 
@@ -126,7 +116,7 @@ public class UserAdminController {
 		}
    		userAdminDto.setSelectedUser(user);
 		userAdminDto.setAllRoles(userService.getAllRoles());
-		return "/admin/updateUser";
+		return ControllerUtils.UPDATE_USER;
 	}
 	
 	@RequestMapping(value = "/getUser/{userID}", method = RequestMethod.GET)
@@ -176,7 +166,6 @@ public class UserAdminController {
 		}
 		userRepository.save(user);
 
-		
 		return "/admin/updatedUser";
 	} 
 }
