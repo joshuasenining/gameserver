@@ -32,11 +32,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequestMapping("/admin")
 public class UserAdminController {
 	@Autowired
-	protected UserService userService;
+	private UserService userService;
+	
 	@Autowired
-	protected SimpleGrantedAuthorityService sgaService;
+	private SimpleGrantedAuthorityService sgaService;
+	
 	@Autowired
-	protected UserRepository userRepository;	
+	private UserRepository userRepository;	
 	
 	@ModelAttribute("user")
 	public User getUser() {
@@ -54,7 +56,8 @@ public class UserAdminController {
 	@Secured({"ADMIN"})
 	public String createRole(@ModelAttribute RolesData rolesData, FeFeedback feFeedback) {
 		userService.createRoles(rolesData);
-		feFeedback.setInfo("New Role created");
+		String message = ControllerUtils.getI18nMessage("createRoles.success");
+		feFeedback.setInfo(message);
 		userService.setRolesData(rolesData);
 		return ControllerUtils.CREATE_ROLE;
 	}
@@ -70,7 +73,8 @@ public class UserAdminController {
 	@Secured({"ADMIN"})
 	public String postRoles(@ModelAttribute RolesData rolesData, FeFeedback feFeeback) {
 		userService.deleteRoles(rolesData);
-		feFeeback.setInfo("You have successfully deleted a role");
+		String message = ControllerUtils.getI18nMessage("deleteRoles.success");
+		feFeeback.setInfo(message);
 		userService.setRolesData(rolesData);
 		return ControllerUtils.DELETE_ROLE;
 	}
@@ -151,8 +155,9 @@ public class UserAdminController {
 				String encodedPwd = encoder.encode(newPassword);
 				user.setPassword(encodedPwd);
 			} else {
-				feFeedback.setError("Password does not match verify password. Please retry");
-				return "/admin/updateUser";
+				String message = ControllerUtils.getI18nMessage("updateUser.error.verifyPasswordDoeNotMatch");
+				feFeedback.setError(message);
+				return ControllerUtils.UPDATE_USER;
 			}
 		} else {
 			user.setId(null);
@@ -160,12 +165,15 @@ public class UserAdminController {
 				String encodedPwd = encoder.encode(userAdminDto.getPassword());
 				user.setPassword(encodedPwd);
 			} else {
-				feFeedback.setError("Password does not match verify password. Please retry");
-				return "/admin/updateUser";
+				String message = ControllerUtils.getI18nMessage("updateUser.error.verifyPasswordDoeNotMatch");
+				feFeedback.setError(message);
+				return ControllerUtils.UPDATE_USER;
 			}
 		}
 		userRepository.save(user);
-
-		return "/admin/updatedUser";
+		String message = ControllerUtils.getI18nMessage("updateUser.success");
+		feFeedback.setInfo(message);
+		
+		return ControllerUtils.UPDATE_USER;
 	} 
 }

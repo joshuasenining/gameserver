@@ -54,6 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// .invalidateHttpSession(true).and()				
 			.authorizeRequests()
 				.antMatchers("/").permitAll()
+				.antMatchers("/css/**").permitAll()
 				.antMatchers("/ckeditor/**").permitAll()	
 				.antMatchers("/bootstrap/**").permitAll()	
 				.antMatchers("/public/**").permitAll()

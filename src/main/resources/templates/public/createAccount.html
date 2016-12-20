@@ -23,7 +23,7 @@
 	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/css/samples.css"></link>
 	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/toolbarconfigurator/lib/codemirror/neo.css"></link>
 	
-    <title th:text="#{editCampaign.title}">Title</title>
+    <title th:text="#{createAccount.title}">Title</title>
     
 	<script th:inline="javascript">
 	$(document).ready(function() {
@@ -35,21 +35,20 @@
 </head>
 <body>
 	<div th:include="/public/navbar :: navbar"></div>
+	<br></br>
+	<br></br>
 	
-	<br></br>
-	<br></br>
-	<br></br>
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-11">
-			<h1 th:text="#{editCampaign.title}">Create</h1>
+			<h1 th:text="#{createAccount.title}">Create</h1>
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-10">
-			<span class="error-message" th:if="${feFeedback.error}" th:text="${feFeedback.error}">Error.</span>
+			<span class="error-message" th:if="${feFeedback.error}" th:utext="${feFeedback.error}">Error.</span>
 		</div>
 	</div>
 	<div class="row">
@@ -59,46 +58,75 @@
 		</div>
 	</div>
 
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<span th:utext="#{createAccount.description}"></span>
+		</div>
+	</div>
+
 	<br></br>
-	<form id="updateOwnerForm" th:object="${campaignDto}" action="#" th:action="@{/gamemaster/editCampaign}" method="post">
-		<input id="ownerId" type="hidden" th:field="*{ownerId}"></input>
-		<input type="hidden" th:field="*{campaign.ownerId}"></input>
-	 
+	<form id="registerAccountForm" th:object="${userDto}" action="#" th:action="@{/public/createAccount}" method="post">
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
-				<label class="input-margin">Campaign name</label>
+				<label class="input-margin" th:text="#{createAccount.userName}">name</label>
 			</div>
 			<div class="col-md-8">
-				<input class="input-margin" th:field="*{campaign.name}"></input>
+				<input class="input-margin" th:field="*{username}"></input>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-1">
-				<label class="input-margin">Description</label>
-			</div>
-		</div>
-		<div class="input-margin">
-			<div class="grid-container">
-				<div class="grid-width-100">
-					<textarea id="editor" th:field="*{campaignFolio.content}"></textarea>
-				</div>
-			</div>
-		</div>
-		
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
-           		<input class="basic-margin" type="submit" value="Submit" />
+				<label class="input-margin" th:text="#{createAccount.firstName}">name</label>
+			</div>
+			<div class="col-md-8">
+				<input class="input-margin" th:field="*{firstName}"></input>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label class="input-margin" th:text="#{createAccount.lastName}">name</label>
+			</div>
+			<div class="col-md-8">
+				<input class="input-margin" th:field="*{lastName}"></input>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label class="input-margin" th:text="#{createAccount.password}">Pass</label>
+			</div>
+			<div class="col-md-8">
+				<input type="password" class="input-margin" th:field="*{password}"></input>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label class="input-margin" th:text="#{createAccount.verifyPassword}">Verify</label>
+			</div>
+			<div class="col-md-8">
+				<input type="password" class="input-margin" th:field="*{verifyPassword}"></input>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label class="input-margin" th:text="#{createAccount.email}">Em</label>
+			</div>
+			<div class="col-md-8">
+				<input class="input-margin" th:field="*{email}" />
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+           		<input type="submit" class="input-margin" th:value="#{createAccount.submit}"></input>
 			</div>
 		</div>
 	</form>
-	
-	<script>
-		<!-- ckeditor js code -->
-		initSample();
-	</script>
-	
 </body>
 </html>

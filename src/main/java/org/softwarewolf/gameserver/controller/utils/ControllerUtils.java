@@ -1,7 +1,30 @@
 package org.softwarewolf.gameserver.controller.utils;
 
+import java.util.Locale;
+
+import org.softwarewolf.gameserver.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Service;
+
+@Service
 public class ControllerUtils {
+	private static UserService userService;
+	
+	@Autowired
+	private void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+	
+	private static MessageSource messageSource;
+	
+	@Autowired
+	private void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+	
 	public static final String CAMPAIGN_HOME = "/gamemaster/campaignHome";
+	public static final String CREATE_ACCOUNT = "/public/createAccount";
 	public static final String CREATE_ROLE = "/admin/createRole";
 	public static final String CHANGE_EMAIL = "/shared/changeEmail";
 	public static final String DELETE_CAMPAIGN = "/admin/deleteCampaign";
@@ -38,4 +61,8 @@ public class ControllerUtils {
 	public static final String READ = "Read";
 	public static final String NO_ACCESS = "No Access";
 
+	public static String getI18nMessage(String key) {
+		Locale locale = userService.getCurrentUserLocale();
+		return messageSource.getMessage(key, null, locale);
+	}
 }

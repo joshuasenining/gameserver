@@ -10,19 +10,24 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.DeleteableRole;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.ResetPasswordDto;
 import org.softwarewolf.gameserver.domain.dto.RoleLists;
 import org.softwarewolf.gameserver.domain.dto.RolesData;
+import org.softwarewolf.gameserver.domain.dto.UserDto;
 import org.softwarewolf.gameserver.domain.dto.UserListItem;
 import org.softwarewolf.gameserver.repository.DeleteableRoleRepository;
 import org.softwarewolf.gameserver.repository.SimpleGrantedAuthorityRepository;
 import org.softwarewolf.gameserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +50,9 @@ public class UserService {
 	
 	@Autowired
 	private GameMailService gameMailService;
+
+	@Autowired
+	private MessageSource messageSource;
 	
 	private static final String EMAIL_PATTERN =
 			"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
@@ -189,15 +197,27 @@ public class UserService {
 	}
 	
 	public User getCurrentUser() {
-		User user =
-				 (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails =
+				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User user = userRepository.findOneByUsername(userDetails.getUsername());
 		return user;
 	}
 	
 	public Locale getCurrentUserLocale() {
-		User user =
-				 (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		return user.getLocale();
+		Locale locale;
+		UserDetails userDetails = null;
+		try {
+			userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		} catch (Exception e) {
+			// not logged in
+		}
+		if (userDetails == null) {
+			locale = LocaleContextHolder.getLocale();
+		} else {
+			User user = userRepository.findOneByUsername(userDetails.getUsername());
+			locale = user.getLocale();
+		}
+		return locale;
 	}
 	
 	public void resetPassword(ResetPasswordDto resetPasswordDto) {
@@ -247,5 +267,55 @@ public class UserService {
 		} else {
 			throw new RuntimeException("Invaild email.");
 		}
+	}
+	
+	public void registerAccount(UserDto userDto) {
+		Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+		Matcher matcher = pattern.matcher(userDto.getEmail());
+		
+		String errMsg = "";
+		String userName = userDto.getUsername();
+		if (userName == null || userName.isEmpty()) {
+			String message = ControllerUtils.getI18nMessage("createAccount.error.usernameRequired");
+			errMsg += message;
+		}
+		User user = userRepository.findOneByUsername(userDto.getUsername());
+		if (user != null) {
+			String message = ControllerUtils.getI18nMessage("createAccount.error.usernameInUse");
+			errMsg += message;
+		}
+		if (!userDto.getPassword().equals(userDto.getVerifyPassword())) {
+			String message = ControllerUtils.getI18nMessage("createAccount.error.passwordVerifyWrong");
+			errMsg += message;
+		}
+		if (!matcher.matches()) {
+			String message = ControllerUtils.getI18nMessage("createAccount.error.invalidEmail");
+			errMsg += message;
+		}
+		if (userRepository.findOneByEmail(userDto.getEmail()) != null) {
+			String message = ControllerUtils.getI18nMessage("createAccount.error.duplicateEmail");
+			errMsg += message;
+		}
+		
+		if (!errMsg.isEmpty()) {
+			throw new RuntimeException(errMsg);
+		}
+		
+		user = new User();
+		user.setAccountNonExpired(true);
+		user.setAccountNonLocked(true);
+		user.setCredentialsNonExpired(true);
+		user.setEmail(userDto.getEmail());
+		user.setEnabled(false);
+		String password = userDto.getPassword();
+		if (password != null && !password.isEmpty()) {
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			password = encoder.encode(userDto.getPassword());
+		}
+		user.setPassword(password);		
+		user.setUsername(userDto.getUsername());
+		user.setFirstName(userDto.getFirstName());
+		user.setLastName(userDto.getLastName());
+		userRepository.save(user);
 	}
 }

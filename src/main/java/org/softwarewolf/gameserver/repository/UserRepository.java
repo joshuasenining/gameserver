@@ -22,4 +22,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     List<User> findAllByKeyValues(String key, Object[] value);		
     
     List<User> deleteByUsername(String username);
+    
+    User findOneByEmail(String email);
 }
