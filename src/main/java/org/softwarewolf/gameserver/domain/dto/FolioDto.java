@@ -20,7 +20,9 @@ public class FolioDto {
 	 * permission (a CampaignUser.permission - "ROLE_OWNER", "ROLE_USER", or "No Access") 
 	 * this is derived from Folo.owners and Folio.users (lists of user.id's)
 	 */
-	private String users;
+	private String owners;
+	private String writers;
+	private String readers;
 	private String forwardingUrl;
 	
 	public FolioDto() {
@@ -84,13 +86,27 @@ public class FolioDto {
 		this.operationType = operationType;
 	}
 	
-	public String getUsers() {
-		return users;
+	public String getOwners() {
+		return owners;
 	}
-	public void setUsers(String users) {
-		this.users = users;
+	public void setOwners(String owners) {
+		this.owners = owners;
 	}
-
+	
+	public String getWriters() {
+		return writers;
+	}
+	public void setWriters(String writers) {
+		this.writers = writers;
+	}
+	
+	public String getReaders() {
+		return readers;
+	}
+	public void setReaders(String readers) {
+		this.readers = readers;
+	}
+	
 	public String getForwardingUrl() {
 		return forwardingUrl;
 	}

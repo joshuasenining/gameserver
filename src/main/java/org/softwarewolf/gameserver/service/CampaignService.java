@@ -98,7 +98,7 @@ public class CampaignService {
 		// We may need to create some CampaignUsers
 		if (createOwnerAndUsers) {
 			User userOwner = userService.getUser(campaign.getOwnerId());
-			CampaignUser owner = new CampaignUser(campaign.getId(), ControllerUtils.ROLE_OWNER, 
+			CampaignUser owner = new CampaignUser(campaign.getId(), ControllerUtils.PERMISSION_OWNER, 
 					userOwner.getId(), userOwner.getUsername());
 			campaignUserRepository.save(owner);
 		}
@@ -152,16 +152,16 @@ public class CampaignService {
 		List<Campaign> allCampaigns = campaignRepository.findAll();
 		List<CampaignUser> inCampaignList = new ArrayList<>();
 		if (ControllerUtils.GM_TYPE.equals(asType)) {
-			List<CampaignUser> ownerList = campaignUserRepository.findAllByUserIdAndRole(userId, ControllerUtils.ROLE_OWNER);
+			List<CampaignUser> ownerList = campaignUserRepository.findAllByUserIdAndPermission(userId, ControllerUtils.PERMISSION_OWNER);
 			if (!ownerList.isEmpty()) {
 				inCampaignList.addAll(ownerList);
 			}
-			List<CampaignUser> gmList = campaignUserRepository.findAllByUserIdAndRole(userId, ControllerUtils.ROLE_GAMEMASTER);
+			List<CampaignUser> gmList = campaignUserRepository.findAllByUserIdAndPermission(userId, ControllerUtils.PERMISSION_GAMEMASTER);
 			if (!gmList.isEmpty()) {
 				inCampaignList.addAll(gmList);
 			}
 		} else if (ControllerUtils.PLAYER_TYPE.equals(asType)) {
-			List<CampaignUser> playerList = campaignUserRepository.findAllByUserIdAndRole(userId, ControllerUtils.ROLE_USER);
+			List<CampaignUser> playerList = campaignUserRepository.findAllByUserIdAndPermission(userId, ControllerUtils.PERMISSION_PLAYER);
 			if (!playerList.isEmpty()) {
 				inCampaignList.addAll(playerList);
 			}

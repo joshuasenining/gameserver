@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.SimpleTag;
@@ -28,11 +29,13 @@ public class Folio implements Serializable {
 	private String content;
 	private List<SimpleTag> tags;
 	private List<String> owners;
-	private List<String> users;
+	private List<String> writers;
+	private List<String> readers;
 	
 	public Folio() { 
 		owners = new ArrayList<>();
-		users = new ArrayList<>();
+		writers = new ArrayList<>();
+		readers = new ArrayList<>();
 	}
 	public Folio(String campaignId) {
 		this();
@@ -123,73 +126,101 @@ public class Folio implements Serializable {
 		if (!owners.contains(owner)) {
 			owners.add(owner);
 		}
-		if (users != null && users.contains(owner)) {
-			removeUser(owner);
+		if (writers != null && writers.contains(owner)) {
+			removeUser(writers, owner);
+		}
+		if (readers != null && readers.contains(owner)) {
+			removeUser(readers, owner);
 		}
 	}
 
-	public void removeOwner(String removeOwner) {
-		if (owners != null && owners.size() == 1 && owners.get(0).equals(removeOwner)) {
-			throw new RuntimeException("You can't remove the last owner");
+	public void removeOwner(String owner) {
+		removeUser(owners, owner);
+	}
+	
+	public List<String> getWriters() {
+		if (writers == null) {
+			writers = new ArrayList<>();
+		}
+		return writers;
+	}
+	
+	public void setWriters(List<String> writers) {
+		this.writers = writers;
+	}
+	
+	public void addWriter(String writer) {
+		if (writers == null) {
+			writers = new ArrayList<>();
+		}
+		if (!writers.contains(writer)) {
+			writers.add(writer);
+		}
+		if (owners != null && owners.contains(writer)) {
+			removeUser(owners, writer);
+		}
+		if (readers != null && readers.contains(writer)) {
+			removeUser(readers, writer);
+		}
+	}
+	
+	public void removeWriter(String writer) {
+		removeUser(writers, writer);
+	}
+	
+	public List<String> getReaders() {
+		if (readers == null) {
+			readers = new ArrayList<>();
+		}
+		return readers;
+	}
+
+	public void setReaders(List<String> readers) {
+		this.readers = readers;
+	}
+	
+	public void addReader(String reader) {
+		if (readers == null) {
+			readers = new ArrayList<>();
+		}
+		if (!readers.contains(reader)) {
+			readers.add(reader);
+		}
+		if (owners != null && owners.contains(reader)) {
+			removeUser(owners, reader);
+		}
+		if (writers != null && readers.contains(reader)) {
+			removeUser(writers, reader);
+		}
+	}
+	
+	public void removeReader(String reader) {
+		removeUser(readers, reader);
+	}	
+	
+	public void removeUser(List<String> userList, String removeOwner) {
+		if (userList != null && userList.size() == 1 && userList.get(0).equals(removeOwner)) {
+			String message = ControllerUtils.getI18nMessage("editFolio.error.canNotRemoveLastOwner");
+			throw new RuntimeException(message);
 		}
 		if (owners != null && owners.contains(removeOwner)) {
-			Iterator<String> iter =owners.iterator();
-			while (iter.hasNext()) {
-				String currentOwner = iter.next();
-				if (removeOwner.equals(currentOwner)) {
-					owners.remove(currentOwner);	
-					break;
-				}				
-			}
+			List<String> newUserList = owners.stream().filter(o -> !removeOwner.equals(o)).collect(Collectors.toList());
+			userList = newUserList;
 		}
 	}
 
-	public List<String> getUsers() {
-		if (users == null) {
-			users = new ArrayList<>();
-		}
-		return users;
-	}
-	
-	public void setUsers(List<String> users) {
-		this.users = users;
-	}
-	
-	public void addUser(String user) {
-		if (users == null) {
-			users = new ArrayList<>();
-		}
-		if (!users.contains(user)) {
-			users.add(user);
-		}
-		if (owners != null && owners.contains(user)) {
-			removeOwner(user);
-		}
-	}
-	
 	public String getUserPermission(String userId) {
 		if (owners.contains(userId)) { 
-			return ControllerUtils.ROLE_OWNER;
-		} else if (users != null && users.contains(userId)) {
-			return ControllerUtils.ROLE_USER;
+			return ControllerUtils.PERMISSION_OWNER;
+		} else if (writers != null && writers.contains(userId)) {
+			return ControllerUtils.PERMISSION_READ_WRITE;
+		} else if (readers != null && readers.contains(userId)) { 
+			return ControllerUtils.PERMISSION_READ;
 		} else {
 			return ControllerUtils.NO_ACCESS;
 		}
 	}
 
-	public void removeUser(String removeUser) {
-		if (users != null && users.contains(removeUser)) {
-			Iterator<String> iter =users.iterator();
-			while (iter.hasNext()) {
-				String currentUser = iter.next();
-				if (removeUser.equals(currentUser)) {
-					users.remove(currentUser);	
-					break;
-				}				
-			}
-		}
-	}	
-	
 	public FolioDescriptor createDescriptor() {
 		return new FolioDescriptor(title, id, tags);
 	}

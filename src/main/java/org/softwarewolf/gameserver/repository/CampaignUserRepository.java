@@ -13,13 +13,13 @@ public interface CampaignUserRepository extends MongoRepository<CampaignUser, St
 	@Query("{'campaignId' : ?0}")
 	List<CampaignUser> findByCampaignId(String campaignId);
 	
-	List<CampaignUser> findAllByCampaignIdAndRole(String campaignId, String role);
+	List<CampaignUser> findAllByCampaignIdAndPermission(String campaignId, String permission);
 	
 	CampaignUser findByCampaignIdAndUserId(String campaignId, String userId);
 
 	List<CampaignUser> findAllByUserId(String userId);
 	
-	List<CampaignUser> findAllByUserIdAndRole(String userId, String role);
+	List<CampaignUser> findAllByUserIdAndPermission(String userId, String permission);
 	
     /// Find by key value pair
     @Query("{?0 : ?1}")

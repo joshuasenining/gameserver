@@ -99,9 +99,11 @@
 				spacerDiv.appendTo(rowDiv);
 				var buttonDiv = $('<div class="col-md-1"/>');
 				var access;
-				if (item["permission"] == "ROLE_OWNER") {
+				if (item["permission"] == "PERMISSION_OWNER") {
 					access = "Owner";
-				} else if (item["permission"] == "ROLE_USER") {
+				} else if (item["permission"] == "PERMISSION_READ_WRITE") { 
+					access = "Read/Write";
+				} else if (item["permission"] == "PERMISSION_READ") {
 					access = "Read";
 				} else {
 					access = "No Access";
@@ -143,9 +145,11 @@
 				var userId = item["userId"];
 				var newPermission = buttonMap[userId];
 				if (newPermission == "Owner") {
-					item["permission"] = "ROLE_OWNER";
+					item["permission"] = "PERMISSION_OWNER";
+				} else if (newPermission == "Read/Write") {
+					item["permission"] == "PERMISSION_READ_WRITE";
 				} else if (newPermission == "Read") {
-					item["permission"] = "ROLE_USER";
+					item["permission"] = "PERMISSION_READ";
 				} else {
 					item["permission"] = "NO_ACCESS";
 				}
@@ -192,6 +196,8 @@
 			if (selection == "No Access") {
 				button.prop("value", "Read");
 			} else if (selection == "Read") {
+				button.prop("value", "Read/Write"); 
+			} else if (selection == "Read/Write") { 
 				button.prop("value", "Owner");
 			} else {
 				button.prop("value", "No Access");

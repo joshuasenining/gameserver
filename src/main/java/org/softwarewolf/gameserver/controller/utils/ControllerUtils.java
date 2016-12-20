@@ -57,6 +57,11 @@ public class ControllerUtils {
 	public static final String ROLE_USER = "ROLE_USER";
 	public static final String ROLE_ADMIN = "ROLE_ADMIN";
 	public static final String ROLE_GAMEMASTER = "ROLE_GAMEMASTER";
+	public static final String PERMISSION_OWNER = "PERMISSION_OWNER";
+	public static final String PERMISSION_GAMEMASTER = "PERMISSION_GAMEMASTER";
+	public static final String PERMISSION_PLAYER = "PERMISSION_PLAYER";
+	public static final String PERMISSION_READ_WRITE = "PERMISSION_READ_WRITE";
+	public static final String PERMISSION_READ = "PERMISSION_READ";
 	public static final String OWNER = "Owner";
 	public static final String READ = "Read";
 	public static final String NO_ACCESS = "No Access";

@@ -215,26 +215,31 @@ public class FolioService implements Serializable {
 		}
 		Folio folio = folioDto.getFolio();
 		folio.setOwners(null);
-		folio.setUsers(null);
+		folio.setWriters(null);
+		folio.setReaders(null);
 		// put values from FolioDto into folio
 		if (campaignUserList != null) {
 			List<String> ownerIdList = new ArrayList<>();
-			List<String> userIdList = new ArrayList<>();
+			List<String> writerIdList = new ArrayList<>();
+			List<String> readerIdList = new ArrayList<>();
 			for (CampaignUser cu : campaignUserList) {
 				String id = cu.getUserId();
 				String permission = cu.getPermission();
-				if (ControllerUtils.ROLE_OWNER.equals(permission)) {
+				if (ControllerUtils.PERMISSION_OWNER.equals(permission)) {
 					// Folio.owners is the list of users with owner authority 
 					folio.addOwner(id);
-					ownerIdList.add(id);
-				} else if (ControllerUtils.ROLE_USER.equals(permission)) {
+//					ownerIdList.add(id);
+				} else if (ControllerUtils.PERMISSION_READ_WRITE.equals(permission)) {
+					folio.addWriter(id);
+//					writerIdList.add(id);
+				} else if (ControllerUtils.PERMISSION_READ.equals(permission)) {
 					// Folio.users is the list of users with read authority
-					folio.addUser(id);
-					userIdList.add(id);
+					folio.addReader(id);
+//					readerIdList.add(id);
 				}
 			}
-			folio.setOwners(ownerIdList);
-			folio.setUsers(userIdList);
+//			folio.setOwners(ownerIdList);
+//			folio.setUsers(userIdList);
 		} else {
 			// No values, current user = owner
 			String ownerId = userService.getCurrentUserId();

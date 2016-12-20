@@ -21,8 +21,8 @@ public class CampaignUserService {
 		return campaignUserRepository.findByCampaignIdAndUserId(campaignId, userId);
 	}
 	
-	public List<CampaignUser> findAllByCampaignIdAndRole(String campaignId, String role) {
-		return campaignUserRepository.findAllByCampaignIdAndRole(campaignId, role);
+	public List<CampaignUser> findAllByCampaignIdAndPermission(String campaignId, String permission) {
+		return campaignUserRepository.findAllByCampaignIdAndPermission(campaignId, permission);
 	}
 	
 	public CampaignUser save(CampaignUser campaignUser) {

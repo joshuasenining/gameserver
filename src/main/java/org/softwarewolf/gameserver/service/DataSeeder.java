@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.Folio;
@@ -22,10 +23,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DataSeeder {
-	private static final String ROLE_USER = "ROLE_USER";
-	private static final String ROLE_ADMIN = "ROLE_ADMIN";
-	private static final String ROLE_GAMEMASTER = "ROLE_GAMEMASTER";
-	private static final String ROLE_OWNER = "ROLE_OWNER";
 	private static final String ADMIN = "admin";
 	private static final String USER = "user";
 	private static final String GM = "gm";
@@ -110,13 +107,13 @@ public class DataSeeder {
 		campaignUserService.deleteAll();
 		
 		try {
-			roleRepo.deleteByRole(ROLE_ADMIN);
+			roleRepo.deleteByRole(ControllerUtils.ROLE_ADMIN);
 		} catch (Exception e) {	}
 		try {
-			roleRepo.deleteByRole(ROLE_GAMEMASTER);
+			roleRepo.deleteByRole(ControllerUtils.ROLE_GAMEMASTER);
 		} catch (Exception e) {	}
 		try {
-			roleRepo.deleteByRole(ROLE_USER);
+			roleRepo.deleteByRole(ControllerUtils.ROLE_USER);
 		} catch (Exception e) {	}
 
 		User adminUser = userRepo.findOneByUsername(ADMIN);
@@ -143,26 +140,26 @@ public class DataSeeder {
 	}
 	
 	private Map<String, SimpleGrantedAuthority> seedRoles() {
-		SimpleGrantedAuthority roleAdmin = sgaRepo.findByRole(ROLE_ADMIN);
-		SimpleGrantedAuthority roleUser = sgaRepo.findByRole(ROLE_USER);
-		SimpleGrantedAuthority roleGamemaster = sgaRepo.findByRole(ROLE_GAMEMASTER);
+		SimpleGrantedAuthority roleAdmin = sgaRepo.findByRole(ControllerUtils.ROLE_ADMIN);
+		SimpleGrantedAuthority roleUser = sgaRepo.findByRole(ControllerUtils.ROLE_USER);
+		SimpleGrantedAuthority roleGamemaster = sgaRepo.findByRole(ControllerUtils.ROLE_GAMEMASTER);
 	
 		if (roleAdmin == null) {
-			roleAdmin = new SimpleGrantedAuthority(ROLE_ADMIN);
+			roleAdmin = new SimpleGrantedAuthority(ControllerUtils.ROLE_ADMIN);
 			roleAdmin = sgaRepo.save(roleAdmin);
 		}
 		if (roleUser == null) {
-			roleUser = new SimpleGrantedAuthority(ROLE_USER);
+			roleUser = new SimpleGrantedAuthority(ControllerUtils.ROLE_USER);
 			roleUser = sgaRepo.save(roleUser);
 		}
 		if (roleGamemaster == null) {
-			roleGamemaster = new SimpleGrantedAuthority(ROLE_GAMEMASTER);
+			roleGamemaster = new SimpleGrantedAuthority(ControllerUtils.ROLE_GAMEMASTER);
 			roleGamemaster = sgaRepo.save(roleGamemaster);
 		}
 		Map<String, SimpleGrantedAuthority> roles = new HashMap<>();
-		roles.put(ROLE_ADMIN, roleAdmin);
-		roles.put(ROLE_USER, roleUser);
-		roles.put(ROLE_GAMEMASTER, roleGamemaster);
+		roles.put(ControllerUtils.ROLE_ADMIN, roleAdmin);
+		roles.put(ControllerUtils.ROLE_USER, roleUser);
+		roles.put(ControllerUtils.ROLE_GAMEMASTER, roleGamemaster);
 		
 		return roles;
 	}
@@ -171,13 +168,13 @@ public class DataSeeder {
 		Map<String, User> userMap = new HashMap<>();
 		List<SimpleGrantedAuthority> roleList = new ArrayList<>();
 
-		roleList.add(roleMap.get(ROLE_USER));
+		roleList.add(roleMap.get(ControllerUtils.ROLE_USER));
 		saveUser(USER, roleList, userMap);
 		
-		roleList.add(roleMap.get(ROLE_GAMEMASTER));
+		roleList.add(roleMap.get(ControllerUtils.ROLE_GAMEMASTER));
 		saveUser(GM, roleList, userMap);
 		
-		roleList.add(roleMap.get(ROLE_ADMIN));
+		roleList.add(roleMap.get(ControllerUtils.ROLE_ADMIN));
 		saveUser(ADMIN, roleList, userMap);
 
 		return userMap;
@@ -192,7 +189,7 @@ public class DataSeeder {
 			user.setFirstName(name);
 			String userPwd = encoder.encode(name);
 			user.setPassword(userPwd);
-			user.setEmail("noSpam@yahoo.com");
+			user.setEmail(name+"@yahoo.com");
 			user.setLocale(Locale.US);
 			user.setAccountNonExpired(true);
 			user.setAccountNonLocked(true);
@@ -218,7 +215,7 @@ public class DataSeeder {
 		
 		User playerUser = userMap.get(USER);
 		Campaign sAs = campaignMap.get(SWORD_AND_SORCERY);
-		CampaignUser player = new CampaignUser(sAs.getId(), ROLE_USER, playerUser.getId(), USER);
+		CampaignUser player = new CampaignUser(sAs.getId(), ControllerUtils.PERMISSION_PLAYER, playerUser.getId(), USER);
 		campaignUserService.save(player);
 		
 		return campaignMap;
@@ -309,7 +306,7 @@ public class DataSeeder {
 		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(MERCHANTS_GUILD));
 		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(GOLDEN_ROAD));
 		goldenRoadFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
-		goldenRoadFolio.addUser(user.getId());
+		goldenRoadFolio.addReader(user.getId());
 		try {
 			folioService.save(goldenRoadFolio);
 		} catch (Exception e) {
@@ -323,7 +320,7 @@ public class DataSeeder {
 		kindomOfMidlandFolio.setContent("<H1>The Kingdom of Midland</H1><p>This is a big kingdom that stretches from east to west.</p>");		
 		kindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(LOCATION));
 		kindomOfMidlandFolio.addTag(tagMap.get(sAndSCampaignId).get(KINGDOM_OF_MIDLAND));
-		kindomOfMidlandFolio.addUser(user.getId());
+		kindomOfMidlandFolio.addReader(user.getId());
 		try {
 			folioService.save(kindomOfMidlandFolio);
 		} catch (Exception e) {

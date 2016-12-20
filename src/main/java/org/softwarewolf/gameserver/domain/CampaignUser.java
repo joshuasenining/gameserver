@@ -3,12 +3,11 @@ package org.softwarewolf.gameserver.domain;
 import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- * This class maps users onto campaigns. The user has a given role in the campaign
- * ("ROLE_OWNER", "ROLE_GAMEMASTER", or "ROLE_USER" for player)
+ * This class maps users onto campaigns. The user has a given permission in the campaign
+ * ("PERMISSION_OWNER", "PERMISSION_GAMEMASTER", or "PERMISSION_PLAYER")
  * in additon, in the context where a campaign player is used, it also has a permission
  * that reflects the authority that the CampaignUser has over the object in question
  * currently only used for Folio objects and could also be any of the roles above
@@ -19,16 +18,14 @@ public class CampaignUser implements Serializable, Comparable<Object> {
 	@Id
 	private String id;
 	private String campaignId;
-	private String role;
+	private String permission;
 	private String userId;
 	private String userName;
-	@Transient
-	String permission;
 	
 	public CampaignUser() {}
-	public CampaignUser(String campaignId, String role, String userId, String username) {
+	public CampaignUser(String campaignId, String permission, String userId, String username) {
 		this.campaignId = campaignId;
-		this.role = role;
+		this.permission = permission;
 		this.userId = userId;
 		this.userName = username;
 	}
@@ -49,12 +46,12 @@ public class CampaignUser implements Serializable, Comparable<Object> {
 		this.campaignId = campaignId;
 	}
 	
-	public String getRole() {
-		return role;
+	public String getPermission() {
+		return permission;
 	}
 
-	public void setRole(String role) {
-		this.role = role;
+	public void setPermission(String permission) {
+		this.permission = permission;
 	}
 		
 	public String getUserId() {
@@ -73,21 +70,13 @@ public class CampaignUser implements Serializable, Comparable<Object> {
 		this.userName = userName;
 	}
 	
-	public String getPermission() {
-		return permission;
-	}
-	
-	public void setPermission(String permission) {
-		this.permission = permission;
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((campaignId == null) ? 0 : campaignId.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		result = prime * result + ((permission == null) ? 0 : permission.hashCode());
 		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
 		return result;
 	}
@@ -111,10 +100,10 @@ public class CampaignUser implements Serializable, Comparable<Object> {
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
-		if (role == null) {
-			if (other.role != null)
+		if (permission == null) {
+			if (other.permission != null)
 				return false;
-		} else if (!role.equals(other.role))
+		} else if (!permission.equals(other.permission))
 			return false;
 		if (userId == null) {
 			if (other.userId != null)
