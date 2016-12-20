@@ -76,7 +76,8 @@ public class AppAdminController {
 		String campaignName = null;
 		try {
 			campaignName = campaignService.deleteCampaign(campaignId);
-			feFeedback.setInfo("You have deleted campaign '"+campaignName+"'");
+			String message = ControllerUtils.getI18nMessage("deleteCampaign.success");
+			feFeedback.setInfo(message + " '"+campaignName+"'");
 		} catch (RuntimeException e) {
 			feFeedback.setError(e.getMessage());
 		}

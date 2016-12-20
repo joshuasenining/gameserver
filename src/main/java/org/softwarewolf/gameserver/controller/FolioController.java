@@ -32,9 +32,6 @@ public class FolioController {
 	@Autowired
 	protected CampaignService campaignService;
 	
-	private static final String NEW_FOLIO = "You are creating a new folio";
-	private static final String EDITING_FOLIO = "You are editing folio '";
-	
 	@RequestMapping(value = "/editFolio", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
 	public String editFolio(HttpSession session, FolioDto folioDto, final FeFeedback feFeedback) {
@@ -45,7 +42,8 @@ public class FolioController {
 
 		folioDto = folioService.initFolioDto(folioDto, campaignId, FolioService.EDIT, GetPermissionsFrom.INIT);
 		folioDto.setForwardingUrl(ControllerUtils.EDIT_FOLIO);
-		feFeedback.setUserStatus(NEW_FOLIO);
+		String message = ControllerUtils.getI18nMessage("editFolio.status.creatingNew");
+		feFeedback.setUserStatus(message);
 		return ControllerUtils.EDIT_FOLIO;
 	}
 	
@@ -60,7 +58,9 @@ public class FolioController {
 
 		folioService.initFolioDto(folioId, folioDto, campaignId, FolioService.EDIT);
 		folioDto.setForwardingUrl(ControllerUtils.EDIT_FOLIO);
-		feFeedback.setUserStatus(EDITING_FOLIO + "'" + folioDto.getFolio().getTitle() + "'");
+		
+		String message = ControllerUtils.getI18nMessage("editFolio.status.editing");
+		feFeedback.setUserStatus(message + "'" + folioDto.getFolio().getTitle() + "'");
 		return ControllerUtils.EDIT_FOLIO;
 	}
 	
@@ -165,7 +165,8 @@ public class FolioController {
 		try {
 			simpleTagService.save(folioDto.getAddTag(), campaignId);
 		} catch (Exception e) {
-			feFeedback.setError("You must have a name for a tag");
+			String message = ControllerUtils.getI18nMessage("editFolio.error.noTagName");
+			feFeedback.setError(message);
 			feFeedback.setInfo(getFeInfo(folioDto));
 			return folioDto.getForwardingUrl();
 		}
@@ -179,9 +180,9 @@ public class FolioController {
 	private String getFeInfo(FolioDto folioDto) {
 		String info;
 		if (folioDto.getFolio().getTitle() == null || folioDto.getFolio().getTitle() == null) { 
-			info = NEW_FOLIO;
+			info = ControllerUtils.getI18nMessage("editFolio.status.creatingNew");
 		} else {
-			info = EDITING_FOLIO + folioDto.getFolio().getTitle() + "'";
+			info = ControllerUtils.getI18nMessage("editFolio.status.editing") + " '" + folioDto.getFolio().getTitle() + "'";
 		}
 		return info;
 		

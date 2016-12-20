@@ -1,23 +1,18 @@
 package org.softwarewolf.gameserver.controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.domain.User;
-import org.softwarewolf.gameserver.domain.dto.RoleLists;
 import org.softwarewolf.gameserver.domain.dto.RolesData;
 import org.softwarewolf.gameserver.domain.dto.UserAdminDto;
-import org.softwarewolf.gameserver.domain.dto.UserListItem;
-import org.softwarewolf.gameserver.repository.UserRepository;
 import org.softwarewolf.gameserver.service.SimpleGrantedAuthorityService;
 import org.softwarewolf.gameserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,9 +31,6 @@ public class UserAdminController {
 	
 	@Autowired
 	private SimpleGrantedAuthorityService sgaService;
-	
-	@Autowired
-	private UserRepository userRepository;	
 	
 	@ModelAttribute("user")
 	public User getUser() {
@@ -85,54 +77,31 @@ public class UserAdminController {
 	 * @param userID
 	 * @return
 	 */
-	@RequestMapping("/rolesJson/{userID}")
+	@RequestMapping("/rolesJson/{userId}")
 	@Secured({"ADMIN"})
-	public @ResponseBody String getRolesJson(@PathVariable("userID") String userID) {
-		if ("newUser".equals(userID)) {
-			userID = null;
-		}
-		RoleLists roleLists = userService.getRoleLists(userID);
-		ObjectMapper objMapper = new ObjectMapper();
-		String jsonStr = null;
-		try {
-			jsonStr = objMapper.writeValueAsString(roleLists);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return jsonStr;
+	public @ResponseBody String getRolesJson(@PathVariable("userId") String userId) {
+		return userService.getRoleListsAsJson(userId);
 	}
 
 	@RequestMapping("/getUserData")
 	@Secured({"ADMIN"})
 	public String getUserDataWithId(@RequestParam(required = false) final String userId, 
 			final UserAdminDto userAdminDto, FeFeedback feFeedback) {
-		List<UserListItem> userList = userService.getUserList();
-		userAdminDto.setUserList(userList);
-		User user = null;
-		if (userId == null) {
-			user = new User();
-		} else {
-			user = userRepository.findOne(userId);
-			if (user == null) {
-				user = new User();
-			}
-		}
-   		userAdminDto.setSelectedUser(user);
-		userAdminDto.setAllRoles(userService.getAllRoles());
+		userService.initUserAdminDto(userAdminDto, userId);
+		
 		return ControllerUtils.UPDATE_USER;
 	}
 	
 	@RequestMapping(value = "/getUser/{userID}", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
-	public @ResponseBody String getUser(HttpServletRequest request, @PathVariable("userID") String userID) {
+	public @ResponseBody String getUser(HttpServletRequest request, 
+			@PathVariable("userID") String userID, FeFeedback feFeedback) {
 		User user = userService.getUser(userID);
 		ObjectMapper objMapper = new ObjectMapper();
 		String jsonStr = null;
 		try {
 			jsonStr = objMapper.writeValueAsString(user);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return jsonStr;
@@ -141,36 +110,12 @@ public class UserAdminController {
 	@RequestMapping(value = "/updateUserData", method = RequestMethod.POST)
 	@Secured({"ADMIN"})
 	public String postUser(final UserAdminDto userAdminDto, FeFeedback feFeedback) {
-		User user = userAdminDto.getSelectedUser();
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-		User prevVersion = userRepository.findOne(user.getId());
-		String newPassword = userAdminDto.getPassword();
-		String verifyPassword = userAdminDto.getVerifyPassword();
-		if (prevVersion != null) {
-			if (newPassword.isEmpty() && verifyPassword.isEmpty()) {
-				String prevEncodedPwd = prevVersion.getPassword();
-				user.setPassword(prevEncodedPwd);
-			} else if (newPassword.equals(verifyPassword)){
-				String encodedPwd = encoder.encode(newPassword);
-				user.setPassword(encodedPwd);
-			} else {
-				String message = ControllerUtils.getI18nMessage("updateUser.error.verifyPasswordDoeNotMatch");
-				feFeedback.setError(message);
-				return ControllerUtils.UPDATE_USER;
-			}
-		} else {
-			user.setId(null);
-			if (userAdminDto.getPassword() != null && userAdminDto.getPassword().equals(userAdminDto.getVerifyPassword())) {
-				String encodedPwd = encoder.encode(userAdminDto.getPassword());
-				user.setPassword(encodedPwd);
-			} else {
-				String message = ControllerUtils.getI18nMessage("updateUser.error.verifyPasswordDoeNotMatch");
-				feFeedback.setError(message);
-				return ControllerUtils.UPDATE_USER;
-			}
+		try {
+			userService.updateUserData(userAdminDto);
+		} catch (Exception e) {
+			feFeedback.setError(e.getMessage());
+			return ControllerUtils.UPDATE_USER;
 		}
-		userRepository.save(user);
 		String message = ControllerUtils.getI18nMessage("updateUser.success");
 		feFeedback.setInfo(message);
 		

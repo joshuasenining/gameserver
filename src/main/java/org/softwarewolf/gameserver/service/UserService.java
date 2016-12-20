@@ -1,5 +1,6 @@
 package org.softwarewolf.gameserver.service;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.ResetPasswordDto;
 import org.softwarewolf.gameserver.domain.dto.RoleLists;
 import org.softwarewolf.gameserver.domain.dto.RolesData;
+import org.softwarewolf.gameserver.domain.dto.UserAdminDto;
 import org.softwarewolf.gameserver.domain.dto.UserDto;
 import org.softwarewolf.gameserver.domain.dto.UserListItem;
 import org.softwarewolf.gameserver.repository.DeleteableRoleRepository;
@@ -30,6 +32,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class UserService {
@@ -209,7 +213,7 @@ public class UserService {
 		try {
 			userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		} catch (Exception e) {
-			// not logged in
+			// not logged in, no worries
 		}
 		if (userDetails == null) {
 			locale = LocaleContextHolder.getLocale();
@@ -317,5 +321,66 @@ public class UserService {
 		user.setFirstName(userDto.getFirstName());
 		user.setLastName(userDto.getLastName());
 		userRepository.save(user);
+	}
+	
+	public void updateUserData(UserAdminDto userAdminDto) {
+		User user = userAdminDto.getSelectedUser();
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+		User prevVersion = userRepository.findOne(user.getId());
+		String newPassword = userAdminDto.getPassword();
+		String verifyPassword = userAdminDto.getVerifyPassword();
+		if (prevVersion != null) {
+			if (newPassword.isEmpty() && verifyPassword.isEmpty()) {
+				String prevEncodedPwd = prevVersion.getPassword();
+				user.setPassword(prevEncodedPwd);
+			} else if (newPassword.equals(verifyPassword)){
+				String encodedPwd = encoder.encode(newPassword);
+				user.setPassword(encodedPwd);
+			} else {
+				throw new RuntimeException(ControllerUtils.getI18nMessage("updateUser.error.verifyPasswordDoeNotMatch"));
+			}
+		} else {
+			user.setId(null);
+			if (userAdminDto.getPassword() != null && userAdminDto.getPassword().equals(userAdminDto.getVerifyPassword())) {
+				String encodedPwd = encoder.encode(userAdminDto.getPassword());
+				user.setPassword(encodedPwd);
+			} else {
+				throw new RuntimeException(ControllerUtils.getI18nMessage("updateUser.error.verifyPasswordDoeNotMatch"));
+			}
+		}
+		userRepository.save(user);
+	}
+	
+	public void initUserAdminDto(UserAdminDto userAdminDto, String userId) {
+		List<UserListItem> userList = getUserList();
+		userAdminDto.setUserList(userList);
+		User user = null;
+		if (userId == null) {
+			user = new User();
+		} else {
+			user = userRepository.findOne(userId);
+			if (user == null) {
+				user = new User();
+			}
+		}
+   		userAdminDto.setSelectedUser(user);
+		userAdminDto.setAllRoles(getAllRoles());		
+	}
+	
+	public String getRoleListsAsJson(String userId) {
+		if ("newUser".equals(userId)) {
+			userId = null;
+		}
+		RoleLists roleLists = getRoleLists(userId);
+		ObjectMapper objMapper = new ObjectMapper();
+		String jsonStr = null;
+		try {
+			jsonStr = objMapper.writeValueAsString(roleLists);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return jsonStr;
 	}
 }

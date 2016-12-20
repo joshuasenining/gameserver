@@ -63,12 +63,14 @@ public class CampaignController {
 		String campaignId = selectCampaignDto.getSelectedCampaignId();
 		campaignService.initSelectCampaignDto(selectCampaignDto, asType);
 		if (campaignId == null) {
-			feFeedback.setError("You must select a campaign");
+			String message = ControllerUtils.getI18nMessage("selectCampaign.error.pickOne");
+			feFeedback.setError(message);
 			return ControllerUtils.SELECT_CAMPAIGN;
 		} else {
 			Campaign selectedCampaign = campaignService.findOne(campaignId);
-			if (selectedCampaign == null) { 
-				feFeedback.setError("Could not locate selected campaign");
+			if (selectedCampaign == null) {
+				String message = ControllerUtils.getI18nMessage("selectCampaign.error.canNotLocate");
+				feFeedback.setError(message);
 				return ControllerUtils.SELECT_CAMPAIGN;
 			} else {
 				session.setAttribute(ControllerUtils.CAMPAIGN_ID, campaignId);
@@ -122,8 +124,10 @@ public class CampaignController {
 	public String postCampaign(@ModelAttribute CampaignDto campaignDto, FeFeedback feFeedback) {
 		String ownerId = campaignDto.getOwnerId();
 		try {
-			campaignService.editCampaign(campaignDto);
-			feFeedback.setInfo("Campaign " + campaignDto.getCampaign().getName() + " created.");
+			campaignService.validateAndSaveCampaign(campaignDto);
+			String campaign = ControllerUtils.getI18nMessage("editCampaign.info.campaign");
+			String created = ControllerUtils.getI18nMessage("editCampaign.info.created");
+			feFeedback.setInfo(campaign + " " + campaignDto.getCampaign().getName() + " " + created + ".");
 		} catch (Exception e) {
 			feFeedback.setError(e.getMessage());
 		}

@@ -35,7 +35,8 @@ public class UserController {
 			return ControllerUtils.RESET_PASSWORD;
 		}
 		
-		feFeedback.setInfo("You have reset your password");
+		String message = ControllerUtils.getI18nMessage("myAccount.resetPassword.success");
+		feFeedback.setInfo(message);
 		return ControllerUtils.RESET_PASSWORD;
 	}
 
@@ -49,7 +50,8 @@ public class UserController {
 			return ControllerUtils.RESET_PASSWORD;
 		}
 		
-		feFeedback.setInfo("A temporary password has been assigned to you. Please check your email.");
+		String message = ControllerUtils.getI18nMessage("myAccount.adminResetPassword.success");
+		feFeedback.setInfo(message);
 		return ControllerUtils.RESET_PASSWORD;
 	}
 	
@@ -70,7 +72,8 @@ public class UserController {
 			return ControllerUtils.CHANGE_EMAIL;
 		}
 		
-		feFeedback.setInfo("You have changed your email address");
+		String message = ControllerUtils.getI18nMessage("myAccount.changeEmail.success");
+		feFeedback.setInfo(message);
 		return ControllerUtils.CHANGE_EMAIL;
 	}
 }

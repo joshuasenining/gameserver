@@ -33,6 +33,7 @@ public class CampaignUserService {
 		campaignUserRepository.deleteByCampaignId(campaignId);
 	}
 	
+	// TODO: Be more specific
 	public void deleteAll() {
 		campaignUserRepository.deleteAll();
 	}

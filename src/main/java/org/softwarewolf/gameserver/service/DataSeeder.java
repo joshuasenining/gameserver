@@ -236,7 +236,7 @@ public class DataSeeder {
 			campaignFolio.setContent(description);
 			campaignDto.setCampaignFolio(campaignFolio);
 			try {
-				campaignService.saveCampaign(campaignDto);
+				campaignService.validateAndSaveCampaign(campaignDto);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
