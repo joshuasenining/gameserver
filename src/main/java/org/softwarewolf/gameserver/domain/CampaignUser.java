@@ -3,12 +3,13 @@ package org.softwarewolf.gameserver.domain;
 import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * This class maps users onto campaigns. The user has a given permission in the campaign
  * ("PERMISSION_OWNER", "PERMISSION_GAMEMASTER", or "PERMISSION_PLAYER")
- * in additon, in the context where a campaign player is used, it also has a permission
+ * in addition, in the context where a campaign player is used, it also has a permission
  * that reflects the authority that the CampaignUser has over the object in question
  * currently only used for Folio objects and could also be any of the roles above
  */
@@ -18,9 +19,13 @@ public class CampaignUser implements Serializable, Comparable<Object> {
 	@Id
 	private String id;
 	private String campaignId;
+	// Permission in the campaign (PERMISSION_OWNER, PERMISSION_GAMEMASTER, PERMISSION_PLAYER)
 	private String permission;
 	private String userId;
 	private String userName;
+	// Permission for an item (i.e. Folio) if attached to one (PERMISSION_OWNER, PERMISSION_READ_WRITE, PERMISSION_WRITE, NO_PERMISSION) 
+	@Transient
+	private String itemPermission;
 	
 	public CampaignUser() {}
 	public CampaignUser(String campaignId, String permission, String userId, String username) {
@@ -68,6 +73,14 @@ public class CampaignUser implements Serializable, Comparable<Object> {
 	
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+	
+	public String getItemPermission() {
+		return itemPermission;
+	}
+	
+	public void setItemPermission(String itemPermission) {
+		this.itemPermission = itemPermission;
 	}
 	
 	@Override

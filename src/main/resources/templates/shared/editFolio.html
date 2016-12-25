@@ -24,7 +24,7 @@
 	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/css/samples.css"></link>
 	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/toolbarconfigurator/lib/codemirror/neo.css"></link>
 
-    <title th:text="#{createCampaign.title}">Title</title>
+    <title th:text="#{editCampaign.title}">Title</title>
     
 	<script th:inline="javascript">
 	$(document).ready(function() {
@@ -99,13 +99,14 @@
 				spacerDiv.appendTo(rowDiv);
 				var buttonDiv = $('<div class="col-md-1"/>');
 				var access;
-				if (item["permission"] == "PERMISSION_OWNER") {
+				if (item["itemPermission"] == "PERMISSION_OWNER") {
 					access = "Owner";
-				} else if (item["permission"] == "PERMISSION_READ_WRITE") { 
+				} else if (item["itemPermission"] == "PERMISSION_READ_WRITE") { 
 					access = "Read/Write";
-				} else if (item["permission"] == "PERMISSION_READ") {
+				} else if (item["itemPermission"] == "PERMISSION_READ") {
 					access = "Read";
 				} else {
+					// in this case item["itemPermission"] == "NO_PERMISSION"
 					access = "No Access";
 				}
 				var button = $('<input id="'+id+'" type="button" class="permission" onclick="modifyPermission(&quot;'+id+'&quot;)"/>')
@@ -145,13 +146,13 @@
 				var userId = item["userId"];
 				var newPermission = buttonMap[userId];
 				if (newPermission == "Owner") {
-					item["permission"] = "PERMISSION_OWNER";
+					item["itemPermission"] = "PERMISSION_OWNER";
 				} else if (newPermission == "Read/Write") {
-					item["permission"] == "PERMISSION_READ_WRITE";
+					item["itemPermission"] = "PERMISSION_READ_WRITE";
 				} else if (newPermission == "Read") {
-					item["permission"] = "PERMISSION_READ";
+					item["itemPermission"] = "PERMISSION_READ";
 				} else {
-					item["permission"] = "NO_ACCESS";
+					item["itemPermission"] = "NO_ACCESS";
 				}
 			});
 			var newUserString = JSON.stringify(usersObject)

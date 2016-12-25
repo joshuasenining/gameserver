@@ -13,6 +13,7 @@ public class FolioDto {
 	private List<FolioDescriptor> folioDescriptorList;
 	private String viewTagList;
 	private String operationType;
+	
 	/**
 	 * Serialized form of List<Map<String, String>> where each map contains:
 	 * id (a CampaignUser.userId)
@@ -20,9 +21,7 @@ public class FolioDto {
 	 * permission (a CampaignUser.permission - "ROLE_OWNER", "ROLE_USER", or "No Access") 
 	 * this is derived from Folo.owners and Folio.users (lists of user.id's)
 	 */
-	private String owners;
-	private String writers;
-	private String readers;
+	private String users;
 	private String forwardingUrl;
 	
 	public FolioDto() {
@@ -86,27 +85,12 @@ public class FolioDto {
 		this.operationType = operationType;
 	}
 	
-	public String getOwners() {
-		return owners;
+	public String getUsers() {
+		return users;
 	}
-	public void setOwners(String owners) {
-		this.owners = owners;
+	public void setUsers(String users) {
+		this.users = users;
 	}
-	
-	public String getWriters() {
-		return writers;
-	}
-	public void setWriters(String writers) {
-		this.writers = writers;
-	}
-	
-	public String getReaders() {
-		return readers;
-	}
-	public void setReaders(String readers) {
-		this.readers = readers;
-	}
-	
 	public String getForwardingUrl() {
 		return forwardingUrl;
 	}

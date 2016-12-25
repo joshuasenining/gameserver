@@ -117,17 +117,16 @@ public class FolioService implements Serializable {
 	public String validateFolio(Folio folio) {
 		String errorList = "";
 		if (folio == null) {
-			errorList = "Null folio.";
-			return errorList;
+			return ControllerUtils.getI18nMessage("editFolio.error.nullFolio");
 		}
 		if (folio.getTitle() == null || folio.getTitle().isEmpty()) {
-			errorList = "Title may not be empty.";
+			errorList = ControllerUtils.getI18nMessage("editFolio.error.emptyTitle");
 		}
 		if (folio.getContent() == null || folio.getContent().isEmpty()) {
 			if (errorList.length() > 0) {
 				errorList += "\n";
 			}
-			errorList += "Content may not be empty.";
+			errorList += ControllerUtils.getI18nMessage("editFolio.error.emptyContent");
 		}
 		return errorList;
 	}
@@ -172,7 +171,7 @@ public class FolioService implements Serializable {
 		
 		if (GetPermissionsFrom.FOLIO.equals(getPermissionsFrom) ||
 				GetPermissionsFrom.INIT.equals(getPermissionsFrom)) {
-			this.usersFromFolioIntoDto(folioDto);
+			usersFromFolioIntoDto(folioDto);
 		} else if (GetPermissionsFrom.FOLIO_DTO.equals(getPermissionsFrom)){
 			usersFromDtoIntoFolio(folioDto);
 		}
@@ -219,27 +218,17 @@ public class FolioService implements Serializable {
 		folio.setReaders(null);
 		// put values from FolioDto into folio
 		if (campaignUserList != null) {
-			List<String> ownerIdList = new ArrayList<>();
-			List<String> writerIdList = new ArrayList<>();
-			List<String> readerIdList = new ArrayList<>();
 			for (CampaignUser cu : campaignUserList) {
 				String id = cu.getUserId();
-				String permission = cu.getPermission();
+				String permission = cu.getItemPermission();
 				if (ControllerUtils.PERMISSION_OWNER.equals(permission)) {
-					// Folio.owners is the list of users with owner authority 
 					folio.addOwner(id);
-//					ownerIdList.add(id);
 				} else if (ControllerUtils.PERMISSION_READ_WRITE.equals(permission)) {
 					folio.addWriter(id);
-//					writerIdList.add(id);
 				} else if (ControllerUtils.PERMISSION_READ.equals(permission)) {
-					// Folio.users is the list of users with read authority
 					folio.addReader(id);
-//					readerIdList.add(id);
 				}
 			}
-//			folio.setOwners(ownerIdList);
-//			folio.setUsers(userIdList);
 		} else {
 			// No values, current user = owner
 			String ownerId = userService.getCurrentUserId();
@@ -262,19 +251,27 @@ public class FolioService implements Serializable {
 		folioDto.setUsers(users);
 	}
 	
+	/**
+	 * This method is for taking the lists of uses of a Folio and populating the FolioDto with it.
+	 * @param folio
+	 * @return
+	 */
 	private List<CampaignUser> getFolioUsers(Folio folio) {
 		List<CampaignUser> allCampaignUsers = campaignUserService.findAllByCampaignId(folio.getCampaignId());
 		List<CampaignUser> folioUserList = new ArrayList<>();
 		
 		for (CampaignUser campaignUser : allCampaignUsers) {
 			if (folio.getOwners().contains(campaignUser.getUserId())) {
-				campaignUser.setPermission(ControllerUtils.ROLE_OWNER);
+				campaignUser.setItemPermission(ControllerUtils.PERMISSION_OWNER);
 				folioUserList.add(campaignUser);
-			} else if (folio.getUsers().contains(campaignUser.getUserId())) {
-				campaignUser.setPermission(ControllerUtils.ROLE_USER);
+			} else if (folio.getWriters().contains(campaignUser.getUserId())) {
+				campaignUser.setItemPermission(ControllerUtils.PERMISSION_READ_WRITE);
+				folioUserList.add(campaignUser);
+			} else if (folio.getReaders().contains(campaignUser.getUserId())) {
+				campaignUser.setItemPermission(ControllerUtils.PERMISSION_READ);
 				folioUserList.add(campaignUser);
 			} else {
-				campaignUser.setPermission(ControllerUtils.NO_ACCESS);
+				campaignUser.setItemPermission(ControllerUtils.NO_ACCESS);
 				folioUserList.add(campaignUser);
 			}
 		}
@@ -303,11 +300,13 @@ public class FolioService implements Serializable {
 
 	public Folio addTagToFolio(String campaignId, String folioId, String tagId) throws Exception {
 		if (tagId == null) {
-			throw new Exception("tagId can not be null");
+			String message = ControllerUtils.getI18nMessage("editFolio.error.nullTagId");
+			throw new Exception(message);
 		}
 		SimpleTag tag = simpleTagService.findOne(tagId);
 		if (tag == null) {
-			throw new Exception("Could not locate a tag for id "+tagId);
+			String message = ControllerUtils.getI18nMessage("editFolio.error.couldNotLocateTag");
+			throw new Exception(message + " " + tagId);
 		}
 		
  		if (folioId.equals("null")) {
@@ -320,7 +319,8 @@ public class FolioService implements Serializable {
 		if (folio == null) {
 			folio = new Folio();
 			folio.setCampaignId(campaignId);
-			folio.setTitle("Placeholder title");
+			String message = ControllerUtils.getI18nMessage("editFolio.placeholderTitle");
+			folio.setTitle(message);
 		} 
 
 		return addTagToFolio(folio, tag);		
@@ -331,7 +331,8 @@ public class FolioService implements Serializable {
 		if (folio != null) {
 			return addTagToFolio(folio, tag);
 		}
-		throw new Exception("Invalid folio id");
+		String message = ControllerUtils.getI18nMessage("editFolio.error.invalidFolioId");
+		throw new Exception(message);
 	}
 	
 	public Folio addTagToFolio(Folio folio, SimpleTag tag) {
@@ -351,7 +352,7 @@ public class FolioService implements Serializable {
 		String userId = userService.getCurrentUserId();
 		List<Folio> folioList = null;
 		if (EDIT.equals(operationType)) {
-			folioList = folioRepository.findAllByOwnersAndCampaignId(userId, campaignId);
+			folioList = getAllEditableFolios(campaignId, userId);
 		} else {
 			folioList = getAllViewableFolios(campaignId, userId);
 		}
@@ -370,15 +371,19 @@ public class FolioService implements Serializable {
 	}
 	
 	public List<Folio> getAllViewableFolios(String campaignId, String userId) {
-		List<Folio> allowedFolios = folioRepository.findAllByUsersAndCampaignId(userId, campaignId);
+		List<Folio> allowedFolios = folioRepository.findAllByWritersAndCampaignId(userId, campaignId);
+		List<Folio> readersFolios = folioRepository.findAllByReadersAndCampaignId(userId, campaignId);
 		List<Folio> ownerFolios = folioRepository.findAllByOwnersAndCampaignId(userId, campaignId);
+		allowedFolios.addAll(readersFolios);
 		allowedFolios.addAll(ownerFolios);
 
 		return allowedFolios;
 	}
 	
 	public List<Folio> getAllEditableFolios(String campaignId, String userId) {
-		List<Folio> allowedFolios = folioRepository.findAllByOwners(userId);
+		List<Folio> allowedFolios = folioRepository.findAllByOwnersAndCampaignId(userId, campaignId);
+		List<Folio> writersFolios = folioRepository.findAllByWritersAndCampaignId(userId, campaignId);
+		allowedFolios.addAll(writersFolios);
 
 		return allowedFolios;
 	}
@@ -486,7 +491,8 @@ public class FolioService implements Serializable {
 	
 	private void createTagList(String operation, SelectFolioDto selectFolioDto, SimpleTag tag) {
 		if (!ADD.equals(operation) && !REMOVE.equals(operation)) {
-			throw new IllegalArgumentException("Only 'add' and remove' are allowable operations.");
+			String message = ControllerUtils.getI18nMessage("editFolio.error.onlyAddAndRemove");
+			throw new IllegalArgumentException(message);
 		}
 		
 		ObjectMapper mapper = new ObjectMapper();
