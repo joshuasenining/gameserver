@@ -1,6 +1,9 @@
 package org.softwarewolf.gameserver.domain.dto;
 
+import java.util.List;
+
 import org.softwarewolf.gameserver.domain.Campaign;
+import org.softwarewolf.gameserver.domain.CampaignSelector;
 import org.softwarewolf.gameserver.domain.Folio;
 
 public class CampaignDto {
@@ -8,6 +11,7 @@ public class CampaignDto {
 	public Folio campaignFolio;
 	public Campaign campaign;
 	public Boolean isOwner;
+	public List<CampaignSelector> campaignList;
 	
 	public CampaignDto() {
 		campaign = new Campaign();
@@ -39,5 +43,12 @@ public class CampaignDto {
 	}
 	public void setIsOwner(Boolean isOwner) {
 		this.isOwner = isOwner;
+	}
+	
+	public List<CampaignSelector> getCampaignList() {
+		return campaignList;
+	}
+	public void setCampaignList(List<CampaignSelector> campaignList) {
+		this.campaignList = campaignList;
 	}
 }

@@ -106,9 +106,7 @@
 			var newUserString = JSON.stringify(usersObject)
 			$("#users").val(newUserString);
 		});
-
 	});	
-	
 	
 	function modifyPermission(buttonId) {
 		var button = $("#"+buttonId);
@@ -155,6 +153,24 @@
 	<form id="editCampaignForm" th:object="${campaignDto}" action="#" th:action="@{/gamemaster/editCampaign}" method="post">
 		<input id="users" type="hidden" th:field="*{users}"></input>
 	 	<input id="isOwner" type="hidden" th:field="*{isOwner}"></input>
+	 	
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-11">
+				<div class="dropdown">
+				    <!--Default buttons with dropdown menu-->
+				    <div class="btn-group">
+		        		<button type="button" class="btn btn-default" th:text="#{editCampaign.selectCampaign}">Action</button>
+				        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
+				        <ul class="dropdown-menu">
+		        		    <li th:each="campaign : *{campaignList}" th:value="$(campaign.id)">
+		            			<a th:href="@{/gamemaser/editCampaign(campaignId=${campaign.id})}" th:text="${campaign.name}">test</a>
+				           	</li>
+				        </ul>
+		    		</div>
+				</div> 		    
+			</div>
+		</div>
 	 	
 		<div class="row">
 			<div class="col-md-1"></div>

@@ -1,13 +1,13 @@
 package org.softwarewolf.gameserver.controller.utils;
 
-public class ImportExportHelper {
+public class ImportExportUtils {
 	private String importFilename;
 	private String selectedCampaignId;
 	private String selectedCampaignName;
 	private String campaignListAsString;
 	private String forwardingUrl;
 	
-	public ImportExportHelper() {	
+	public ImportExportUtils() {	
 	}
 	
 	public String getImportFilename() {

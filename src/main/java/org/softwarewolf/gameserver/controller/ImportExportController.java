@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.softwarewolf.gameserver.service.ImportExportService;
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
-import org.softwarewolf.gameserver.controller.utils.ImportExportHelper;
+import org.softwarewolf.gameserver.controller.utils.ImportExportUtils;
 import org.softwarewolf.gameserver.service.CampaignService;
 
 @Controller
@@ -35,7 +35,7 @@ public class ImportExportController {
 	
 	@RequestMapping(value = "/exportCampaign", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
-	public String exportCampaign(HttpSession session, final ImportExportHelper importExportHelper,
+	public String exportCampaign(HttpSession session, final ImportExportUtils importExportHelper,
 			final FeFeedback feFeedback) {
 
 		boolean isImport = false;
@@ -52,7 +52,7 @@ public class ImportExportController {
 	
 	@RequestMapping(value = "/exportCampaign", method = RequestMethod.POST)
 	@Secured({"ADMIN"})
-	public String exportCampaignPost(HttpSession session, final ImportExportHelper importExportHelper, 
+	public String exportCampaignPost(HttpSession session, final ImportExportUtils importExportHelper, 
 			final FeFeedback feFeedback) {
 		String backupFile;
 		try {
@@ -77,7 +77,7 @@ public class ImportExportController {
 	
 	@RequestMapping(value = "/importCampaign", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
-	public String importCampaign(HttpSession session, final ImportExportHelper importExportHelper, final FeFeedback feFeedback) {
+	public String importCampaign(HttpSession session, final ImportExportUtils importExportHelper, final FeFeedback feFeedback) {
 		boolean isImport = true;
 		try {
 			importExportService.initImportExportHelper(importExportHelper, isImport, ControllerUtils.IMPORT_CAMPAIGN);
@@ -110,7 +110,7 @@ public class ImportExportController {
 	  @RequestMapping(value = "/importCampaign", method = RequestMethod.POST)
 	  public String handleFileUpload(
 	      @RequestParam("file") MultipartFile file, 
-	      final ImportExportHelper importExportHelper,  FeFeedback feFeedback, 
+	      final ImportExportUtils importExportHelper,  FeFeedback feFeedback, 
 	      HttpServletRequest request) {	    
 
 		  	if (!file.isEmpty()) {

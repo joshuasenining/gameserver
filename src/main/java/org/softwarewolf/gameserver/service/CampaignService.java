@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Campaign;
+import org.softwarewolf.gameserver.domain.CampaignSelector;
 import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
@@ -84,7 +85,7 @@ public class CampaignService {
 		campaignDto.setCampaign(campaign);
 		campaignDto.setUsers(userListString);
 		campaignDto.setIsOwner(Boolean.TRUE);
-		
+		campaignDto.setCampaignList(getCampaignList());
 		String folioId = campaign.getCampaignFolioId();
 		if (folioId != null) {
 			Folio folio = folioService.findOne(campaign.getCampaignFolioId());
@@ -364,5 +365,11 @@ public class CampaignService {
 		campaignRepository.delete(selectedCampaign);
 		
 		return campaignName;
+	}
+	
+	private List<CampaignSelector> getCampaignList() {
+		List<Campaign> campaignList = campaignRepository.findAll();
+		List<CampaignSelector> selectorList = campaignList.stream().map(c -> c.getCampaignSelector()).collect(Collectors.toList());
+		return selectorList;
 	}
 }

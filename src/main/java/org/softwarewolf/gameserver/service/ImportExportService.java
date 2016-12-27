@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
-import org.softwarewolf.gameserver.controller.utils.ImportExportHelper;
+import org.softwarewolf.gameserver.controller.utils.ImportExportUtils;
 //import org.softwarewolf.gameserver.controller.helper.ImportExportHelper;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.CampaignUser;
@@ -52,7 +52,7 @@ public class ImportExportService {
 	@Autowired
 	FolioRepository folioRepository;
 
-	public void initImportExportHelper(ImportExportHelper importExportHelper, boolean isImport, String forwardingUrl) 
+	public void initImportExportHelper(ImportExportUtils importExportHelper, boolean isImport, String forwardingUrl) 
 			throws JsonGenerationException, JsonMappingException, IOException {
 		importExportHelper.setSelectedCampaignId(null);
 		importExportHelper.setSelectedCampaignName(null);

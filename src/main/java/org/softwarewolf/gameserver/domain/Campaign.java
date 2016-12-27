@@ -175,5 +175,7 @@ public class Campaign implements Serializable {
 		return true;
 	}
 
-	
+	public CampaignSelector getCampaignSelector() {
+		return new CampaignSelector(name, id);
+	}
 }
