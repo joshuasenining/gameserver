@@ -94,12 +94,18 @@ public class ImportExportService {
 		campaignData.setCampaign(campaign);
 		
 		// ** Users **
-		String campaignOwnerId = campaign.getOwnerId();
-		List<String> gmIdList = campaign.getGameMasterIdList();
-		List<CampaignUser> playerList = campaignPlayerRepository.findAllByKeyValue("campaignId", campaignId);
+		List<String> ownerIdList = campaign.getOwnerList(); 
+		List<String> gmIdList = campaign.getGameMasterList();
+		List<String> playerIdList = campaign.getPlayerList();
 		// Populate the list of all campaign user ids
 		List<String> campaignUserIdList = new ArrayList<>();
-		campaignUserIdList.add(campaignOwnerId);
+		if (ownerIdList != null) {
+			for (String ownerId : ownerIdList) {
+				if (!campaignUserIdList.contains(ownerId)) {
+					campaignUserIdList.add(ownerId);
+				}
+			}
+		}
 		if (gmIdList != null) {
 			for (String gmId : gmIdList) {
 				if (!campaignUserIdList.contains(gmId)) {
@@ -107,10 +113,10 @@ public class ImportExportService {
 				}
 			}
 		}
-		if (playerList != null) {
-			for (CampaignUser player : playerList) {
-				if (!campaignUserIdList.contains(player.getUserId())) {
-					campaignUserIdList.add(player.getUserId());
+		if (playerIdList != null) {
+			for (String playerId : playerIdList) {
+				if (!campaignUserIdList.contains(playerId)) {
+					campaignUserIdList.add(playerId);
 				}
 			}
 		}
@@ -245,18 +251,33 @@ public class ImportExportService {
 		if (existingCampaign != null) {
 			campaign.setId(existingCampaign.getId());
 		}
-		User owner = oldUserIdToNewUserMap.get(campaign.getOwnerId());
-		if (owner == null) {
-			// throw exception! Can't have a null owner!
-		}
-		campaign.setOwnerId(owner.getId());
-		List<String> newUserIdList = new ArrayList<>();
-		for (String oldUserId : campaign.getGameMasterIdList()) {
-			User newUser = oldUserIdToNewUserMap.get(oldUserId);
-			if (newUser != null) {
-				newUserIdList.add(newUser.getId());
+		List<String> newOwnerIds = new ArrayList<>();
+		for (String ownerId : campaign.getOwnerList()) {
+			User owner = oldUserIdToNewUserMap.get(ownerId);
+			if (owner != null) {
+				newOwnerIds.add(owner.getId());
 			}
 		}
+		if (newOwnerIds.isEmpty()) {
+			// throw exception! Can't have a null owner!
+		}
+		campaign.setOwnerList(newOwnerIds);
+		List<String> newGmIdList = new ArrayList<>();
+		for (String oldGmId : campaign.getGameMasterList()) {
+			User newGm = oldUserIdToNewUserMap.get(oldGmId);
+			if (newGm != null) {
+				newGmIdList.add(newGm.getId());
+			}
+		}
+		campaign.setGameMasterList(newGmIdList);
+		List<String> newPlayerIdList = new ArrayList<>();
+		for (String oldPlayerId : campaign.getPlayerList()) {
+			User newPlayer = oldUserIdToNewUserMap.get(oldPlayerId);
+			if (newPlayer != null) {
+				newPlayerIdList.add(newPlayer.getId());
+			}
+		}
+		campaign.setGameMasterList(newPlayerIdList);
 		campaignRepository.save(campaign);
 	}
 	

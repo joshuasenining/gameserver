@@ -1,6 +1,7 @@
 package org.softwarewolf.gameserver.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -13,19 +14,19 @@ public class Campaign implements Serializable {
 	private String id;
 	private String name;
 	private String campaignFolioId;
-	private String ownerId;
-	private List<String> gameMasterIdList;
+	private List<String> ownerList;
+	private List<String> gameMasterList;
+	private List<String> playerList;
 
 	public Campaign() {}
 	
 	public Campaign(String ownerId) {
-		this.ownerId = ownerId;
+		addOwner(ownerId);
 	}
 	
 	public String getId() {
 		return id;
-	}
-	
+	}	
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -33,7 +34,6 @@ public class Campaign implements Serializable {
 	public String getName() {
 		return name;
 	}
-	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -41,36 +41,95 @@ public class Campaign implements Serializable {
 	public String getCampaignFolioId() {
 		return campaignFolioId;
 	}
-
 	public void setCampaignFolioId(String campaignFolioId) {
 		this.campaignFolioId = campaignFolioId;
 	}
 		
-	public String getOwnerId() {
-		return ownerId;
+	public List<String> getOwnerList() {
+		if (ownerList == null) {
+			ownerList = new ArrayList<>();
+		}
+		return ownerList;
+	}	
+	public void setOwnerList(List<String> ownerList) {
+		this.ownerList = ownerList;
+	}
+	public void addOwner(String ownerId) {
+		if (ownerList == null) {
+			ownerList = new ArrayList<>();
+			ownerList.add(ownerId); 
+		} else if (!ownerList.contains(ownerId)) {
+			ownerList.add(ownerId);
+		}
+	}
+	public void removeOwner(String ownerId) {
+		if (ownerList != null) {
+			if (ownerList.contains(ownerId)) {
+				ownerList.remove(ownerId);
+			}
+		}
 	}
 	
-	public void setOwnerId(String ownerId) {
-		this.ownerId = ownerId;
+	public List<String> getGameMasterList() {
+		if (gameMasterList == null) {
+			gameMasterList = new ArrayList<>();
+		}
+		return gameMasterList;
+	}
+	public void setGameMasterList(List<String> gameMasterList) {
+		this.gameMasterList = gameMasterList;
+	}		
+	public void addGameMaster(String gameMasterId) {
+		if (gameMasterList == null) {
+			gameMasterList = new ArrayList<>();
+			gameMasterList.add(gameMasterId);
+		} else if (!gameMasterList.contains(gameMasterId)) {
+			gameMasterList.add(gameMasterId);
+		}
+	}
+	public void removeGameMaster(String gameMasterId) {
+		if (gameMasterList != null) {
+			if (gameMasterList.contains(gameMasterId)) {
+				gameMasterList.remove(gameMasterId);
+			}
+		}
 	}
 	
-	public List<String> getGameMasterIdList() {
-		return gameMasterIdList;
+	public List<String> getPlayerList() {
+		if (playerList == null) {
+			playerList = new ArrayList<>();
+		}
+		return playerList;
+	}	
+	public void setPlayerList(List<String> playerList) {
+		this.playerList = playerList;
+	}
+	public void addPlayer(String playerId) {
+		if (playerList == null) {
+			playerList = new ArrayList<>();
+			playerList.add(playerId);
+		} else if (!playerList.contains(playerId)) {
+			playerList.add(playerId);
+		}
+	}
+	public void removePlayer(String playerId) {
+		if (playerList != null) {
+			if (playerList.contains(playerId)) {
+				playerList.remove(playerId);
+			}
+		}
 	}
 	
-	public void setGameMasterIdList(List<String> gameMasterIdList) {
-		this.gameMasterIdList = gameMasterIdList;
-	}
-		
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((campaignFolioId == null) ? 0 : campaignFolioId.hashCode());
-		result = prime * result + ((gameMasterIdList == null) ? 0 : gameMasterIdList.hashCode());
+		result = prime * result + ((gameMasterList == null) ? 0 : gameMasterList.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());
+		result = prime * result + ((ownerList == null) ? 0 : ownerList.hashCode());
+		result = prime * result + ((playerList == null) ? 0 : playerList.hashCode());
 		return result;
 	}
 
@@ -88,10 +147,10 @@ public class Campaign implements Serializable {
 				return false;
 		} else if (!campaignFolioId.equals(other.campaignFolioId))
 			return false;
-		if (gameMasterIdList == null) {
-			if (other.gameMasterIdList != null)
+		if (gameMasterList == null) {
+			if (other.gameMasterList != null)
 				return false;
-		} else if (!gameMasterIdList.equals(other.gameMasterIdList))
+		} else if (!gameMasterList.equals(other.gameMasterList))
 			return false;
 		if (id == null) {
 			if (other.id != null)
@@ -103,11 +162,18 @@ public class Campaign implements Serializable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (ownerId == null) {
-			if (other.ownerId != null)
+		if (ownerList == null) {
+			if (other.ownerList != null)
 				return false;
-		} else if (!ownerId.equals(other.ownerId))
+		} else if (!ownerList.equals(other.ownerList))
+			return false;
+		if (playerList == null) {
+			if (other.playerList != null)
+				return false;
+		} else if (!playerList.equals(other.playerList))
 			return false;
 		return true;
-	}	
+	}
+
+	
 }

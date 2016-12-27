@@ -150,7 +150,12 @@ public class FolioService implements Serializable {
 		if (folio == null || folio.getId() == null) {
 			folio = initFolio(null, campaignId);
 			folioDto.setFolio(folio);
-		} 
+		}
+		if (folio.getOwners().contains(userService.getCurrentUserId())) {
+			folioDto.setIsOwner(Boolean.TRUE);
+		} else {
+			folioDto.setIsOwner(Boolean.FALSE);
+		}
 
 		List<SimpleTag> selectedTagList = folio.getTags();
 		if (selectedTagList.size() > 0) {
@@ -197,7 +202,8 @@ public class FolioService implements Serializable {
 			folio = new Folio();
 			folio.setCampaignId(campaignId);
 			folio.addOwner(userService.getCurrentUserId());
-		}
+		} 
+		
 		return folio;
 	}
 
@@ -572,6 +578,10 @@ public class FolioService implements Serializable {
 	
 	public List<Folio> deleteByCampaignId(String campaignId) {
 		return folioRepository.deleteByCampaignId(campaignId);
+	}
+	
+	public void delete(Folio folio) {
+		folioRepository.delete(folio);
 	}
 }
 

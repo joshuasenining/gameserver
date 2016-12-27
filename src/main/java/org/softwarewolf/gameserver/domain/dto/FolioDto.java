@@ -13,13 +13,13 @@ public class FolioDto {
 	private List<FolioDescriptor> folioDescriptorList;
 	private String viewTagList;
 	private String operationType;
+	private Boolean isOwner;
 	
 	/**
-	 * Serialized form of List<Map<String, String>> where each map contains:
-	 * id (a CampaignUser.userId)
-	 * userName (a CampaignUser.userName)
-	 * permission (a CampaignUser.permission - "ROLE_OWNER", "ROLE_USER", or "No Access") 
-	 * this is derived from Folo.owners and Folio.users (lists of user.id's)
+	 * Serialized form of List<CampaignUser> where we add an itemPermission to 
+	 * each CampaignUser to denote that user's permission on the folio:
+	 * CampaignUser.itemPermission - "PERMISSION_OWNER", "PERMISSION_READ_WRITE", "PERMISSION_READ", or "No Access") 
+	 * this is derived from Folo.owners, Folio.writers, and Folio.readers (lists of user.id's)
 	 */
 	private String users;
 	private String forwardingUrl;
@@ -96,5 +96,12 @@ public class FolioDto {
 	}
 	public void setForwardingUrl(String forwardingUrl) {
 		this.forwardingUrl = forwardingUrl;
+	}
+	
+	public Boolean getIsOwner() {
+		return isOwner;
+	}
+	public void setIsOwner(Boolean isOwner) {
+		this.isOwner = isOwner;
 	}
 }

@@ -10,7 +10,6 @@
     <link rel="icon" href="/werewolf-512.png"></link>
    	<link rel="stylesheet" href="/css/style.css" type="text/css" th:href="@{/css/style.css}"></link>	
 	<link rel="stylesheet" href="/css/font-awesome.css" type="text/css" th:href="@{/css/font-awesome.css}"></link>
-
     <!-- Bootstrap & JQuery -->
 	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"></link>
 	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css}"></link>
@@ -85,42 +84,47 @@
 				}
 			});
 		
-  			var users = $("#users")[0].value;
- 			var userList = null;
- 			if (users.length > 0) {
- 				userList = jQuery.parseJSON(users);
- 			}
- 			
-			$.each(userList, function(i, item) {
-				var name = item["userName"];
-				var id = item["userId"];
-				var rowDiv = $('<div class="row"/>');
-				var spacerDiv = $('<div class="col-md-1"/>');
-				spacerDiv.appendTo(rowDiv);
-				var buttonDiv = $('<div class="col-md-1"/>');
-				var access;
-				if (item["itemPermission"] == "PERMISSION_OWNER") {
-					access = "Owner";
-				} else if (item["itemPermission"] == "PERMISSION_READ_WRITE") { 
-					access = "Read/Write";
-				} else if (item["itemPermission"] == "PERMISSION_READ") {
-					access = "Read";
-				} else {
-					// in this case item["itemPermission"] == "NO_PERMISSION"
-					access = "No Access";
-				}
-				var button = $('<input id="'+id+'" type="button" class="permission" onclick="modifyPermission(&quot;'+id+'&quot;)"/>')
-					.prop("value", access);
-				button.appendTo(buttonDiv);
-				buttonDiv.appendTo(rowDiv);
-				var labelDiv = $('<div class="col-md-3"/>');
-				var label = $('<label class="input-margin"/>')
-					.text(name);
-				label.appendTo(labelDiv);
-				labelDiv.appendTo(rowDiv);
-				
-				rowDiv.appendTo("#permissionList")
-			}); 			
+			if ($("#isOwner").val() == "true") {
+	  			var users = $("#users")[0].value;
+	 			var userList = null;
+	 			if (users.length > 0) {
+	 				userList = jQuery.parseJSON(users);
+	 			}
+	 			
+				$.each(userList, function(i, item) {
+					var name = item["userName"];
+					var id = item["userId"];
+					var rowDiv = $('<div class="row"/>');
+					var spacerDiv = $('<div class="col-md-1"/>');
+					spacerDiv.appendTo(rowDiv);
+					var buttonDiv = $('<div class="col-md-1"/>');
+					var access;
+					if (item["itemPermission"] == "PERMISSION_OWNER") {
+						access = "Owner";
+					} else if (item["itemPermission"] == "PERMISSION_READ_WRITE") { 
+						access = "Read/Write";
+					} else if (item["itemPermission"] == "PERMISSION_READ") {
+						access = "Read";
+					} else {
+						// in this case item["itemPermission"] == "NO_PERMISSION"
+						access = "No Access";
+					}
+					var button = $('<input id="'+id+'" type="button" class="permission" onclick="modifyPermission(&quot;'+id+'&quot;)"/>')
+						.prop("value", access);
+					button.appendTo(buttonDiv);
+					buttonDiv.appendTo(rowDiv);
+					var labelDiv = $('<div class="col-md-3"/>');
+					var label = $('<label class="input-margin"/>')
+						.text(name);
+					label.appendTo(labelDiv);
+					labelDiv.appendTo(rowDiv);
+					
+					rowDiv.appendTo("#permissionList")
+				}); 			
+			} else {
+				$("#permissionLabel").addClass("hide");
+				$("#permissionList").addClass("hide");
+			}
 		});	
 		
 		$("#editFolioForm").submit(function(event) {
@@ -158,11 +162,7 @@
 			var newUserString = JSON.stringify(usersObject)
 			$("#users").val(newUserString);
 		});
-		
-		$(function() {
-			$("#selectable").selectable();
-		});
-		
+
         $("#changeView").click(function() {
         	var cvValue = $("#changeView").attr("value");
         	if (cvValue == "View as HTML") {
@@ -171,16 +171,20 @@
         		$("#viewContainer").removeClass("hide");
         		$("#editorContainer").addClass("hide");
         		$("#changeView").attr("value", "Edit");
-        		$("#permissionLabel").addClass("hide");
-        		$("#permissionList").addClass("hide");
+        		if ($("#isOwner").val() == "true") {
+        			$("#permissionLabel").addClass("hide");
+        			$("#permissionList").addClass("hide");
+        		}
         		$("#submitBtn").addClass("hide");
         	} else {
         		$("#viewContainer").addClass("hide");
         		$("#editorContainer").removeClass("hide");
         		$("#changeView").attr("value", "View as HTML");
-        		$("#permissionLabel").removeClass("hide");
-        		$("#permissionList").removeClass("hide");
-        		$("#submitBtn").removeClass("hide");
+        		if ($("#isOwner").val() == "true") {
+        			$("#permissionLabel").removeClass("hide");
+	        		$("#permissionList").removeClass("hide");
+        		}
+	        	$("#submitBtn").removeClass("hide");
         	}
         });
 	});		
@@ -263,6 +267,7 @@
 		<input type="hidden" id="folioId" th:field="*{folio.id}"></input>
 		<input type="hidden" id="operationType" th:field="*{operationType}"></input>
 		<input type="hidden" id="users" th:field="*{users}"></input>
+		<input type="hidden" id="isOwner" th:field="*{isOwner}"></input>
 		<input type="hidden" id="forwardingUrl" th:field="*{forwardingUrl}"></input>
 
 		<div class="row">

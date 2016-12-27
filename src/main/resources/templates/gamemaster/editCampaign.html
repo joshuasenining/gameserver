@@ -28,9 +28,101 @@
 	<script th:inline="javascript">
 	$(document).ready(function() {
 		$( window ).load(function() {
-			// placeholder
-		});		
-	});		
+			if ($("#isOwner").val() == "true") {
+	  			var users = $("#users")[0].value;
+	 			var userList = null;
+	 			if (users.length > 0) {
+	 				userList = jQuery.parseJSON(users);
+	 			}
+	 			
+				$.each(userList, function(i, item) {
+					var name = item["userName"];
+					var id = item["userId"];
+					var rowDiv = $('<div class="row"/>');
+					var spacerDiv = $('<div class="col-md-1"/>');
+					spacerDiv.appendTo(rowDiv);
+					var buttonDiv = $('<div class="col-md-1"/>');
+					var access;
+					if (item["permission"] == "PERMISSION_OWNER") {
+						access = "Owner";
+					} else if (item["permission"] == "PERMISSION_GAMEMASTER") { 
+						access = "Game Master";
+					} else if (item["permission"] == "PERMISSION_PLAYER") {
+						access = "Player";
+					} else {
+						// in this case item["itemPermission"] == "NO_PERMISSION"
+						access = "No Access";
+					}
+					var button = $('<input id="'+id+'" type="button" class="permission" onclick="modifyPermission(&quot;'+id+'&quot;)"/>')
+						.prop("value", access);
+					button.appendTo(buttonDiv);
+					buttonDiv.appendTo(rowDiv);
+					var labelDiv = $('<div class="col-md-3"/>');
+					var label = $('<label class="input-margin"/>')
+						.text(name);
+					label.appendTo(labelDiv);
+					labelDiv.appendTo(rowDiv);
+					
+					rowDiv.appendTo("#permissionList")
+				}); 			
+			} else {
+				$("#permissionLabel").addClass("hide");
+				$("#permissionList").addClass("hide");
+			}
+		});	
+		
+		$("#editCampaignForm").submit(function(event) {
+			var permissionMap = {};
+			var buttonMap = {};
+			var buttonData = [];
+			$('.permission').each(function(i, btn) {
+			    var value = $(this).attr("value");
+			    var id = $(this).attr("id");
+			    
+			    item = {};
+			    item["id"] = id;
+			    item["value"] = value;
+				
+				buttonData.push(item);
+				
+				buttonMap[id] = value;
+			});
+			console.log(buttonData);
+
+			var usersObject = JSON.parse($("#users").val());
+			$.each(usersObject, function(i, item) { 
+				var userId = item["userId"];
+				var newPermission = buttonMap[userId];
+				if (newPermission == "Owner") {
+					item["permission"] = "PERMISSION_OWNER";
+				} else if (newPermission == "Game Master") {
+					item["permission"] = "PERMISSION_GAMEMASTER";
+				} else if (newPermission == "Player") {
+					item["permission"] = "PERMISSION_PLAYER";
+				} else {
+					item["permission"] = "NO_ACCESS";
+				}
+			});
+			var newUserString = JSON.stringify(usersObject)
+			$("#users").val(newUserString);
+		});
+
+	});	
+	
+	
+	function modifyPermission(buttonId) {
+		var button = $("#"+buttonId);
+		var selection = button.attr("value");
+		if (selection == "No Access") {
+			button.prop("value", "Owner");
+		} else if (selection == "Owner") {
+			button.prop("value", "Game Master"); 
+		} else if (selection == "Game Master") { 
+			button.prop("value", "Player");
+		} else {
+			button.prop("value", "No Access");
+		}
+	}	
 </script>   
 </head>
 <body>
@@ -60,10 +152,10 @@
 	</div>
 
 	<br></br>
-	<form id="updateOwnerForm" th:object="${campaignDto}" action="#" th:action="@{/gamemaster/editCampaign}" method="post">
-		<input id="ownerId" type="hidden" th:field="*{ownerId}"></input>
-		<input type="hidden" th:field="*{campaign.ownerId}"></input>
-	 
+	<form id="editCampaignForm" th:object="${campaignDto}" action="#" th:action="@{/gamemaster/editCampaign}" method="post">
+		<input id="users" type="hidden" th:field="*{users}"></input>
+	 	<input id="isOwner" type="hidden" th:field="*{isOwner}"></input>
+	 	
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
@@ -87,6 +179,14 @@
 			</div>
 		</div>
 		
+		<div id="permissionLabel" class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label class="input-margin" th:text="#{editFolio.setPermissions}">Set</label>
+			</div>
+		</div>
+		
+		<span id="permissionList"></span>		
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">

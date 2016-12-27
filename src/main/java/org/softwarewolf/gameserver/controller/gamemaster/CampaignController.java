@@ -7,7 +7,6 @@ import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.controller.utils.GetPermissionsFrom;
 import org.softwarewolf.gameserver.domain.Campaign;
 import org.softwarewolf.gameserver.domain.Folio;
-import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.CampaignDto;
 import org.softwarewolf.gameserver.domain.dto.FolioDto;
 import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
@@ -17,8 +16,6 @@ import org.softwarewolf.gameserver.service.FolioService;
 import org.softwarewolf.gameserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -109,12 +106,7 @@ public class CampaignController {
 	@RequestMapping(value = "/gamemaster/editCampaign", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
 	public String getCampaignDto(CampaignDto campaignDto, FeFeedback feFeedback) {
-		UserDetails userDetails =
-				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		String userName = userDetails.getUsername();
-		User user = userRepository.findOneByUsername(userName);
-		
-		campaignService.initCampaignDto(campaignDto, user.getId());
+		campaignDto = campaignService.initCampaignDto(null);
 		
 		return ControllerUtils.EDIT_CAMPAIGN;
 	}
@@ -122,16 +114,18 @@ public class CampaignController {
 	@RequestMapping(value = "/gamemaster/editCampaign", method = RequestMethod.POST)
 	@Secured({"GAMEMASTER", "ADMIN"})
 	public String postCampaign(@ModelAttribute CampaignDto campaignDto, FeFeedback feFeedback) {
-		String ownerId = campaignDto.getOwnerId();
+		String campaignId = null;
 		try {
-			campaignService.validateAndSaveCampaign(campaignDto);
-			String campaign = ControllerUtils.getI18nMessage("editCampaign.info.campaign");
+			campaignService.validateCampaign(campaignDto);
+			Campaign campaign = campaignService.saveCampaign(campaignDto);
+			campaignId = campaign.getId();
+			String campaignPrefix = ControllerUtils.getI18nMessage("editCampaign.info.campaign");
 			String created = ControllerUtils.getI18nMessage("editCampaign.info.created");
-			feFeedback.setInfo(campaign + " " + campaignDto.getCampaign().getName() + " " + created + ".");
+			feFeedback.setInfo(campaignPrefix + " " + campaignDto.getCampaign().getName() + " " + created + ".");
 		} catch (Exception e) {
 			feFeedback.setError(e.getMessage());
 		}
-		campaignService.initCampaignDto(campaignDto, ownerId);
+		campaignDto = campaignService.initCampaignDto(campaignId);
 		return ControllerUtils.EDIT_CAMPAIGN;
 	}
 }

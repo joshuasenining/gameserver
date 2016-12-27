@@ -9,15 +9,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ControllerUtils {
-	private static UserService userService;
-	
+	private static UserService userService;	
 	@Autowired
 	private void setUserService(UserService userService) {
 		this.userService = userService;
 	}
 	
-	private static MessageSource messageSource;
-	
+	private static MessageSource messageSource;	
 	@Autowired
 	private void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;

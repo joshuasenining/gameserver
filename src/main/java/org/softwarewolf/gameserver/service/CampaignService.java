@@ -1,7 +1,11 @@
 package org.softwarewolf.gameserver.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Campaign;
@@ -11,21 +15,19 @@ import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.CampaignDto;
 import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
-import org.softwarewolf.gameserver.domain.dto.UserListItem;
 import org.softwarewolf.gameserver.repository.CampaignUserRepository;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
-import org.softwarewolf.gameserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class CampaignService {
 	@Autowired
 	private UserService userService;
-	
-	@Autowired
-	private UserRepository userRepository;
 	
 	@Autowired
 	private CampaignRepository campaignRepository;
@@ -42,69 +44,103 @@ public class CampaignService {
 	@Autowired
 	private FolioService folioService;
 	
-	public List<UserListItem> getGamemasters() {
-		List<UserListItem> gamemasters = new ArrayList<>();
-		List<User> userList = userRepository.findAll();
-		for (User user : userList) {
-			SimpleGrantedAuthority roleGamemaster = new SimpleGrantedAuthority(ControllerUtils.ROLE_GAMEMASTER);
-			
-			if (user.getAuthorities().contains(roleGamemaster)) {
-				UserListItem item = new UserListItem(user.getId(), user.getUsername());
-				gamemasters.add(item);
+	public CampaignDto initCampaignDto(String campaignId) {
+		Campaign campaign = null;
+		if (campaignId != null) {
+			campaign = campaignRepository.findOne(campaignId);
+		} else {
+			campaign = new Campaign();
+		}
+		List<User> allUserList = userService.findAll();
+		List<CampaignUser> campaignUserList = null;
+		if (campaign.getId() == null) {
+			String ownerId = userService.getCurrentUserId();
+			campaign.addOwner(ownerId);
+			campaignUserList = new ArrayList<>();
+			for (User user : allUserList) {
+				String permission = (ownerId.equals(user.getId())) ? ControllerUtils.PERMISSION_OWNER : ControllerUtils.NO_ACCESS;
+				CampaignUser cu = new CampaignUser(null, permission, user.getId(), user.getUsername());
+				campaignUserList.add(cu);
+			}
+		} else {
+			campaignUserList = campaignUserService.findAllByCampaignId(campaign.getId());
+			List<String> campaignUserIds = campaignUserList.stream().map(u -> u.getId()).collect(Collectors.toList());
+			for (User user : allUserList) {
+				if (!campaignUserIds.contains(user.getId())) {
+					CampaignUser cu = new CampaignUser(campaign.getId(), ControllerUtils.NO_ACCESS, user.getId(), user.getUsername());
+					campaignUserList.add(cu);
+				}
 			}
 		}
-		return gamemasters;
+		ObjectMapper mapper = new ObjectMapper();
+		String userListString = null;
+		try {
+			userListString = mapper.writeValueAsString(campaignUserList);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		CampaignDto campaignDto = new CampaignDto();
+		campaignDto.setCampaign(campaign);
+		campaignDto.setUsers(userListString);
+		campaignDto.setIsOwner(Boolean.TRUE);
+		
+		String folioId = campaign.getCampaignFolioId();
+		if (folioId != null) {
+			Folio folio = folioService.findOne(campaign.getCampaignFolioId());
+			campaignDto.setCampaignFolio(folio);
+		} else {
+			campaignDto.setCampaignFolio(new Folio());
+		}
+		return campaignDto;
 	}
 	
-	public void initCampaignDto(CampaignDto campaignDto, String ownerId) {
-		campaignDto.setGamemasters(null);
-		campaignDto.setOwnerId(ownerId);
-		campaignDto.setCampaign(new Campaign(ownerId));
-	}
-	
+	/**
+	 * 2 cases: Insert and update
+	 * @param campaignDto
+	 * @return Campaign
+	 * @throws Exception
+	 */
 	public Campaign saveCampaign(CampaignDto campaignDto) throws Exception {
 		Campaign campaign = campaignDto.getCampaign();
-		// Do we need to set the campaign owner?
-		if (campaign.getOwnerId() == null) {
-			if (campaignDto.getOwnerId() == null) {
-				campaignDto.setOwnerId(userService.getCurrentUserId());
+		String campaignId = campaign.getId();
+		// If we haven't saved campaign yet, we need to so we have an id.
+		List<CampaignUser> campaignUserList = getCampaignUsersFromDto(campaignDto);
+		if (campaignId == null) {
+			campaign = campaignRepository.save(campaign);
+			// ...and there won't be any campaign users so save them too;
+			for (CampaignUser cu : campaignUserList) {
+				cu.setCampaignId(campaign.getId());
 			}
-			String campaignOwnerId = campaignDto.getOwnerId();
-			campaign.setOwnerId(campaignOwnerId);
+			campaignUserList = campaignUserRepository.save(campaignUserList);
+			campaign = campaignRepository.save(campaign);
+			campaignId = campaign.getId();
+		} else {
+			// We need to update the CampaignUsers
+			campaignUserService.deleteByCampaignId(campaignId);
+			campaignUserRepository.save(campaignUserList);
 		}
-		// Set the gms
-		List<UserListItem> gamemasters = campaignDto.getGamemasters();
-		if (gamemasters != null && !gamemasters.isEmpty()) {
-			List<String> gmIdList = new ArrayList<>();
-			gamemasters.forEach(gm -> gmIdList.add(gm.getId()));  
-			campaign.setGameMasterIdList(gmIdList);
-		}
+		List<CampaignUser> ownerList = campaignUserService.findAllByCampaignIdAndPermission(campaignId, ControllerUtils.PERMISSION_OWNER);
+		// We can't have 0 owners
+		if (ownerList == null || ownerList.isEmpty()) {
+			User userOwner = userService.getCurrentUser();
+			CampaignUser campaignUser = new CampaignUser(campaignId, ControllerUtils.PERMISSION_OWNER, userOwner.getId(), userOwner.getUsername());
+			campaignUserService.save(campaignUser);
+			campaign.addOwner(userOwner.getId());
+		}			
+
+		// Save the campaign and the campaign folio
+		campaign = campaignRepository.save(campaign);
+		saveCampaignFolio(campaignDto);
 		
-		// We need the campaign id for the folio, if we haven't saved the campaign ever
-		// we don't have an id, so we need to do this...
-		boolean saveFolio = false;
-		boolean createOwnerAndUsers = false;
-		Folio campaignFolio = saveCampaignFolio(campaignDto);
-		if (campaignFolio == null) {
-			saveFolio = true;
-			createOwnerAndUsers = true;
-		}
-		campaign =  campaignRepository.save(campaign);
-		if (saveFolio) {
-			saveCampaignFolio(campaignDto);
-		}
-		
-		// We may need to create some CampaignUsers
-		if (createOwnerAndUsers) {
-			User userOwner = userService.getUser(campaign.getOwnerId());
-			CampaignUser owner = new CampaignUser(campaign.getId(), ControllerUtils.PERMISSION_OWNER, 
-					userOwner.getId(), userOwner.getUsername());
-			campaignUserRepository.save(owner);
-		}
 		return campaign;
 	}
 	
-	private Folio saveCampaignFolio(CampaignDto campaignDto) throws Exception {
+	private List<CampaignUser> filterCampaignUserListByPermissions(List<CampaignUser> inList, List<String> filter) {
+		return inList.stream().filter(u -> !(filter.contains(u.getPermission()))).collect(Collectors.toList());
+	}
+	
+	public Folio saveCampaignFolio(CampaignDto campaignDto) throws Exception {
 		String campaignId = campaignDto.getCampaign().getId();
 		if (campaignId == null || campaignId.isEmpty()) {
 			return null;
@@ -116,9 +152,11 @@ public class CampaignService {
 		if (campaignFolio.getTitle() == null) {
 			campaignFolio.setTitle(campaignDto.getCampaign().getName());
 		}
-		if (campaignFolio.getOwners().isEmpty()) {
-			campaignFolio.addOwner(campaignDto.ownerId);
-		}
+		Campaign campaign = campaignDto.getCampaign();
+		campaignFolio.setOwners(campaign.getOwnerList());
+		campaignFolio.setWriters(campaign.getGameMasterList());
+		campaignFolio.setReaders(campaign.getPlayerList());
+		
 		try {
 			// The folio that describes a campaign has a special tag
 			SimpleTag campaignDescriptionTag = getCampaignDescriptionTag(campaignId);
@@ -214,12 +252,59 @@ public class CampaignService {
 		return campaignRepository.save(campaign);
 	}
 	
-	public void validateAndSaveCampaign(CampaignDto campaignDto) throws Exception {
+	public void validateCampaign(CampaignDto campaignDto) throws Exception {
+		putUsersFromDtoIntoCampaign(campaignDto);
 		Campaign campaign = campaignDto.getCampaign();
-		campaign.setOwnerId(campaignDto.getOwnerId());
 		Folio campaignFolio = campaignDto.getCampaignFolio();
 		validateCampaign(campaign, campaignFolio);
-		campaign = saveCampaign(campaignDto);
+	}
+	
+	/**
+	 * Note: Upon initial creation of a campaign, none of the campaign users might have 
+	 * the campaignId in them because the campaign hasn't been saved yet.
+	 * @param campaignDto
+	 */
+	private void putUsersFromDtoIntoCampaign(CampaignDto campaignDto) {
+		Campaign campaign = campaignDto.getCampaign();
+		List<CampaignUser> campaignUserList = getCampaignUsersFromDto(campaignDto);
+		campaign.setOwnerList(null);
+		campaign.setGameMasterList(null);
+		campaign.setPlayerList(null);
+		for (CampaignUser campaignUser : campaignUserList) {
+			if (ControllerUtils.PERMISSION_OWNER.equals(campaignUser.getPermission())) {
+				campaign.addOwner(campaignUser.getUserId());
+			} else if (ControllerUtils.PERMISSION_GAMEMASTER.equals(campaignUser.getPermission())) {
+				campaign.addGameMaster(campaignUser.getUserId());
+			} else if (ControllerUtils.PERMISSION_PLAYER.equals(campaignUser.getPermission())) {
+				campaign.addPlayer(campaignUser.getUserId());
+			}
+		}
+	}
+	
+	private List<CampaignUser> getCampaignUsersFromDto(CampaignDto campaignDto) {
+		ObjectMapper mapper = new ObjectMapper();
+		JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, CampaignUser.class);
+		List<CampaignUser> campaignUserList = null;
+		try {
+			campaignUserList = mapper.readValue(campaignDto.users, type);
+		} catch (Exception e) {
+			String message = ControllerUtils.getI18nMessage("editCampaign.error.couldNotGetUsers");
+			throw new RuntimeException(message);
+		}
+		return campaignUserList; 
+	}
+	
+	
+	private List<CampaignUser> getCampaignUsersFromCampaign(Campaign campaign) {
+		List<String> campaignUserIds = new ArrayList<>();
+		campaignUserIds.addAll(campaign.getOwnerList());
+		campaignUserIds.addAll(campaign.getGameMasterList());
+		campaignUserIds.addAll(campaign.getPlayerList());
+		
+		String[] userArray = campaignUserIds.toArray(new String[campaignUserIds.size()]);
+		List<CampaignUser> campaignUserList = campaignUserService.findAllByKeyValues("userId", userArray);
+	
+		return campaignUserList; 
 	}
 	
 	public SimpleTag getCampaignDescriptionTag(String campaignId) {
@@ -234,17 +319,14 @@ public class CampaignService {
 	
 	private void validateCampaign(Campaign campaign, Folio campaignFolio) {
 		StringBuilder errors = new StringBuilder();
-		if (campaign.getName() == null) {
-			errors.append("");
+		if (campaign.getName().isEmpty()) {
+			String message = ControllerUtils.getI18nMessage("editCampaign.error.noCampaignName");
+			errors.append(message);
 		} else {
 			List<Campaign> existingCampaigns = campaignRepository.findAll();
 			for (Campaign existingCampaign : existingCampaigns) {
 				if (existingCampaign.getName().toUpperCase().equals(campaign.getName().toUpperCase()) && 
 						!existingCampaign.getId().equals(campaign.getId())) {
-					if (errors.length() > 0) {
-						String message = ControllerUtils.getI18nMessage("editCampaign.error.noCampaignName");
-						errors.append(message);
-					}
 					String message = ControllerUtils.getI18nMessage("editCampaign.error.noDuplicateNames");
 					errors.append(message);
 				}
@@ -256,7 +338,7 @@ public class CampaignService {
 				String message = ControllerUtils.getI18nMessage("editCampaign.error.noDescription");
 				errors.append(message);
 			}
-			if (campaign.getOwnerId() == null) {
+			if (campaign.getOwnerList() == null || campaign.getOwnerList().isEmpty()) {
 				if (errors.length() > 0) {
 					errors.append(" ");
 				}

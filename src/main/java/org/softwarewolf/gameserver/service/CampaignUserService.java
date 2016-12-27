@@ -13,6 +13,10 @@ public class CampaignUserService {
 	@Autowired 
 	private CampaignUserRepository campaignUserRepository;
 	
+	public List<CampaignUser> findAll() {
+		return campaignUserRepository.findAll();
+	}
+	
 	public List<CampaignUser> findAllByCampaignId(String campaignId) {
 		return campaignUserRepository.findByCampaignId(campaignId);
 	}
@@ -27,6 +31,10 @@ public class CampaignUserService {
 	
 	public CampaignUser save(CampaignUser campaignUser) {
 		return campaignUserRepository.save(campaignUser);
+	}
+	
+	public void delete(CampaignUser campaignUser) {
+		campaignUserRepository.delete(campaignUser);
 	}
 	
 	public void deleteByCampaignId(String campaignId) {

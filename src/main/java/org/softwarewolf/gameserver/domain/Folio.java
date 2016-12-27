@@ -116,6 +116,9 @@ public class Folio implements Serializable {
 	}
 	
 	public void setOwners(List<String> owners) {
+		if (owners == null) {
+			owners = new ArrayList<>();
+		}
 		this.owners = owners;
 	}
 
@@ -146,6 +149,9 @@ public class Folio implements Serializable {
 	}
 	
 	public void setWriters(List<String> writers) {
+		if (writers == null) {
+			writers = new ArrayList<>();
+		}
 		this.writers = writers;
 	}
 	
@@ -176,6 +182,9 @@ public class Folio implements Serializable {
 	}
 
 	public void setReaders(List<String> readers) {
+		if (readers == null) {
+			readers = new ArrayList<>();
+		}
 		this.readers = readers;
 	}
 	

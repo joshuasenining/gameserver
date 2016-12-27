@@ -73,19 +73,21 @@ public class FolioController {
 			return ControllerUtils.USER_MENU;
 		}		
 
+		String editingMsg = ControllerUtils.getI18nMessage("editFolio.status.editing");
 		Folio folio = null;
 		try {
 			folio = folioService.saveFolio(folioDto);
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
-			feFeedback.setUserStatus("You are editing folio " + (folio == null ? "" : folio.getTitle()));
+			feFeedback.setUserStatus(editingMsg + " " +(folio == null ? "" : folio.getTitle()));
 			folioDto = folioService.initFolioDto(folioDto, campaignId, FolioService.EDIT, GetPermissionsFrom.FOLIO_DTO);
 			return ControllerUtils.EDIT_FOLIO;
 		}
 		
-		feFeedback.setInfo("You have modified folio " + folio.getTitle());
-		feFeedback.setUserStatus("You are editing folio " + folio.getTitle());
+		String modified = ControllerUtils.getI18nMessage("editFolio.modified");
+		feFeedback.setInfo(modified + " " + folio.getTitle());
+		feFeedback.setUserStatus(editingMsg + " " + folio.getTitle());
 		return ControllerUtils.EDIT_FOLIO;
 	}	
 	

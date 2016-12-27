@@ -1,10 +1,12 @@
 package org.softwarewolf.gameserver.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Campaign;
@@ -20,6 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class DataSeeder {
@@ -72,6 +77,9 @@ public class DataSeeder {
 	
 	@Autowired
 	private CampaignUserService campaignUserService;
+	
+	@Autowired
+	private UserService userService;
 	
 	public void cleanRepos() {
 		Campaign sAndSCampaign = campaignService.findOneByName(SWORD_AND_SORCERY);
@@ -127,6 +135,26 @@ public class DataSeeder {
 		User userUser = userRepo.findOneByUsername(USER);
 		if (userUser != null) {
 			userRepo.delete(userUser);
+		}
+		
+		cleanOrphanedData();
+	}
+	
+	public void cleanOrphanedData() {
+		List<CampaignUser> allCampaignUsers = campaignUserService.findAll();
+		List<Campaign> allCampaigns = campaignService.getAllCampaigns();
+		List<String> allCampaignIds = allCampaigns.stream().map(c -> c.getId()).collect(Collectors.toList());
+		for (CampaignUser campaignUser : allCampaignUsers) {
+			if (!allCampaignIds.contains(campaignUser.getCampaignId())) {
+				campaignUserService.delete(campaignUser);
+			}
+		}
+		
+		List<Folio> allFolios = folioService.findAll();
+		for (Folio folio : allFolios) {
+			if (!allCampaignIds.contains(folio.getId())) {
+				folioService.delete(folio);
+			}
 		}
 	}
 	
@@ -207,33 +235,51 @@ public class DataSeeder {
 	
 	private Map<String, Campaign> seedCampaign(Map<String, User> userMap) {
 		Map<String, Campaign> campaignMap = new HashMap<>();
-		String gmId = (userMap.get(GM).getId());
+		String gmId = userMap.get(GM).getId();
+		String userId = userMap.get(USER).getId();
 
-		saveCampaign(SWORD_AND_SORCERY, "Generic sword and sorcery campaign", gmId, campaignMap);
-		saveCampaign(SPACE_OPERA, "Generic space opera campaign", gmId, campaignMap);
-		saveCampaign(MODERN, "Generic modern campaign", gmId, campaignMap);
-		
-		User playerUser = userMap.get(USER);
-		Campaign sAs = campaignMap.get(SWORD_AND_SORCERY);
-		CampaignUser player = new CampaignUser(sAs.getId(), ControllerUtils.PERMISSION_PLAYER, playerUser.getId(), USER);
-		campaignUserService.save(player);
+		saveCampaign(SWORD_AND_SORCERY, "Generic sword and sorcery campaign", gmId, campaignMap, userId);
+		saveCampaign(SPACE_OPERA, "Generic space opera campaign", gmId, campaignMap, userId);
+		saveCampaign(MODERN, "Generic modern campaign", gmId, campaignMap, null);
 		
 		return campaignMap;
 	}
 	
-	private void saveCampaign(String name, String description, String ownerId, Map<String, Campaign> campaignMap) {
+	private void saveCampaign(String name, String description, String ownerId, Map<String, Campaign> campaignMap, 
+			String playerId) {
 		Campaign campaign = campaignService.findOneByName(name);
 		if (campaign == null) {
 			CampaignDto campaignDto = new CampaignDto();
 			campaign = new Campaign();
 			campaign.setName(name);
-			campaignDto.setOwnerId(ownerId);
+			campaign.addOwner(ownerId);
+			if (playerId != null) {
+				campaign.addPlayer(playerId);
+			}
 			campaignDto.setCampaign(campaign);
+			User user = userService.getUser(ownerId);
+			CampaignUser owner = new CampaignUser(null, ControllerUtils.PERMISSION_OWNER, ownerId, user.getUsername());
+			List<CampaignUser> cuList = new ArrayList<>();
+			cuList.add(owner);
+			if (playerId != null) {
+				User playerUser = userService.getUser(playerId);
+				CampaignUser player = new CampaignUser(null, ControllerUtils.PERMISSION_PLAYER, playerId, playerUser.getUsername());
+				cuList.add(player);
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				String userList = mapper.writeValueAsString(cuList);
+				campaignDto.setUsers(userList);
+			} catch (JsonProcessingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			Folio campaignFolio = new Folio();
 			campaignFolio.setContent(description);
 			campaignDto.setCampaignFolio(campaignFolio);
 			try {
-				campaignService.validateAndSaveCampaign(campaignDto);
+				campaignService.validateCampaign(campaignDto);
+				campaignService.saveCampaign(campaignDto);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

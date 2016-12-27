@@ -383,4 +383,8 @@ public class UserService {
 		}
 		return jsonStr;
 	}
+	
+	public List<User> findAll() {
+		return userRepository.findAll();
+	}
 }
