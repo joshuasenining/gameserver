@@ -153,6 +153,7 @@
 	<form id="editCampaignForm" th:object="${campaignDto}" action="#" th:action="@{/gamemaster/editCampaign}" method="post">
 		<input id="users" type="hidden" th:field="*{users}"></input>
 	 	<input id="isOwner" type="hidden" th:field="*{isOwner}"></input>
+	 	<input id="campaigns" type="hidden" th:field="*{campaignList}"></input>
 	 	
 		<div class="row">
 			<div class="col-md-1"></div>
@@ -163,9 +164,9 @@
 		        		<button type="button" class="btn btn-default" th:text="#{editCampaign.selectCampaign}">Action</button>
 				        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
 				        <ul class="dropdown-menu">
-		        		    <li th:each="campaign : *{campaignList}" th:value="$(campaign.id)">
-		            			<a th:href="@{/gamemaser/editCampaign(campaignId=${campaign.id})}" th:text="${campaign.name}">test</a>
-				           	</li>
+ 	        		    	<li th:each="campaign : *{campaignList}" th:value="${campaign.id}">
+		            			<a th:href="@{/gamemaster/editCampaign(campaignId=${campaign.id})}" th:text="${campaign.name}">test</a>
+				           	</li>  
 				        </ul>
 		    		</div>
 				</div> 		    

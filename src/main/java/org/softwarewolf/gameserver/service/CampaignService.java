@@ -45,7 +45,7 @@ public class CampaignService {
 	@Autowired
 	private FolioService folioService;
 	
-	public CampaignDto initCampaignDto(String campaignId) {
+	public void initCampaignDto(String campaignId, CampaignDto campaignDto) {
 		Campaign campaign = null;
 		if (campaignId != null) {
 			campaign = campaignRepository.findOne(campaignId);
@@ -81,10 +81,9 @@ public class CampaignService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		CampaignDto campaignDto = new CampaignDto();
 		campaignDto.setCampaign(campaign);
 		campaignDto.setUsers(userListString);
-		campaignDto.setIsOwner(Boolean.TRUE);
+		campaignDto.setIsOwner(isCampaignOwner(campaign));
 		campaignDto.setCampaignList(getCampaignList());
 		String folioId = campaign.getCampaignFolioId();
 		if (folioId != null) {
@@ -93,7 +92,6 @@ public class CampaignService {
 		} else {
 			campaignDto.setCampaignFolio(new Folio());
 		}
-		return campaignDto;
 	}
 	
 	/**
@@ -370,6 +368,22 @@ public class CampaignService {
 	private List<CampaignSelector> getCampaignList() {
 		List<Campaign> campaignList = campaignRepository.findAll();
 		List<CampaignSelector> selectorList = campaignList.stream().map(c -> c.getCampaignSelector()).collect(Collectors.toList());
+/*
+		ObjectMapper mapper = new ObjectMapper();
+		String value = null; 
+		try {
+			value = mapper.writeValueAsString(selectorList);
+		} catch (Exception e) {
+			// Don't die
+			e.printStackTrace();
+		}
+		return value;
+		*/
 		return selectorList;
+	}
+	
+	private Boolean isCampaignOwner(Campaign campaign) {
+		String userId = userService.getCurrentUserId();
+		return campaign.getOwnerList().contains(campaign) ? Boolean.TRUE : Boolean.FALSE;
 	}
 }

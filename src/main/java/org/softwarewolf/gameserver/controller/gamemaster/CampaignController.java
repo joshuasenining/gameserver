@@ -17,7 +17,6 @@ import org.softwarewolf.gameserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -105,15 +104,16 @@ public class CampaignController {
 	
 	@RequestMapping(value = "/gamemaster/editCampaign", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
-	public String getCampaignDto(CampaignDto campaignDto, FeFeedback feFeedback) {
-		campaignDto = campaignService.initCampaignDto(null);
+	public String getCampaignDto(final CampaignDto campaignDto, FeFeedback feFeedback,
+			@RequestParam(value = "campaignId", required = false) String campaignId) {
+		campaignService.initCampaignDto(campaignId, campaignDto);
 		
 		return ControllerUtils.EDIT_CAMPAIGN;
 	}
 	
 	@RequestMapping(value = "/gamemaster/editCampaign", method = RequestMethod.POST)
 	@Secured({"GAMEMASTER", "ADMIN"})
-	public String postCampaign(@ModelAttribute CampaignDto campaignDto, FeFeedback feFeedback) {
+	public String postCampaign(final CampaignDto campaignDto, FeFeedback feFeedback) {
 		String campaignId = null;
 		try {
 			campaignService.validateCampaign(campaignDto);
@@ -125,7 +125,7 @@ public class CampaignController {
 		} catch (Exception e) {
 			feFeedback.setError(e.getMessage());
 		}
-		campaignDto = campaignService.initCampaignDto(campaignId);
+		campaignService.initCampaignDto(campaignId, campaignDto);
 		return ControllerUtils.EDIT_CAMPAIGN;
 	}
 }
