@@ -104,7 +104,7 @@ public class CampaignController {
 	
 	@RequestMapping(value = "/gamemaster/editCampaign", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
-	public String getCampaignDto(final CampaignDto campaignDto, FeFeedback feFeedback,
+	public String getCampaignDto(CampaignDto campaignDto, FeFeedback feFeedback,
 			@RequestParam(value = "campaignId", required = false) String campaignId) {
 		campaignService.initCampaignDto(campaignId, campaignDto);
 		
@@ -113,7 +113,7 @@ public class CampaignController {
 	
 	@RequestMapping(value = "/gamemaster/editCampaign", method = RequestMethod.POST)
 	@Secured({"GAMEMASTER", "ADMIN"})
-	public String postCampaign(final CampaignDto campaignDto, FeFeedback feFeedback) {
+	public String postCampaign(CampaignDto campaignDto, FeFeedback feFeedback) {
 		String campaignId = null;
 		try {
 			campaignService.validateCampaign(campaignDto);

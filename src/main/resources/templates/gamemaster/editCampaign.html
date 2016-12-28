@@ -41,7 +41,7 @@
 					var rowDiv = $('<div class="row"/>');
 					var spacerDiv = $('<div class="col-md-1"/>');
 					spacerDiv.appendTo(rowDiv);
-					var buttonDiv = $('<div class="col-md-1"/>');
+					var buttonDiv = $('<div class="col-md-2"/>');
 					var access;
 					if (item["permission"] == "PERMISSION_OWNER") {
 						access = "Owner";
@@ -72,39 +72,41 @@
 		});	
 		
 		$("#editCampaignForm").submit(function(event) {
-			var permissionMap = {};
-			var buttonMap = {};
-			var buttonData = [];
-			$('.permission').each(function(i, btn) {
-			    var value = $(this).attr("value");
-			    var id = $(this).attr("id");
-			    
-			    item = {};
-			    item["id"] = id;
-			    item["value"] = value;
-				
-				buttonData.push(item);
-				
-				buttonMap[id] = value;
-			});
-			console.log(buttonData);
-
-			var usersObject = JSON.parse($("#users").val());
-			$.each(usersObject, function(i, item) { 
-				var userId = item["userId"];
-				var newPermission = buttonMap[userId];
-				if (newPermission == "Owner") {
-					item["permission"] = "PERMISSION_OWNER";
-				} else if (newPermission == "Game Master") {
-					item["permission"] = "PERMISSION_GAMEMASTER";
-				} else if (newPermission == "Player") {
-					item["permission"] = "PERMISSION_PLAYER";
-				} else {
-					item["permission"] = "NO_ACCESS";
-				}
-			});
-			var newUserString = JSON.stringify(usersObject)
-			$("#users").val(newUserString);
+			if ($("#isOwner").val() == "true") {
+				var permissionMap = {};
+				var buttonMap = {};
+				var buttonData = [];
+				$('.permission').each(function(i, btn) {
+				    var value = $(this).attr("value");
+				    var id = $(this).attr("id");
+				    
+				    item = {};
+				    item["id"] = id;
+				    item["value"] = value;
+					
+					buttonData.push(item);
+					
+					buttonMap[id] = value;
+				});
+				console.log(buttonData);
+	
+				var usersObject = JSON.parse($("#users").val());
+				$.each(usersObject, function(i, item) { 
+					var userId = item["userId"];
+					var newPermission = buttonMap[userId];
+					if (newPermission == "Owner") {
+						item["permission"] = "PERMISSION_OWNER";
+					} else if (newPermission == "Game Master") {
+						item["permission"] = "PERMISSION_GAMEMASTER";
+					} else if (newPermission == "Player") {
+						item["permission"] = "PERMISSION_PLAYER";
+					} else {
+						item["permission"] = "NO_ACCESS";
+					}
+				});
+				var newUserString = JSON.stringify(usersObject)
+				$("#users").val(newUserString);
+			}
 		});
 	});	
 	
@@ -151,10 +153,10 @@
 
 	<br></br>
 	<form id="editCampaignForm" th:object="${campaignDto}" action="#" th:action="@{/gamemaster/editCampaign}" method="post">
-		<input id="users" type="hidden" th:field="*{users}"></input>
-	 	<input id="isOwner" type="hidden" th:field="*{isOwner}"></input>
-	 	<input id="campaigns" type="hidden" th:field="*{campaignList}"></input>
-	 	
+		<input id="users" type="hidden" th:field="*{users}"></input>	
+ 	 	<input id="isOwner" type="hidden" th:field="*{isOwner}"></input>
+ 	 	<input id="campaignId" type="hidden" th:field="*{campaign.id}"></input>
+	
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-11">
@@ -204,6 +206,7 @@
 		</div>
 		
 		<span id="permissionList"></span>		
+		
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">

@@ -52,6 +52,7 @@ public class CampaignService {
 		} else {
 			campaign = new Campaign();
 		}
+		campaignDto.setCampaign(campaign);
 		List<User> allUserList = userService.findAll();
 		List<CampaignUser> campaignUserList = null;
 		if (campaign.getId() == null) {
@@ -65,7 +66,7 @@ public class CampaignService {
 			}
 		} else {
 			campaignUserList = campaignUserService.findAllByCampaignId(campaign.getId());
-			List<String> campaignUserIds = campaignUserList.stream().map(u -> u.getId()).collect(Collectors.toList());
+			List<String> campaignUserIds = campaignUserList.stream().map(u -> u.getUserId()).collect(Collectors.toList());
 			for (User user : allUserList) {
 				if (!campaignUserIds.contains(user.getId())) {
 					CampaignUser cu = new CampaignUser(campaign.getId(), ControllerUtils.NO_ACCESS, user.getId(), user.getUsername());
@@ -81,7 +82,6 @@ public class CampaignService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		campaignDto.setCampaign(campaign);
 		campaignDto.setUsers(userListString);
 		campaignDto.setIsOwner(isCampaignOwner(campaign));
 		campaignDto.setCampaignList(getCampaignList());
@@ -166,6 +166,8 @@ public class CampaignService {
 
 			campaignFolio = folioService.save(campaignFolio);
 			campaignDto.setCampaignFolio(campaignFolio);
+			campaign.setCampaignFolioId(campaignFolio.getId());
+			save(campaign);
 			return campaignFolio;
 		} catch (Exception e) {
 			String message = ControllerUtils.getI18nMessage("editCampaign.error.couldNotSave");
@@ -328,6 +330,7 @@ public class CampaignService {
 						!existingCampaign.getId().equals(campaign.getId())) {
 					String message = ControllerUtils.getI18nMessage("editCampaign.error.noDuplicateNames");
 					errors.append(message);
+					break;
 				}
 			}
 			if (campaignFolio.getContent() == null) {
@@ -368,22 +371,12 @@ public class CampaignService {
 	private List<CampaignSelector> getCampaignList() {
 		List<Campaign> campaignList = campaignRepository.findAll();
 		List<CampaignSelector> selectorList = campaignList.stream().map(c -> c.getCampaignSelector()).collect(Collectors.toList());
-/*
-		ObjectMapper mapper = new ObjectMapper();
-		String value = null; 
-		try {
-			value = mapper.writeValueAsString(selectorList);
-		} catch (Exception e) {
-			// Don't die
-			e.printStackTrace();
-		}
-		return value;
-		*/
+
 		return selectorList;
 	}
 	
 	private Boolean isCampaignOwner(Campaign campaign) {
 		String userId = userService.getCurrentUserId();
-		return campaign.getOwnerList().contains(campaign) ? Boolean.TRUE : Boolean.FALSE;
+		return campaign.getOwnerList().contains(userId) ? Boolean.TRUE : Boolean.FALSE;
 	}
 }
