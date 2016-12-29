@@ -135,6 +135,14 @@ public class FolioService implements Serializable {
 		return folioRepository.findAll();
 	}
 	
+	public FolioDto initCopyFolioDto(String folioId, FolioDto folioDto, String campaignId) {
+		initFolioDto(folioId, folioDto, campaignId, FolioService.EDIT);
+		Folio folio = folioDto.getFolio();
+		folio.setTitle("");
+		folio.setId("");
+		return folioDto;
+	}
+	
 	public FolioDto initFolioDto(String folioId, FolioDto folioDto, String campaignId, String operationType) {
 		Folio folio = initFolio(folioId, campaignId);
 		if (folioDto == null) {

@@ -186,7 +186,24 @@ public class FolioController {
 		} else {
 			info = ControllerUtils.getI18nMessage("editFolio.status.editing") + " '" + folioDto.getFolio().getTitle() + "'";
 		}
-		return info;
-		
+		return info;	
 	}
+	
+	
+	@RequestMapping(value = "/copyFolio/{folioId}", method = RequestMethod.GET)
+	@Secured({"USER", "GAMEMASTER"})
+	public String copyFolio(HttpSession session, @PathVariable String folioId, FolioDto folioDto, 
+			FeFeedback feFeedback) {
+		String campaignId = (String)session.getAttribute(ControllerUtils.CAMPAIGN_ID);
+		if (campaignId == null) {
+			return ControllerUtils.USER_MENU;
+		}
+
+		folioService.initCopyFolioDto(folioId, folioDto, campaignId);
+		folioDto.setForwardingUrl(ControllerUtils.EDIT_FOLIO);
+		
+		String message = ControllerUtils.getI18nMessage("editFolio.status.editingCopy");
+		feFeedback.setUserStatus(message + " '" + folioDto.getFolio().getTitle() + "'");
+		return ControllerUtils.EDIT_FOLIO;		
+	}	
 }

@@ -56,6 +56,12 @@
 			$("#returnBtn").click(function() {
 				window.location = $("#forwardingUrl").val();
 			});
+			
+	        $("#copyBtn").click(function(e) {
+	        	var folioId = $("#folioId").val();
+	        	$("#viewFolioForm").attr("action", "/shared/copyFolio/"+folioId);
+	        	$("#viewFolioForm").submit();
+	        });
 		});
 	});
 	</script>	
@@ -77,6 +83,7 @@
 		<input type="hidden" id="displayTags"></input>
 		<input type="hidden" id="titleText" th:field="*{folio.title}"></input>
 		<input type="hidden" id="content" th:field="*{folio.content}"></input>
+		<input type="hidden" id="folioId" th:field="*{folio.id}"></input>
 		<input type="hidden" id="forwardingUrl" th:field="*{forwardingUrl}"></input>
 						
 		<div class="row">
@@ -125,7 +132,14 @@
 		</div>
 	 
 		<div class="row">
-		<div class="col-md-1"></div>	
+			<div class="col-md-1"></div>
+			<div class="col-md-7">
+				<input type="button" id="copyBtn" class="basic-margin" value="Copy"></input>
+			</div>
+		</div>
+	 
+		<div class="row">
+			<div class="col-md-1"></div>	
 			<div class="col-md-8">
 				<div class="btn-group submit">
   					<button type="button" id="returnBtn" class="btn btn-default" th:text="Return"></button>

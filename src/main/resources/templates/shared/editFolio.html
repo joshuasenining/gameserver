@@ -97,7 +97,7 @@
 					var rowDiv = $('<div class="row"/>');
 					var spacerDiv = $('<div class="col-md-1"/>');
 					spacerDiv.appendTo(rowDiv);
-					var buttonDiv = $('<div class="col-md-1"/>');
+					var buttonDiv = $('<div class="col-md-2"/>');
 					var access;
 					if (item["itemPermission"] == "PERMISSION_OWNER") {
 						access = "Owner";
@@ -398,6 +398,7 @@
 				<input type="button" id="copyBtn" class="basic-margin" value="Copy"></input>
 			</div>
 		</div>
+		
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-7">
@@ -407,10 +408,10 @@
 
 	</form>
 
-<script>
-<!-- ckeditor js code -->
-	initSample();
-</script>
+	<script>
+	<!-- ckeditor js code -->
+		initSample();
+	</script>
 
 </body>
 </html>
