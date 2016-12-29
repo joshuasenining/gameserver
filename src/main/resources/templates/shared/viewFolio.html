@@ -15,6 +15,11 @@
     <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js" th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
     <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
 
+	<script type="application/javascript" src="/ckeditor/ckeditor.js"></script> <!--  th:src="@{/webjars/ckeditor/4.5.8/standard/ckeditor.js}"></script> -->
+	<script src="/ckeditor/gameserver/js/sample.js"></script>
+	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/css/samples.css"></link>
+	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/toolbarconfigurator/lib/codemirror/neo.css"></link>
+
 	<title th:text="#{selectFolio.title}">Title</title>
 
 	<script th:inline="javascript">
@@ -35,6 +40,10 @@
 				$("#tagList").text(listString);
 			}
 			
+			if ($("#folioId").val() == "") {
+				$("#printBtnDiv").addClass("hide");
+				$("#copyBtnDiv").addClass("hide");
+			}
 			if ($("#forwardingUrl").val() == "/shared/viewFolio") {
 				$("#returnBtn").addClass("hide");
 			}
@@ -65,11 +74,17 @@
 		});
 	});
 	</script>	
-
+	<script>
+	    function print(editorName) {
+	        var editor = CKEDITOR.instances[editorName];           
+	        editor.execCommand('print');
+	    }
+	</script>
 </head>
 <body>
 	<div th:include="/public/navbar :: navbar"></div>
 
+	<br></br>
 	<br></br>
 	<div class="row">
 		<div class="col-md-1"></div>
@@ -118,6 +133,23 @@
 			</div>
 		</div>
 
+		<div id="editorContainer" class="folio-margin hide">
+			<div class="grid-container">
+				<div class="grid-width-100">
+					<textarea id="editor" class="ckeditor" th:field="*{folio.content}"></textarea>
+				</div>
+			</div>
+		</div>
+
+		<div id="printBtnDiv" class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<button type="button" onclick="print('editor')">
+					<span class="glyphicon glyphicon-print"></span>&nbsp;Print
+				</button>
+			</div>
+		</div>
+
 		<div id="contentLabel" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
@@ -131,7 +163,7 @@
 			</div>
 		</div>
 	 
-		<div class="row">
+		<div id="copyBtnDiv" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-7">
 				<input type="button" id="copyBtn" class="basic-margin" value="Copy"></input>
