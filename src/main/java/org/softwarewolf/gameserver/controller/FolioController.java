@@ -60,7 +60,7 @@ public class FolioController {
 		folioDto.setForwardingUrl(ControllerUtils.EDIT_FOLIO);
 		
 		String message = ControllerUtils.getI18nMessage("editFolio.status.editing");
-		feFeedback.setUserStatus(message + "'" + folioDto.getFolio().getTitle() + "'");
+		feFeedback.setUserStatus(message + " '" + folioDto.getFolio().getTitle() + "'");
 		return ControllerUtils.EDIT_FOLIO;
 	}
 	
@@ -84,7 +84,7 @@ public class FolioController {
 			folioDto = folioService.initFolioDto(folioDto, campaignId, FolioService.EDIT, GetPermissionsFrom.FOLIO_DTO);
 			return ControllerUtils.EDIT_FOLIO;
 		}
-		
+		folioService.initFolioDto(folio.getId(), folioDto, campaignId, FolioService.EDIT);
 		String modified = ControllerUtils.getI18nMessage("editFolio.modified");
 		feFeedback.setInfo(modified + " " + folio.getTitle());
 		feFeedback.setUserStatus(editingMsg + " " + folio.getTitle());

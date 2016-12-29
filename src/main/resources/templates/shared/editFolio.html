@@ -127,6 +127,11 @@
 			}
 		});	
 		
+		if ($("#folioId").val() == "") {
+			$("#copyBtn").attr("hidden", "true");
+		} 
+		
+		
 		$("#editFolioForm").submit(function(event) {
 			var permissionMap = {};
 			var buttonMap = {};
@@ -186,6 +191,13 @@
         		}
 	        	$("#submitBtn").removeClass("hide");
         	}
+        });
+        
+        $("#copyBtn").click(function(e) {
+        	e.preventDefault();
+        	$("#folioId").val("");
+        	$("#folioStatus").text("You are editing a copied document");
+        	$("#pageTitle").val("");
         });
 	});		
 	</script>   
@@ -380,6 +392,12 @@
 		<span id="permissionList"></span>
 						
 		<br></br>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-7">
+				<input type="button" id="copyBtn" class="basic-margin" value="Copy"></input>
+			</div>
+		</div>
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-7">
