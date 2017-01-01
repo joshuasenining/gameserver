@@ -27,63 +27,11 @@
     
 	<script th:inline="javascript">
 	$(document).ready(function() {
-		$( window ).load(function() {
-			var unselectedList = $("#unselectedTags")[0].value;
-			var unselectedTagList = null;
-			if (unselectedList.length > 0) {
-				unselectedTagList = jQuery.parseJSON(unselectedList);
-			} else {
-				unselectedTagList= [];
+		$( window ).load(function() {		
+			if ($("#isFirstBoard").val() == "true") {
+				$("#selectBoardDiv").addClass("hide");
 			}
 			
-			var selectedList = $("#selectedTags")[0].value;
-			var selectedTagList = null;
-			if (selectedList.length > 0) {
-				selectedTagList = jQuery.parseJSON(selectedList);
-			} else {
-				selectedTagList = [];
-			}
-			
-			$.each(unselectedTagList, function(i, item) {
-				var name = item["name"];
-				var id = item["id"];
-				var newButton = $('<button type="button"/>')
-				  .text(name)
-				  .click( function() { 
-						$("#addTag").val(id);
-						$("#editFolioForm").submit();
-				  })
-				  .addClass("btn btn-default add-btn")
-				  .attr('id', id)
-				  .attr('name', name)
-				  .appendTo($("#unselectedTagSpan"));
-			});
-
-			$.each(selectedTagList, function(i, item) {
-				var name = item["name"];
-				var id = item["id"];
-				if (name == "Campaign Description") {
-					var newButton = $('<button type="button"/>')
-					  .text(name)
-					  .attr("disabled", "true")
-					  .addClass("btn btn-default add-btn")
-					  .attr('id', id)
-					  .attr('name', name)
-					  .appendTo($("#selectedTagSpan"));
-				} else {
-					var newButton = $('<button type="button"/>')
-					  .text(name)
-					  .click( function() { 
-							$("#removeTag").val(id);
-							$("#editFolioForm").submit();
-					  })
-					  .addClass("btn btn-default add-btn")
-					  .attr('id', id)
-					  .attr('name', name)
-					  .appendTo($("#selectedTagSpan"));
-				}
-			});
-		
 			if ($("#isOwner").val() == "true") {
 	  			var users = $("#users")[0].value;
 	 			var userList = null;
@@ -99,11 +47,11 @@
 					spacerDiv.appendTo(rowDiv);
 					var buttonDiv = $('<div class="col-md-2"/>');
 					var access;
-					if (item["itemPermission"] == "PERMISSION_OWNER") {
+					if (item["permission"] == "PERMISSION_OWNER") {
 						access = "Owner";
-					} else if (item["itemPermission"] == "PERMISSION_READ_WRITE") { 
+					} else if (item["permission"] == "PERMISSION_READ_WRITE") { 
 						access = "Read/Write";
-					} else if (item["itemPermission"] == "PERMISSION_READ") {
+					} else if (item["permission"] == "PERMISSION_READ") {
 						access = "Read";
 					} else {
 						// in this case item["itemPermission"] == "NO_PERMISSION"
@@ -127,11 +75,7 @@
 			}
 		});	
 		
-		if ($("#folioId").val() == "") {
-			$("#copyBtn").attr("hidden", "true");
-		} 
-		
-		$("#editFolioForm").submit(function(event) {
+		$("#editMessageBoardForm").submit(function(event) {
 			var permissionMap = {};
 			var buttonMap = {};
 			var buttonData = [];
@@ -154,17 +98,19 @@
 				var userId = item["userId"];
 				var newPermission = buttonMap[userId];
 				if (newPermission == "Owner") {
-					item["itemPermission"] = "PERMISSION_OWNER";
+					item["permission"] = "PERMISSION_OWNER";
 				} else if (newPermission == "Read/Write") {
-					item["itemPermission"] = "PERMISSION_READ_WRITE";
+					item["permission"] = "PERMISSION_READ_WRITE";
 				} else if (newPermission == "Read") {
-					item["itemPermission"] = "PERMISSION_READ";
+					item["permission"] = "PERMISSION_READ";
 				} else {
-					item["itemPermission"] = "NO_ACCESS";
+					item["permission"] = "NO_ACCESS";
 				}
 			});
 			var newUserString = JSON.stringify(usersObject)
 			$("#users").val(newUserString);
+			
+			$("#descriptorList").val(null);
 		});
 
         $("#changeView").click(function() {
@@ -191,21 +137,11 @@
 	        	$("#submitBtn").removeClass("hide");
         	}
         });
-        
-        $("#copyBtn").click(function(e) {
-        	e.preventDefault();
-        	$("#folioId").val("");
-        	$("#folioStatus").text("You are editing a copied document");
-        	$("#pageTitle").val("");
-        });
+     
 	});		
 	</script>   
 
 	<script th:inline="javascript">
-		function selectFolio() {
-			window.location = "/shared/selectFolio?operation=edit";
-		}
-	
 		function modifyPermission(buttonId) {
 			var button = $("#"+buttonId);
 			var selection = button.attr("value");
@@ -221,25 +157,6 @@
 		}
 		
 	</script>
-    <script>
-       $(function() {
-          $("#addTagDialog" ).dialog({
-             autoOpen: false,  
-             buttons: {
-          	   OK: function() {
-          		   $("#addTag").val($("#tagName").val());
-          		   $(this).dialog("close");
-          		   $("#editFolioForm").attr("action", "/shared/addTag");
-          		   $("#editFolioForm").submit();
-          	   }
-             }
-          });
-          
-          $("#createTag").click(function() {
-             $("#addTagDialog").dialog( "open" );
-          });
-       });
-    </script>
 </head>
 <body id="main">
 	<div th:include="/public/navbar :: navbar"></div>
@@ -250,7 +167,7 @@
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-11">
-			<h1 th:text="#{editFolio.title}">Updated</h1>
+			<h1 th:text="#{editMessageBoard.title}">Updated</h1>
 		</div>
 	</div>
 
@@ -267,18 +184,10 @@
 		</div>
 	</div>
  
-	<form id="addTagForm" action="/shared/addTagToFolio" method="get"></form>
-	<form id="removeTagForm" action="/shared/removeTagFromFolio" method="get"></form>
-	<form id="editFolioForm" th:object="${folioDto}" action="#" th:action="@{/shared/editFolio}" method="post">
-		<input type="hidden" id="campaignId" th:field="*{folio.campaignId}"></input>
-		<input type="hidden" id="unselectedTags" th:field="*{unselectedTags}"></input>
-		<input type="hidden" id="selectedTags" th:field="*{selectedTags}"></input>
-		<input type="hidden" id="addTag" th:field="*{addTag}"></input>
-		<input type="hidden" id="removeTag" th:field="*{removeTag}"></input>
-		<input type="hidden" id="folioId" th:field="*{folio.id}"></input>
-		<input type="hidden" id="operationType" th:field="*{operationType}"></input>
+	<form id="editMessageBoardForm" th:object="${messageBoardDto}" action="#" th:action="@{/admin/editMessageBoard}" method="post">
 		<input type="hidden" id="users" th:field="*{users}"></input>
 		<input type="hidden" id="isOwner" th:field="*{isOwner}"></input>
+		<input type="hidden" id="isFirstBoard" th:field="*{isFirstBoard}"></input>
 		<input type="hidden" id="forwardingUrl" th:field="*{forwardingUrl}"></input>
 
 		<div class="row">
@@ -291,79 +200,46 @@
 		<div class="row">
 			<div class="row">
 				<div class="col-md-1"></div>
-				<div class="col-md-9">
-					<button id="folioStatus" type="button" class="input-margin btn btn-info dropdown-toggle" aria-expanded="false" th:text="${feFeedback.userStatus}"></button>
+				<div class="col-md-11">
+					<button id="messageBoardStatus" type="button" class="input-margin btn btn-info dropdown-toggle" aria-expanded="false" th:text="${feFeedback.userStatus}"></button>
 				</div>
 			</div>
 		</div>
-			
-		<div class="row">
+		<br></br>
+		
+		<div id="selectBoardDiv" class="row">
 			<div class="col-md-1"></div>
-			<div class="col-md-2">
-				<label class="input-margin" th:text="#{editFolio.selectFolio}">Select</label>
-			</div>
-			<div class="col-md-8">
-				<div class="btn-group">
-  					<button type="button" class="btn btn-default" th:utext="#{editFolio.selectFolio}" th:onclick="'selectFolio();'">Select Folio</button>
-				</div>				
+			<div class="col-md-11">
+				<div class="dropdown">
+				    <!--Default buttons with dropdown menu-->
+				    <div class="btn-group">
+		        		<button type="button" class="btn btn-default" th:text="#{editMessageBoard.selectMessageBoard}">Action</button>
+				        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
+				        <ul class="dropdown-menu">
+		        		    <li th:each="descriptor : *{messageBoardDescriptorList}" th:value="${descriptor.messageBoardId}">
+		            			<a th:href="@{/admin/editMessageBoard/}+${descriptor.messageBoardId}" th:text="${descriptor.messageBoardName}">test</a>
+				           	</li>
+				        </ul>
+		    		</div>
+				</div> 		    
 			</div>
 		</div>
 
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
-				<label class="input-margin" th:text="#{editFolio.pageTitle}">Name</label>
+				<label class="input-margin" th:text="#{editMessageBoard.name}">Name</label>
 			</div>
 			<div class="col-md-8">
-				<input id="pageTitle" class="input-margin fullWidth" th:field="*{folio.title}"></input>
+				<input id="pageTitle" class="input-margin fullWidth" th:field="*{messageBoard.name}"></input>
 			</div>
 		</div>
 	
-		<div id="addTagDialog" title="Add a tag">
-			<label for="tagName">New tag</label>
-            <input id="tagName"></input>
-		</div>	
-		<div class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-2">
-				<label class="input-margin" th:text="#{editFolio.createTag}">Create</label>
-			</div>
-			<div class="col-md-8">
-				<input type="button" id="createTag" class="input-margin" th:value="#{editFolio.createTagText}"></input>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-3">
-				<label class="input-margin" th:text="#{selectFolio.unselectedTags}">Tags</label>	  
-			</div>
-		</div>
-		
-		<div class="row">   
-			<div class="col-md-1"></div>   	
-			<div class="row col-md-10">
-				<span id="unselectedTagSpan"></span>
-			</div>	
-		</div>	        	
-
-		<div class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-3">
-				<label class="input-margin" th:text="#{selectFolio.selectedTags}">Tags</label>	  
-			</div>
-		</div>
-		
-		<div class="row">   
-			<div class="col-md-1"></div>   	
-			<div id="selectedTagSpan" class="row col-md-10">
-			</div>	
-		</div>	  		
 
 		<div id="editorContainer" class="folio-margin">
 			<div class="grid-container">
 				<div class="grid-width-100">
-					<textarea id="editor" th:field="*{folio.content}"></textarea>
+					<textarea id="editor" th:field="*{messageBoard.description}"></textarea>
 				</div>
 			</div>
 		</div>
@@ -384,20 +260,13 @@
 		<div id="permissionLabel" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-2">
-				<label class="input-margin" th:text="#{editFolio.setPermissions}">Set</label>
+				<label class="input-margin" th:text="#{editMessageBoard.setPermissions}">Set</label>
 			</div>
 		</div>
 		
 		<span id="permissionList"></span>
 						
 		<br></br>
-		<div class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-7">
-				<input type="button" id="copyBtn" class="basic-margin" value="Copy"></input>
-			</div>
-		</div>
-		
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-7">

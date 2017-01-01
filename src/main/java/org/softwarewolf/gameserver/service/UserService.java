@@ -323,7 +323,7 @@ public class UserService {
 		userRepository.save(user);
 	}
 	
-	public void updateUserData(UserAdminDto userAdminDto) {
+	public void editUserData(UserAdminDto userAdminDto) {
 		User user = userAdminDto.getSelectedUser();
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -338,7 +338,7 @@ public class UserService {
 				String encodedPwd = encoder.encode(newPassword);
 				user.setPassword(encodedPwd);
 			} else {
-				throw new RuntimeException(ControllerUtils.getI18nMessage("updateUser.error.verifyPasswordDoeNotMatch"));
+				throw new RuntimeException(ControllerUtils.getI18nMessage("editUser.error.verifyPasswordDoeNotMatch"));
 			}
 		} else {
 			user.setId(null);
@@ -346,7 +346,7 @@ public class UserService {
 				String encodedPwd = encoder.encode(userAdminDto.getPassword());
 				user.setPassword(encodedPwd);
 			} else {
-				throw new RuntimeException(ControllerUtils.getI18nMessage("updateUser.error.verifyPasswordDoeNotMatch"));
+				throw new RuntimeException(ControllerUtils.getI18nMessage("editUser.error.verifyPasswordDoeNotMatch"));
 			}
 		}
 		userRepository.save(user);

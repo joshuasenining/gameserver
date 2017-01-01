@@ -89,7 +89,7 @@ public class UserAdminController {
 			final UserAdminDto userAdminDto, FeFeedback feFeedback) {
 		userService.initUserAdminDto(userAdminDto, userId);
 		
-		return ControllerUtils.UPDATE_USER;
+		return ControllerUtils.EDIT_USER;
 	}
 	
 	@RequestMapping(value = "/getUser/{userID}", method = RequestMethod.GET)
@@ -107,18 +107,19 @@ public class UserAdminController {
 		return jsonStr;
 	}
 
-	@RequestMapping(value = "/updateUserData", method = RequestMethod.POST)
+	@RequestMapping(value = "/editUserData", method = RequestMethod.POST)
 	@Secured({"ADMIN"})
 	public String postUser(final UserAdminDto userAdminDto, FeFeedback feFeedback) {
 		try {
-			userService.updateUserData(userAdminDto);
+			userService.editUserData(userAdminDto);
 		} catch (Exception e) {
 			feFeedback.setError(e.getMessage());
-			return ControllerUtils.UPDATE_USER;
+			return ControllerUtils.EDIT_USER;
 		}
-		String message = ControllerUtils.getI18nMessage("updateUser.success");
+		userService.initUserAdminDto(userAdminDto, userAdminDto.getSelectedUserId());
+		String message = ControllerUtils.getI18nMessage("editUser.success");
 		feFeedback.setInfo(message);
 		
-		return ControllerUtils.UPDATE_USER;
+		return ControllerUtils.EDIT_USER;
 	} 
 }

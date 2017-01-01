@@ -29,6 +29,7 @@ public class ControllerUtils {
 	public static final String DELETE_ROLE = "/admin/deleteRole";
 	public static final String EDIT_CAMPAIGN = "/gamemaster/editCampaign";
 	public static final String EDIT_FOLIO = "/shared/editFolio";
+	public static final String EDIT_MESSAGE_BOARD = "/admin/editMessageBoard";
 	public static final String EMAIL_SETTINGS = "admin/emailSettings";
 	public static final String EXPORT_CAMPAIGN = "/admin/exportCampaign";
 	public static final String GET_FOLIO = "/shared/getFolio";
@@ -40,7 +41,7 @@ public class ControllerUtils {
 	public static final String SELECT_CAMPAIGN_PLAYER = "/shared/selectCampaign/player";
 	public static final String SELECT_FOLIO = "/shared/selectFolio";
 	public static final String SETTINGS = "/admin/settings";
-	public static final String UPDATE_USER = "/admin/updateUser";
+	public static final String EDIT_USER = "/admin/editUser";
 	public static final String USER_MENU = "/user/menu";
 	public static final String VIEW_FOLIO = "/shared/viewFolio";
 	public static final String VIEW_CAMPAIGN_INFO = "/shared/viewCampaignInfo";
