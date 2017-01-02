@@ -35,6 +35,7 @@ public class ControllerUtils {
 	public static final String GET_FOLIO = "/shared/getFolio";
 	public static final String IMPORT_CAMPAIGN = "/admin/importCampaign";
 	public static final String LOGIN = "/login";
+	public static final String MESSAGE_BOARD = "/shared/messageBoard";
 	public static final String RESET_PASSWORD = "/shared/resetPassword";
 	public static final String SELECT_CAMPAIGN = "/shared/selectCampaign";
 	public static final String SELECT_CAMPAIGN_GM = "/shared/selectCampaign/gm";

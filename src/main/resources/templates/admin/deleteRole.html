@@ -78,7 +78,7 @@
 		
 	<div class="row">
 	    <div class="col-md-1"></div>
-		<div class="col-md-10">Please use this functionality with caution. Deleting roles can make the application unusable and require that the database be re seeded.</div>
+		<div class="col-md-10" th:text="#{deleteRoles.message}"></div>
 	</div>
 	<form id="postRolesForm" th:object="${rolesData}" action="#" th:action="@{/admin/deleteRole}" method="post"> 
 		<select id="selectedRoles" class="select optional item-hide" multiple="multiple" th:field="*{selectedRoles}" size="1"></select>
