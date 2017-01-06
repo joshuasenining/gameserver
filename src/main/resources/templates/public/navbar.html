@@ -32,16 +32,16 @@
 		              <li class="dropdown">
 		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-cog"></i><span class="left-padding-5">Admin</span><span class="caret"></span></a>
 		                <ul class="dropdown-menu" role="menu">
-		                  <li><a href="/admin/getSettings" th:text="#{menu.item.settings}">App Settings</a></li>
-		                  <li><a href="/admin/createRole" th:text="#{menu.item.createRoles}">Create</a></li>
-		                  <li><a href="/admin/deleteRole" th:text="#{menu.item.deleteRoles}">Delete Roles</a></li>
 		                  <li><a href="/admin/getUserData" th:text="#{menu.item.editUsers}">Edit</a></li>
-		                  <li><a href="/admin/seedData" th:text="#{menu.item.seedData}">Seed</a></li>
+		                  <li><a href="/admin/editMessageBoard" th:text="#{menu.item.editMessageBoard}">Msg</a></li>
+		                  <li><a href="/admin/createRole" th:text="#{menu.item.createRoles}">Create</a></li>
+		                  <li><a href="/admin/deleteCampaign" th:text="#{menu.item.deleteCampaign}">Delete</a></li>
+		                  <li><a href="/admin/deleteRole" th:text="#{menu.item.deleteRoles}">Delete Roles</a></li>
+		                  <li><a href="/admin/emailSettings" th:text="#{menu.item.emailSettings}">Email</a></li>
 		                  <li><a href="/admin/exportCampaign" th:text="#{exportCampaign.title}">Export</a></li>
 		                  <li><a href="/admin/importCampaign" th:text="#{importCampaign.title}">Import</a></li>
-		                  <li><a href="/admin/deleteCampaign" th:text="#{menu.item.deleteCampaign}">Delete</a></li>
-		                  <li><a href="/admin/emailSettings" th:text="#{menu.item.emailSettings}">Email</a></li>
-		                  <li><a href="/admin/editMessageBoard" th:text="#{menu.item.editMessageBoard}">Msg</a></li>
+		                  <li><a href="/admin/seedData" th:text="#{menu.item.seedData}">Seed</a></li>
+		                  <li><a href="/admin/getSettings" th:text="#{menu.item.settings}">App Settings</a></li>
 		                  <li><a href="/test/testMail">Test Mail</a></li>		                  
 		                </ul>
 		              </li>
@@ -52,13 +52,13 @@
 		              <li class="dropdown">
 		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-book"></i><span class="left-padding-5">Gamemaster</span><span class="caret"></span></a>
 		                <ul class="dropdown-menu" role="menu">
-		                  <li><a href="/shared/selectCampaign/gm" th:text="#{menu.item.selectCampaign}">Select Camp</a></li>
-		                  <li><a href="#" th:text="#{menu.item.checkNotifications}">Notifications</a></li>
-		                  <li><a href="/gamemaster/editCampaign" th:text="#{menu.item.editCampaign}">Create Camp</a></li>
 		                  <li><a href="/gamemaster/campaignHome" th:text="#{menu.item.campaignHome}">Camp Home</a></li>
-		                  <li><a th:if="${session.campaignName}" href="/shared/editFolio" th:text="#{menu.item.editFolio}">Create T</a></li>
-		                  <li><a th:if="${session.campaignName}" href="/shared/viewFolio" th:text="#{viewFolio.title}">view</a></li>
+		                  <li><a href="#" th:text="#{menu.item.checkNotifications}">Notifications</a></li>
 		                  <li><a th:if="${session.campaignName}" href="/shared/editBook" th:text="#{editBook.title}">edit b</a></li>
+		                  <li><a href="/gamemaster/editCampaign" th:text="#{menu.item.editCampaign}">Create Camp</a></li>
+		                  <li><a th:if="${session.campaignName}" href="/shared/editFolio" th:text="#{menu.item.editFolio}">Create T</a></li>
+		                  <li><a href="/shared/selectCampaign/gm" th:text="#{menu.item.selectCampaign}">Select Camp</a></li>
+		                  <li><a th:if="${session.campaignName}" href="/shared/viewFolio" th:text="#{viewFolio.title}">view</a></li>
 		                </ul>
 		              </li>
 		            </ul>
