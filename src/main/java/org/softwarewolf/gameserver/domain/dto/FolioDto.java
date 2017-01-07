@@ -6,7 +6,7 @@ import org.softwarewolf.gameserver.domain.Folio;
 
 public class FolioDto {
 	private Folio folio;
-	private String unselectededTags;
+	private String unselectedTags;
 	private String selectedTags;
 	private String addTag;
 	private String removeTag;
@@ -36,10 +36,10 @@ public class FolioDto {
 	}
 	
 	public String getUnselectedTags() {
-		return unselectededTags;
+		return unselectedTags;
 	}
-	public void setUnselectededTags(String unassignedTags) {
-		this.unselectededTags = unassignedTags;
+	public void setUnselectedTags(String unselectedTags) {
+		this.unselectedTags = unselectedTags;
 	}
 
 	public String getSelectedTags() {

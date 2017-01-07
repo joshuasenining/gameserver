@@ -51,6 +51,7 @@
 				  .text(name)
 				  .click( function() { 
 						$("#addTag").val(id);
+						$("#editFolioForm").attr("action", "/shared/addRemoveTag");
 						$("#editFolioForm").submit();
 				  })
 				  .addClass("btn btn-default add-btn")
@@ -75,7 +76,8 @@
 					  .text(name)
 					  .click( function() { 
 							$("#removeTag").val(id);
-							$("#editFolioForm").submit();
+							$("#editFolioForm").attr("action", "/shared/addRemoveTag");
+							$("#editFolioForm").submit();						  
 					  })
 					  .addClass("btn btn-default add-btn")
 					  .attr('id', id)
@@ -267,8 +269,6 @@
 		</div>
 	</div>
  
-	<form id="addTagForm" action="/shared/addTagToFolio" method="get"></form>
-	<form id="removeTagForm" action="/shared/removeTagFromFolio" method="get"></form>
 	<form id="editFolioForm" th:object="${folioDto}" action="#" th:action="@{/shared/editFolio}" method="post">
 		<input type="hidden" id="campaignId" th:field="*{folio.campaignId}"></input>
 		<input type="hidden" id="unselectedTags" th:field="*{unselectedTags}"></input>

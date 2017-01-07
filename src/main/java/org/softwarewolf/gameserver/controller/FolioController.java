@@ -91,6 +91,36 @@ public class FolioController {
 		return ControllerUtils.EDIT_FOLIO;
 	}	
 	
+	@RequestMapping(value = "/addRemoveTag", method = RequestMethod.POST)
+	@Secured({"USER","GAMEMASTER"})
+	public String addRemoveTag(HttpSession session, final FolioDto folioDto, 
+			final FeFeedback feFeedback) {
+		String campaignId = (String)session.getAttribute(ControllerUtils.CAMPAIGN_ID);
+		if (campaignId == null) {
+			return ControllerUtils.USER_MENU;
+		}		
+
+		String editingMsg = ControllerUtils.getI18nMessage("editFolio.status.editing");
+		Folio folio = null;
+		try {
+			folio = folioService.setTags(folioDto);
+		} catch (Exception e) {
+			String errorMessage = e.getMessage();
+			feFeedback.setError(errorMessage);
+			feFeedback.setUserStatus(editingMsg + " " + (folio == null ? "" : folio.getTitle()));
+			folioService.initFolioDto(folioDto, campaignId, FolioService.EDIT, GetPermissionsFrom.FOLIO_DTO);
+			return ControllerUtils.EDIT_FOLIO;
+		}
+		String modified = ControllerUtils.getI18nMessage("editFolio.modified");
+		feFeedback.setInfo(modified + " " + folio.getTitle());
+		String status = editingMsg;
+		if (folio.getTitle() != null) {
+			status += " " + folio.getTitle();
+		}
+		feFeedback.setUserStatus(status);
+		return ControllerUtils.EDIT_FOLIO;
+	}	
+	
 	@RequestMapping(value = "/selectFolio", method = RequestMethod.GET)
 	@Secured({"USER", "GAMEMASTER"})
 	public String selectViewFolio(HttpSession session, @RequestParam("operation") String operation,

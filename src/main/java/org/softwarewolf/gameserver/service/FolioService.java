@@ -53,49 +53,93 @@ public class FolioService implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public Folio saveFolio(FolioDto folioDto) throws Exception {
-		String selectedTagString = folioDto.getSelectedTags();
-		ObjectMapper mapper = new ObjectMapper();
-		JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, SimpleTag.class);
-		List<SimpleTag> selectedTagList = null;
-		if (selectedTagString.isEmpty()) { 
-			selectedTagList = new ArrayList<>();
-		} else { 
-			selectedTagList = mapper.readValue(selectedTagString, type); 
-		}
-
-		Folio folio = folioDto.getFolio();
-		folio.setTags(selectedTagList);
+		Folio folio = setTags(folioDto);
 
 		// Put the values for the use permissions from the dto into the folio
 		usersFromDtoIntoFolio(folioDto);
 		
-		addRemoveTagsToFolio(folioDto);
-		
-		if (folio.getTitle() == null || folio.getTitle().isEmpty()) {
-			return folio;
-		}
+//		if (folio.getTitle() == null) {
+//			return folio;
+//		}
 		
 		return save(folio);
 	}
 	
-	public void addRemoveTagsToFolio(FolioDto folioDto) {
-		Folio folio = folioDto.getFolio();
+	public Folio setTags(FolioDto folioDto) {
 		String addTagId = folioDto.getAddTag();
-		if (addTagId != null && !addTagId.isEmpty()) {
-			SimpleTag newTag = simpleTagService.findOne(addTagId);
-			if (newTag != null) {
-				folio.addTag(newTag);
-			}
-		}
 		String removeTagId = folioDto.getRemoveTag();
-		if (removeTagId != null && !removeTagId.isEmpty()) {
-			SimpleTag oldTag = simpleTagService.findOne(removeTagId);
-			if (oldTag != null) {
-				folio.removeTag(oldTag);
+		Folio folio = folioDto.getFolio();
+		
+		boolean addTag = true;
+		SimpleTag newTag = null;
+		if (addTagId != null || removeTagId != null) {
+			if (removeTagId == null) {
+				newTag = simpleTagService.findOne(addTagId);
+				folioDto.setAddTag(null);
+			} else {
+				addTag = false;
+				newTag = simpleTagService.findOne(removeTagId);
+				folioDto.setRemoveTag(null);
+			}
+			
+			if (newTag == null) {
+				String message = ControllerUtils.getI18nMessage("editFolio.error.couldNotLocateTag");
+				throw new RuntimeException(message);
 			}
 		}
-		folioDto.setAddTag(null);
-		folioDto.setRemoveTag(null);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String selectedTagString = folioDto.getSelectedTags();
+		JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, SimpleTag.class);
+		List<SimpleTag> selectedTagList = null;
+		if (selectedTagString == null) { 
+			selectedTagList = new ArrayList<>();
+		} else { 
+			try {
+				selectedTagList = mapper.readValue(selectedTagString, type);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				String message = ControllerUtils.getI18nMessage("editFolio.error.errorCreatingTagList");
+				throw new RuntimeException(message);
+			} 
+		}
+		String unselectedTagString = folioDto.getUnselectedTags();
+		List<SimpleTag> unselectedTagList = null;
+		if (unselectedTagString == null) { 
+			unselectedTagList = new ArrayList<>();
+		} else { 
+			try {
+				unselectedTagList = mapper.readValue(unselectedTagString, type);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				String message = ControllerUtils.getI18nMessage("editFolio.error.errorCreatingTagList");
+				throw new RuntimeException(message);
+			} 
+		}		
+				
+		if (addTag) {
+			selectedTagList.add(newTag);
+			unselectedTagList.remove(newTag);
+		} else {
+			selectedTagList.remove(newTag);
+			unselectedTagList.add(newTag);
+		}
+		try {
+			selectedTagString = mapper.writeValueAsString(selectedTagList);
+			unselectedTagString = mapper.writeValueAsString(unselectedTagList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			String message = ControllerUtils.getI18nMessage("editFolio.error.errorCreatingTagList");
+			throw new RuntimeException(message);
+		} 
+		folioDto.setSelectedTags(selectedTagString);
+		folioDto.setUnselectedTags(unselectedTagString);
+		folio.setTags(selectedTagList);
+		
+		return folio;
 	}
 	
 	public Folio save(Folio folio) throws Exception {
@@ -176,7 +220,7 @@ public class FolioService implements Serializable {
 		if (unselectedTagList.size() > 0) {
 			Collections.sort(unselectedTagList, new SimpleTagCompare());
 			String unselectedTags = tagListToString(unselectedTagList);
-			folioDto.setUnselectededTags(unselectedTags);
+			folioDto.setUnselectedTags(unselectedTags);
 		}
 		folioDto.setOperationType(operationType);
 		folioDto.setAddTag(null);
@@ -442,7 +486,7 @@ public class FolioService implements Serializable {
 		
 		String addTagName = selectFolioDto.getAddTagName();
 		String removeTagName = selectFolioDto.getRemoveTagName();
-		if (!addTagName.isEmpty() || !removeTagName.isEmpty()) {
+		if (addTagName != null || removeTagName != null) {
 			for(SimpleTag tag: allTags) {
 				String currentTagName = tag.getName();
 				if (addTagName != null && addTagName.equals(currentTagName)) {
@@ -514,7 +558,7 @@ public class FolioService implements Serializable {
 		List<SimpleTag> unselectedTagList = null;
 		List<SimpleTag> selectedTagList = null;
 
-		if (selectFolioDto.getUnselectedTags().isEmpty()) {
+		if (selectFolioDto.getUnselectedTags() == null) {
 			unselectedTagList = new ArrayList<>();
 		} else {
 			try {
@@ -524,7 +568,7 @@ public class FolioService implements Serializable {
 				e.printStackTrace();
 			}
 		}
-		if (selectFolioDto.getSelectedTags().isEmpty()) {
+		if (selectFolioDto.getSelectedTags() == null) {
 			selectedTagList = new ArrayList<>();
 		} else {
 			try {
