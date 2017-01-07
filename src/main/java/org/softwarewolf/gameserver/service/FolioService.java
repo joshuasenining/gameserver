@@ -58,10 +58,6 @@ public class FolioService implements Serializable {
 		// Put the values for the use permissions from the dto into the folio
 		usersFromDtoIntoFolio(folioDto);
 		
-//		if (folio.getTitle() == null) {
-//			return folio;
-//		}
-		
 		return save(folio);
 	}
 	
@@ -70,22 +66,21 @@ public class FolioService implements Serializable {
 		String removeTagId = folioDto.getRemoveTag();
 		Folio folio = folioDto.getFolio();
 		
-		boolean addTag = true;
+		String action = "none";
 		SimpleTag newTag = null;
-		if (addTagId != null || removeTagId != null) {
-			if (removeTagId == null) {
-				newTag = simpleTagService.findOne(addTagId);
-				folioDto.setAddTag(null);
-			} else {
-				addTag = false;
-				newTag = simpleTagService.findOne(removeTagId);
-				folioDto.setRemoveTag(null);
-			}
+		if (addTagId != null) {
+			action = "add";
+			newTag = simpleTagService.findOne(addTagId);
+			folioDto.setAddTag(null);
+		} else if (removeTagId != null) {
+			action = "remove";
+			newTag = simpleTagService.findOne(removeTagId);
+			folioDto.setRemoveTag(null);
+		}
 			
-			if (newTag == null) {
-				String message = ControllerUtils.getI18nMessage("editFolio.error.couldNotLocateTag");
-				throw new RuntimeException(message);
-			}
+		if (!action.equals("none") && newTag == null) {
+			String message = ControllerUtils.getI18nMessage("editFolio.error.couldNotLocateTag");
+			throw new RuntimeException(message);
 		}
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -119,10 +114,10 @@ public class FolioService implements Serializable {
 			} 
 		}		
 				
-		if (addTag) {
+		if ("add".equals(action)) {
 			selectedTagList.add(newTag);
 			unselectedTagList.remove(newTag);
-		} else {
+		} else if ("remove".equals(action)){
 			selectedTagList.remove(newTag);
 			unselectedTagList.add(newTag);
 		}
@@ -199,10 +194,26 @@ public class FolioService implements Serializable {
 	
 	public FolioDto initFolioDto(FolioDto folioDto, String campaignId, String operationType, GetPermissionsFrom getPermissionsFrom) {
 		Folio folio = folioDto.getFolio();
-		if (folio == null || folio.getId() == null) {
-			folio = initFolio(null, campaignId);
-			folioDto.setFolio(folio);
+		folio.setCampaignId(campaignId);
+		if (folio.getOwners().isEmpty()) {
+			folio.addOwner(userService.getCurrentUserId());
 		}
+		initFolioDtoTags(folioDto, campaignId, operationType);
+		
+		if (GetPermissionsFrom.FOLIO.equals(getPermissionsFrom) ||
+				GetPermissionsFrom.INIT.equals(getPermissionsFrom)) {
+			usersFromFolioIntoDto(folioDto);
+		} else if (GetPermissionsFrom.FOLIO_DTO.equals(getPermissionsFrom)){
+			usersFromDtoIntoFolio(folioDto);
+		}
+		
+		folioDto.setFolioDescriptorList(getFolioDescriptorList(folio.getCampaignId(), null, operationType));
+		return folioDto;
+	}
+
+	public void initFolioDtoTags(FolioDto folioDto, String campaignId, String operationType) {
+		Folio folio = folioDto.getFolio();
+
 		if (folio.getOwners().contains(userService.getCurrentUserId())) {
 			folioDto.setIsOwner(Boolean.TRUE);
 		} else {
@@ -225,18 +236,8 @@ public class FolioService implements Serializable {
 		folioDto.setOperationType(operationType);
 		folioDto.setAddTag(null);
 		folioDto.setRemoveTag(null);
-		
-		if (GetPermissionsFrom.FOLIO.equals(getPermissionsFrom) ||
-				GetPermissionsFrom.INIT.equals(getPermissionsFrom)) {
-			usersFromFolioIntoDto(folioDto);
-		} else if (GetPermissionsFrom.FOLIO_DTO.equals(getPermissionsFrom)){
-			usersFromDtoIntoFolio(folioDto);
-		}
-		
-		folioDto.setFolioDescriptorList(getFolioDescriptorList(folio.getCampaignId(), null, operationType));
-		return folioDto;
 	}
-
+	
 	private List<SimpleTag> filterTagList(List<SimpleTag> tagList, String campaignId) {
 		// Don't allow the selection of this tag
 		SimpleTag campaignDescriptionTag = simpleTagService.findOneByNameAndCampaignId("Campaign Description", campaignId);

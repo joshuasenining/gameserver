@@ -102,8 +102,7 @@ public class CampaignService {
 		String campaignId = campaign.getId();
 		// If we haven't saved campaign yet, we need to so we have an id.
 		List<CampaignUser> campaignUserList = getCampaignUsersFromDto(campaignDto);
-		if (campaignId.isEmpty()) {
-			campaign.setId(null);
+		if (campaignId == null) {
 			campaign = campaignRepository.save(campaign);
 			// ...and there won't be any campaign users so save them too;
 			for (CampaignUser cu : campaignUserList) {
@@ -125,14 +124,8 @@ public class CampaignService {
 			campaignUserService.save(campaignUser);
 			campaign.addOwner(userOwner.getId());
 		}			
-
-		// Save the campaign and the campaign folio
-		if (campaign != null && campaign.getId().isEmpty()) {
-			campaign.setId(null);
-		}
 		campaign = campaignRepository.save(campaign);
-		// Need to have the campaing id in the campaign...
-		campaignDto.setCampaign(campaign);
+
 		saveCampaignFolio(campaignDto);
 		
 		return campaign;
@@ -337,7 +330,7 @@ public class CampaignService {
 	
 	private void validateCampaign(Campaign campaign, Folio campaignFolio) {
 		StringBuilder errors = new StringBuilder();
-		if (campaign.getName().isEmpty()) {
+		if (campaign.getName() == null || campaign.getName().isEmpty()) {
 			String message = ControllerUtils.getI18nMessage("editCampaign.error.noCampaignName");
 			errors.append(message);
 		} else {
