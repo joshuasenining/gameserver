@@ -16,34 +16,33 @@ import org.softwarewolf.gameserver.domain.dto.MessageBoardDto;
 import org.softwarewolf.gameserver.service.MessageBoardService;
 
 @Controller
-@RequestMapping("/shared")
 public class MessageBoardController {
 	@Autowired
 	protected MessageBoardService messageBoardService;
 	
-	@RequestMapping(value = "/messageBoards", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/editMessageBoard", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
 	public String editMessageBoard(HttpSession session, MessageBoardDto messageBoardDto, final FeFeedback feFeedback) {
 		messageBoardDto = messageBoardService.initMessageBoardDto(messageBoardDto);
 		messageBoardDto.setForwardingUrl(ControllerUtils.MESSAGE_BOARD);
 		String message = ControllerUtils.getI18nMessage("editMessageBoard.status.creatingNew");
 		feFeedback.setUserStatus(message);
-		return ControllerUtils.MESSAGE_BOARD;
+		return ControllerUtils.EDIT_MESSAGE_BOARD;
 	}
 	
-	@RequestMapping(value = "/messageBoards/{messageBoardId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/editMessageBoard/{messageBoardId}", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
 	public String editMessageBoardWithId(HttpSession session, final MessageBoardDto messageBoardDto, 
 			@PathVariable String messageBoardId, final FeFeedback feFeedback) {
 		messageBoardService.initMessageBoardDto(messageBoardId, messageBoardDto);
-		messageBoardDto.setForwardingUrl(ControllerUtils.MESSAGE_BOARD);
+		messageBoardDto.setForwardingUrl(ControllerUtils.EDIT_MESSAGE_BOARD);
 		
 		String message = ControllerUtils.getI18nMessage("editMessageBoard.status.editing");
 		feFeedback.setUserStatus(message + " '" + messageBoardDto.getMessageBoard().getName() + "'");
-		return ControllerUtils.MESSAGE_BOARD;
+		return ControllerUtils.EDIT_MESSAGE_BOARD;
 	}
 	
-	@RequestMapping(value = "/messageBoards", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/editMessageBoard", method = RequestMethod.POST)
 	@Secured({"ADMIN"})
 	public String postEditPage(HttpSession session, MessageBoardDto messageBoardDto, 
 			final FeFeedback feFeedback) {
@@ -57,11 +56,11 @@ public class MessageBoardController {
 			feFeedback.setError(errorMessage);
 			feFeedback.setUserStatus(editingMsg + " " +(messageBoard == null ? "" : messageBoard.getName()));
 			messageBoardDto = messageBoardService.initMessageBoardDto(messageBoardDto);
-			return ControllerUtils.MESSAGE_BOARD;
+			return ControllerUtils.EDIT_MESSAGE_BOARD;
 		}
 		String modified = ControllerUtils.getI18nMessage("editMessageBoard.modified");
 		feFeedback.setInfo(modified + " " + messageBoard.getName());
 		feFeedback.setUserStatus(editingMsg + " " + messageBoard.getName());
-		return ControllerUtils.MESSAGE_BOARD;
+		return ControllerUtils.EDIT_MESSAGE_BOARD;
 	}	
 }

@@ -102,7 +102,8 @@ public class CampaignService {
 		String campaignId = campaign.getId();
 		// If we haven't saved campaign yet, we need to so we have an id.
 		List<CampaignUser> campaignUserList = getCampaignUsersFromDto(campaignDto);
-		if (campaignId == null) {
+		if (campaignId.isEmpty()) {
+			campaign.setId(null);
 			campaign = campaignRepository.save(campaign);
 			// ...and there won't be any campaign users so save them too;
 			for (CampaignUser cu : campaignUserList) {
@@ -126,7 +127,12 @@ public class CampaignService {
 		}			
 
 		// Save the campaign and the campaign folio
+		if (campaign != null && campaign.getId().isEmpty()) {
+			campaign.setId(null);
+		}
 		campaign = campaignRepository.save(campaign);
+		// Need to have the campaing id in the campaign...
+		campaignDto.setCampaign(campaign);
 		saveCampaignFolio(campaignDto);
 		
 		return campaign;
@@ -289,6 +295,20 @@ public class CampaignService {
 			String message = ControllerUtils.getI18nMessage("editCampaign.error.couldNotGetUsers");
 			throw new RuntimeException(message);
 		}
+/*
+		List<CampaignUser> ownerList = campaignUserList.stream().filter(c -> c.getPermission().equals(ControllerUtils.PERMISSION_OWNER)).collect(Collectors.toList());
+		List<CampaignUser> addList = new ArrayList<>();
+		for (CampaignUser owner : ownerList) {
+			CampaignUser gamemasterVersion = new CampaignUser(owner.getCampaignId(), ControllerUtils.PERMISSION_GAMEMASTER, owner.getUserId(), owner.getUserName());
+			if (!campaignUserList.contains(gamemasterVersion)) {
+				gamemasterVersion = campaignUserService.save(gamemasterVersion);
+				addList.add(gamemasterVersion);
+			}
+			if (!addList.isEmpty()) {
+				campaignUserList.addAll(addList);
+			}
+		}
+*/
 		return campaignUserList; 
 	}
 	
