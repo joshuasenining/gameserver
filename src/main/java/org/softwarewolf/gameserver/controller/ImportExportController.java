@@ -1,13 +1,6 @@
 package org.softwarewolf.gameserver.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -22,115 +15,103 @@ import org.springframework.web.multipart.MultipartFile;
 import org.softwarewolf.gameserver.service.ImportExportService;
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
-import org.softwarewolf.gameserver.controller.utils.ImportExportUtils;
-import org.softwarewolf.gameserver.service.CampaignService;
+import org.softwarewolf.gameserver.domain.dto.ImportExportSelectorDto;
 
 @Controller
 @RequestMapping(value = "/admin")
 public class ImportExportController {
 	@Autowired
 	private ImportExportService importExportService;
-	@Autowired
-	private CampaignService campaignService;
-	
+
 	@RequestMapping(value = "/exportCampaign", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
-	public String exportCampaign(HttpSession session, final ImportExportUtils importExportHelper,
+	public String exportCampaign(HttpSession session, ImportExportSelectorDto importExportSelectorDto,
 			final FeFeedback feFeedback) {
 
 		boolean isImport = false;
 		try {
-			importExportService.initImportExportHelper(importExportHelper, isImport, ControllerUtils.EXPORT_CAMPAIGN);
+			importExportService.initImportExportBundle(importExportSelectorDto, isImport, ControllerUtils.EXPORT_CAMPAIGN);
 		} catch (IOException e) {
 			feFeedback.setError(e.getMessage());
 			return ControllerUtils.EXPORT_CAMPAIGN;
 		}
-		feFeedback.setUserStatus("You are about to backup a campaign");
+		String message = ControllerUtils.getI18nMessage("exportCampaign.status");
+		feFeedback.setUserStatus(message);
 
-		return importExportHelper.getForwardingUrl();
+		return importExportSelectorDto.getForwardingUrl();
 	}
 	
 	@RequestMapping(value = "/exportCampaign", method = RequestMethod.POST)
 	@Secured({"ADMIN"})
-	public String exportCampaignPost(HttpSession session, final ImportExportUtils importExportHelper, 
+	public String exportCampaignPost(HttpSession session, final ImportExportSelectorDto importExportSelectorDto, 
 			final FeFeedback feFeedback) {
 		String backupFile;
 		try {
-			String campaignId = importExportHelper.getSelectedCampaignId();
+			String campaignId = importExportSelectorDto.getSelectedCampaignId();
 			backupFile = importExportService.exportCampaign(campaignId);
 			feFeedback.setError(null);
-			feFeedback.setInfo("You have successfull exported " + backupFile);
-			feFeedback.setUserStatus("Success");
+			String info = ControllerUtils.getI18nMessage("exportCampaign.success") + " " + backupFile;
+			feFeedback.setInfo(info);
+			String status = ControllerUtils.getI18nMessage("exportCampaign.status");
+			feFeedback.setUserStatus(status);
 		} catch (IOException e) {
 			feFeedback.setError(e.getMessage());
+			String status = ControllerUtils.getI18nMessage("exportCampaign.status");
+			feFeedback.setUserStatus(status);
 			return ControllerUtils.EXPORT_CAMPAIGN;
 		}
 		
 		boolean isImport = false;
 		try {
-			importExportService.initImportExportHelper(importExportHelper, isImport, ControllerUtils.EXPORT_CAMPAIGN);
+			importExportService.initImportExportBundle(importExportSelectorDto, isImport, ControllerUtils.EXPORT_CAMPAIGN);
 		} catch (IOException e) {
 			feFeedback.setError(e.getMessage());
 		}
-		return importExportHelper.getForwardingUrl();
+		return importExportSelectorDto.getForwardingUrl();
 	}
 	
 	@RequestMapping(value = "/importCampaign", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
-	public String importCampaign(HttpSession session, final ImportExportUtils importExportHelper, final FeFeedback feFeedback) {
+	public String importCampaign(HttpSession session, final ImportExportSelectorDto importExportSelectorDto, final FeFeedback feFeedback) {
 		boolean isImport = true;
 		try {
-			importExportService.initImportExportHelper(importExportHelper, isImport, ControllerUtils.IMPORT_CAMPAIGN);
+			importExportService.initImportExportBundle(importExportSelectorDto, isImport, ControllerUtils.IMPORT_CAMPAIGN);
 		} catch (Exception e) {
 			feFeedback.setError(e.getMessage());
 			return ControllerUtils.IMPORT_CAMPAIGN;
 		}
 
-		feFeedback.setUserStatus("Select a campaign to import");
-		return importExportHelper.getForwardingUrl();
+		String status = ControllerUtils.getI18nMessage("importCampaign.selectFile");
+		feFeedback.setUserStatus(status);
+		return importExportSelectorDto.getForwardingUrl();
 	}
-/*	
+
+
 	@RequestMapping(value = "/importCampaign", method = RequestMethod.POST)
-	@Secured({"ADMIN"})
-	public String importCampaignPost(HttpSession session, final ImportExportHelper importExportHelper, final FeFeedback feFeedback) {
-//		String campaignId = importExportHelper.getSelectedCampaignId();
-//		if (campaignId == null) {
-//			feFeedback.setError("You must select a campaign to import.");
-//			return ControllerHelper.IMPORT_CAMPAIGN;
-//		}
-		
-		importExportService.importCampaign(importExportHelper.getImportFilePath());
-		feFeedback.setInfo("You have successfully imported " + importExportHelper.getSelectedCampaignName());
-		feFeedback.setUserStatus("Success");
-		
-		return importExportHelper.getForwardingUrl();
+	public String handleFileUpload(@RequestParam("file") MultipartFile file, 
+			final ImportExportSelectorDto importExportSelectorDto,  FeFeedback feFeedback, 
+			HttpServletRequest request) {	    
+	  	if (!file.isEmpty()) {
+	  		try {
+	  			importExportService.importCampaignData(file);
+	  			
+	  			String filePath = importExportSelectorDto.getFilePath();
+	  			String status = ControllerUtils.getI18nMessage("importCampaign.selectFile");
+		        feFeedback.setUserStatus(status);
+		        String info = ControllerUtils.getI18nMessage("importCampaign.success");
+		        feFeedback.setInfo(info + " " + filePath);
+		        return ControllerUtils.IMPORT_CAMPAIGN;
+	  		} catch (Exception e) {
+	  			e.printStackTrace();
+	  			feFeedback.setError(e.getMessage());
+	  			String status = ControllerUtils.getI18nMessage("importCampaign.selectFile");
+	  			feFeedback.setUserStatus(status);
+	  			return ControllerUtils.IMPORT_CAMPAIGN;
+	  		}
+	  	} else {
+	  		System.out.println("FAILURE >>>>> Upload file is empty");
+		    return ControllerUtils.IMPORT_CAMPAIGN;
+	    }
 	}
-*/	
-
-	  @RequestMapping(value = "/importCampaign", method = RequestMethod.POST)
-	  public String handleFileUpload(
-	      @RequestParam("file") MultipartFile file, 
-	      final ImportExportUtils importExportHelper,  FeFeedback feFeedback, 
-	      HttpServletRequest request) {	    
-
-		  	if (!file.isEmpty()) {
-		  		try {
-		  			importExportService.importCampaignData(file);
-		  			
-		  			String fileName = importExportHelper.getImportFilename();
-			        feFeedback.setUserStatus("Select a campaign file to import");
-			        feFeedback.setInfo("You have successfully imported " + fileName);
-			        return ControllerUtils.IMPORT_CAMPAIGN;
-		  		} catch (Exception e) {
-		  			System.out.println("FAILURE >>>>> File upload failed.");
-			        e.printStackTrace();
-			        return ControllerUtils.IMPORT_CAMPAIGN;
-		  		}
-		    } else {
-		    	System.out.println("FAILURE >>>>> Upload file is empty");
-			    return ControllerUtils.IMPORT_CAMPAIGN;
-		    }
-	  }
-
 }
 

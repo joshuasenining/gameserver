@@ -3,6 +3,7 @@ package org.softwarewolf.gameserver.domain.dto;
 import java.util.List;
 
 import org.softwarewolf.gameserver.domain.Campaign;
+import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.User;
@@ -11,7 +12,8 @@ public class ImportExportCampaignDto {
 	private Campaign campaign;
 	private List<User> userList;
 	private List<Folio> folioList;
-	private List<SimpleTag> tagsList;
+	private List<SimpleTag> tagList;
+	private List<CampaignUser> campaignUserList;
 	
 	public Campaign getCampaign() {
 		return campaign;
@@ -34,11 +36,17 @@ public class ImportExportCampaignDto {
 		this.folioList = folioList;
 	}
 	
-	public List<SimpleTag> getTagsList() {
-		return tagsList;
+	public List<SimpleTag> getTagList() {
+		return tagList;
 	}
-	public void setTagsList(List<SimpleTag> tagsList) {
-		this.tagsList = tagsList;
+	public void setTagList(List<SimpleTag> tagList) {
+		this.tagList = tagList;
 	}
 	
+	public List<CampaignUser> getCampaignUserList() {
+		return campaignUserList;
+	}
+	public void setCampaignUserList(List<CampaignUser> campaignUserList) {
+		this.campaignUserList = campaignUserList;
+	}
 }

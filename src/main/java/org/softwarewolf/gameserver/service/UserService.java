@@ -406,4 +406,16 @@ public class UserService {
 		}
 		return false;
 	}
+	
+	public List<User> findAllByKeyValues(String key, Object[] value) {
+		return userRepository.findAllByKeyValues(key, value);
+	}
+	
+	public User save(User user) {
+		return userRepository.save(user);
+	}
+	
+	public List<User> save(List<User> userList) {
+		return userRepository.save(userList);
+	}
 }

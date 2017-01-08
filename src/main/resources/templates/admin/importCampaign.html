@@ -80,8 +80,8 @@
 		</div>
 	</div>
 
-	<form id="importCampaignForm" th:object="${importExportHelper}" action="#" th:action="@{/admin/importCampaign}" method="post" enctype="multipart/form-data">
-		<input id="filename" name="filename" type="hidden" th:field="*{importFilename}"></input>
+	<form id="importCampaignForm" th:object="${importExportSelectorDto}" action="#" th:action="@{/admin/importCampaign}" method="post" enctype="multipart/form-data">
+		<input id="filename" name="filename" type="hidden" th:field="*{filePath}"></input>
 		<div class="row">
 			<div class="col-md-2"></div>
 			<div class="col-md-1">

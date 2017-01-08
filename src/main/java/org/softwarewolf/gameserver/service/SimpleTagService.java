@@ -87,4 +87,12 @@ public class SimpleTagService {
 	public List<SimpleTag> deleteByCampaignId(String campaignId) {
 		return simpleTagRepository.deleteByCampaignId(campaignId);
 	}
+	
+	public List<SimpleTag> findAllByCampaignId(String campaignId) {
+		return simpleTagRepository.findAllByCampaignId(campaignId);
+	}
+	
+	public List<SimpleTag> save(List<SimpleTag> tagList) {
+		return simpleTagRepository.save(tagList);
+	}
 }

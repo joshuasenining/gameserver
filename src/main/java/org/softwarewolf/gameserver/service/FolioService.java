@@ -623,17 +623,29 @@ public class FolioService implements Serializable {
 		return folioList;
 	}
 
-	public Folio findOneByCampaignIdAndTitle(String campaignId) {
+	public Folio getCampaignDescription(String campaignId) {
 		Campaign campaign = campaignRepository.findOne(campaignId);
 		return folioRepository.findOneByCampaignIdAndTitle(campaignId, campaign.getName());
+	}
+
+	public Folio findOneByCampaignIdAndTitle(String campaignId, String title) {
+		return folioRepository.findOneByCampaignIdAndTitle(campaignId, title);
 	}
 	
 	public List<Folio> deleteByCampaignId(String campaignId) {
 		return folioRepository.deleteByCampaignId(campaignId);
 	}
-	
+
 	public void delete(Folio folio) {
 		folioRepository.delete(folio);
+	}
+	
+	public List<Folio> findAllByCampaignId(String campaignId) {
+		return folioRepository.findAllByCampaignId(campaignId);
+	}	
+
+	public List<Folio> save(List<Folio> folioList) {
+		return folioRepository.save(folioList);
 	}
 }
 

@@ -81,7 +81,7 @@ public class CampaignController {
 			FolioDto folioDto, FeFeedback feFeedback) {
 		
 		try {
-			Folio folio = folioService.findOneByCampaignIdAndTitle(selectedCampaignId);
+			Folio folio = folioService.getCampaignDescription(selectedCampaignId);
 			folioDto.setFolio(folio);
 			folioDto = folioService.initFolioDto(folioDto, selectedCampaignId, FolioService.VIEW, GetPermissionsFrom.INIT);
 			folioDto.setForwardingUrl(ControllerUtils.SELECT_CAMPAIGN);

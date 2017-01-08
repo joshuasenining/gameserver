@@ -5,7 +5,9 @@ import javax.servlet.http.HttpSession;
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.domain.EmailSettings;
+import org.softwarewolf.gameserver.domain.dto.ApplicationSettingsDto;
 import org.softwarewolf.gameserver.domain.dto.SelectCampaignDto;
+import org.softwarewolf.gameserver.service.ApplicationSettingsService;
 import org.softwarewolf.gameserver.service.CampaignService;
 import org.softwarewolf.gameserver.service.DataSeeder;
 import org.softwarewolf.gameserver.service.GameMailService;
@@ -28,6 +30,9 @@ public class AppAdminController {
 	@Autowired
 	private CampaignService campaignService;
 	
+	@Autowired
+	private ApplicationSettingsService applicationSettingsService;
+	
 	@RequestMapping(value="/seedData", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
 	public String seedDb() {
@@ -39,7 +44,22 @@ public class AppAdminController {
 
 	@RequestMapping(value="/getSettings", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
-	public String changeAppSettings() {
+	public String changeAppSettings(ApplicationSettingsDto applicationSettingsDto, FeFeedback feFeedback) {
+		applicationSettingsService.initApplicationSettingsDto(applicationSettingsDto);
+		return ControllerUtils.SETTINGS;
+	}
+
+	@RequestMapping(value="/postSettings", method = RequestMethod.POST)
+	@Secured({"ADMIN"})
+	public String postAppSettings(ApplicationSettingsDto applicationSettingsDto, FeFeedback feFeedback) {
+		try {
+			applicationSettingsService.setExportDir(applicationSettingsDto.getExportDir());
+			String exportDir = applicationSettingsService.getExportDir();
+			String message = ControllerUtils.getI18nMessage("settings.changedExportDir");
+			feFeedback.setInfo(message + " " + exportDir);
+		} catch (Exception e) {
+			feFeedback.setError(e.getMessage());
+		}
 		
 		return ControllerUtils.SETTINGS;
 	}

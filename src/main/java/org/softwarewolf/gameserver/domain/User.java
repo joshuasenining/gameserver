@@ -13,6 +13,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Document
 public class User implements UserDetails, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -24,6 +26,7 @@ public class User implements UserDetails, Serializable {
 	private String password;
 	private String email;
 	private Locale locale;
+	@JsonIgnore
 	private List<GrantedAuthority> authorities;
 	private boolean accountNonExpired;
 	private boolean accountNonLocked;

@@ -1,20 +1,20 @@
-package org.softwarewolf.gameserver.controller.utils;
+package org.softwarewolf.gameserver.domain.dto;
 
-public class ImportExportUtils {
-	private String importFilename;
+public class ImportExportSelectorDto {
+	private String filePath;
 	private String selectedCampaignId;
 	private String selectedCampaignName;
 	private String campaignListAsString;
 	private String forwardingUrl;
 	
-	public ImportExportUtils() {	
+	public ImportExportSelectorDto() {	
 	}
 	
-	public String getImportFilename() {
-		return importFilename;
+	public String getFilePath() {
+		return filePath;
 	}
-	public void setImportFilename(String importFilename) {
-		this.importFilename = importFilename;
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 	
 	public String getSelectedCampaignId() {

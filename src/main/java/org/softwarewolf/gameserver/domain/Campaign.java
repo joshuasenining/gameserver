@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Document
 public class Campaign implements Serializable {
@@ -17,7 +20,7 @@ public class Campaign implements Serializable {
 	private List<String> ownerList;
 	private List<String> gameMasterList;
 	private List<String> playerList;
-
+	
 	public Campaign() {}
 	
 	public Campaign(String ownerId) {
@@ -175,6 +178,7 @@ public class Campaign implements Serializable {
 		return true;
 	}
 
+	@JsonIgnore
 	public CampaignSelector getCampaignSelector() {
 		return new CampaignSelector(name, id);
 	}

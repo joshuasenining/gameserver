@@ -78,15 +78,15 @@
 
 	<div class="row">
 		<div class="row">
-			<div class="col-md-2"></div>
+			<div class="col-md-3"></div>
 			<div class="col-md-9">
 				<button id="exportStatus" type="button" class="input-margin btn btn-info dropdown-toggle" aria-expanded="false" th:text="${feFeedback.userStatus}"></button>
 			</div>
 		</div>
 	</div>
 
-	<form id="exportCampaignForm" th:object="${importExportHelper}" action="#" th:action="@{/admin/exportCampaign}" method="post">
-		<input id="importFilePath" type="hidden" th:field="*{importFilePath}"></input>
+	<form id="exportCampaignForm" th:object="${importExportSelectorDto}" action="#" th:action="@{/admin/exportCampaign}" method="post">
+		<input id="filePath" type="hidden" th:field="*{filePath}"></input>
 		<input id="selectedCampaignId" type="hidden" th:field="*{selectedCampaignId}"></input>
 		<input id="selectedCampaignName" type="hidden" th:field="*{selectedCampaignName}"></input>
 		<input id="campaignListAsString" type="hidden" th:field="*{campaignListAsString}"></input>
@@ -94,7 +94,7 @@
 		
 		<div class="row">
 			<div class="col-md-1"></div>
-			<div class="col-md-1">
+			<div class="col-md-2">
 				<label class="input-margin" th:text="#{exportCampaign.selectCampaign}">Select</label>
 			</div>
 			<div class="col-md-8">
@@ -108,7 +108,7 @@
 		</div>
 
 		<div class="row">
-			<div class="col-md-2"></div>
+			<div class="col-md-3"></div>
 			<div class="col-md-1">
        			<input type="submit" class="input-margin btn btn-info dropdown-toggle" th:value="#{exportCampaign.export}"></input>
 			</div>

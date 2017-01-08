@@ -19,6 +19,7 @@
     <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
 	<script type="application/javascript" src="https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js" th:src="@{/webjars/jquery-ui/1.11.4/jquery-ui.min.js}"></script>
 
+	<title th:text="#{settings.title}">Title</title>
 </head>
 <body>
 	<div th:include="/public/navbar :: navbar"></div>
@@ -26,17 +27,43 @@
 	<br></br>
 	<div class="row">
 		<div class="col-md-1"></div>
-		<div class="col-md-10"><h1 th:text="#{settings.page.title}">Title</h1></div>
+		<div class="col-md-10"><h1 th:text="#{settings.title}">Title</h1></div>
 	</div>
-	<br></br><br></br>
-	<form>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<span class="error-message" th:if="${feFeedback.error}" th:text="${feFeedback.error}">Error.</span>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<span class="info-message" th:if="${feFeedback.info}" th:text="${feFeedback.info}">Info.</span>
+		</div>
+	</div>
+	
+	<br></br>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10"><p th:text="#{settings.desc}"></p></div>
+	</div>
+	<br></br>
+	<form id="appSettings" th:object="${applicationSettingsDto}" action="#" th:action="@{/admin/postSettings}" method="post">
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-10">
-				<label th:text="#{settings.page.unused}"></label>
-				<input th:value="#{settings.page.nothingtoseehere}"></input>
+				<label th:text="#{settings.exportFileDir}"></label>
+				<input th:field="*{exportDir}" ></input>
 			</div>
 		</div>
+		<br></br>
+		<div class="row">		  
+			<div class="col-md-1"></div>      	
+			<div class="col-md-1">
+				<input type="submit" class="btn btn-default" th:value="#{settings.submitBtn}" ></input>
+			</div>
+		</div>		
 	</form>
 </body>
 </html>
