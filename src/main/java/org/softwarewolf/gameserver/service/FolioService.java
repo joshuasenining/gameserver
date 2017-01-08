@@ -1,5 +1,4 @@
 package org.softwarewolf.gameserver.service;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;

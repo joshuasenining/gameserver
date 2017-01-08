@@ -28,19 +28,12 @@
 			if ($("#inacessableCampaigns").val() == "") {
 				$("#requestCampaignDiv").addClass("hide");
 			}
-			
-			$("#selectCampaignForm").submit(function(event) {
-				var form = $("#selectCampaignForm");
-				var action = form.attr("action");
-				var asType = $("#asType").val();
-				var newAction = action + "/" + asType
-				form.attr("action", newAction);
-			});
+
 		});		
 	});	
 	
 	function viewCampaign(id) {
-		window.location.replace("/shared/viewCampaignInfo/"+$("#asType").val()+"?campaignId="+id);
+		window.location.replace("/shared/viewCampaignInfo/"+id);
 	}
 	</script>
 </head>
@@ -71,7 +64,6 @@
 	<form id="selectCampaignForm" th:object="${selectCampaignDto}" action="#" th:action="@{/shared/selectCampaign}" method="post">
 		<input id="accessableCampaigns" type="hidden" th:field="*{accessableCampaigns}"></input>
 		<input id="inacessableCampaigns" type="hidden" th:field="*{inaccessableCampaigns}"></input>
-		<input id="asType" type="hidden" th:field="*{asType}"></input>
 		
 		<div id="selectCampaignLabel" class="row">		        	
 			<div class="col-md-1"></div>
@@ -92,7 +84,7 @@
 			</div>
 		</div>
 		
-		<div sec:authorize="hasRole('ROLE_USER')" th:if="${asType} == 'player'" id="requestCampaignDiv">
+		<div id="requestCampaignDiv">
 			<div class="row">		        	
 				<div class="col-md-1"></div>
 				<div class="col-md-2">

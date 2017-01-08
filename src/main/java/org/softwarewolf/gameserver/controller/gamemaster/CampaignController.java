@@ -43,21 +43,21 @@ public class CampaignController {
 	 * @param selectCampaignDto
 	 * @return
 	 */
-	@RequestMapping(value = "/shared/selectCampaign/{asType}", method = RequestMethod.GET)
+	@RequestMapping(value = "/shared/selectCampaign", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER"})
-	public String selectCampaign(final SelectCampaignDto selectCampaignDto, @PathVariable String asType,
+	public String selectCampaign(final SelectCampaignDto selectCampaignDto,
 			FeFeedback feFeedback) {
-		campaignService.initSelectCampaignDto(selectCampaignDto, asType);
+		campaignService.initSelectCampaignDto(selectCampaignDto);
 
 		return ControllerUtils.SELECT_CAMPAIGN;
 	}
 	
-	@RequestMapping(value = "/shared/selectCampaign/{asType}", method = RequestMethod.POST)
+	@RequestMapping(value = "/shared/selectCampaign", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER"})
 	public String selectCampaign(HttpSession session, final SelectCampaignDto selectCampaignDto,
-			FeFeedback feFeedback, @PathVariable String asType) {
+			FeFeedback feFeedback) {
 		String campaignId = selectCampaignDto.getSelectedCampaignId();
-		campaignService.initSelectCampaignDto(selectCampaignDto, asType);
+		campaignService.initSelectCampaignDto(selectCampaignDto);
 		if (campaignId == null) {
 			String message = ControllerUtils.getI18nMessage("selectCampaign.error.pickOne");
 			feFeedback.setError(message);
@@ -76,32 +76,24 @@ public class CampaignController {
 		return ControllerUtils.USER_MENU;
 	}
 	
-	@RequestMapping(value = "/shared/viewCampaignInfo/{asType}", method = RequestMethod.GET)
-	public String viewCampaignInfo(HttpSession session, @RequestParam("campaignId") String selectedCampaignId,
-			@PathVariable String asType, FolioDto folioDto, FeFeedback feFeedback) {
+	@RequestMapping(value = "/shared/viewCampaignInfo/{campaignId}", method = RequestMethod.GET)
+	public String viewCampaignInfo(HttpSession session, @PathVariable("campaignId") String selectedCampaignId,
+			FolioDto folioDto, FeFeedback feFeedback) {
 		
 		try {
 			Folio folio = folioService.findOneByCampaignIdAndTitle(selectedCampaignId);
 			folioDto.setFolio(folio);
 			folioDto = folioService.initFolioDto(folioDto, selectedCampaignId, FolioService.VIEW, GetPermissionsFrom.INIT);
-			folioDto.setForwardingUrl(getForwardingUrl(asType));
+			folioDto.setForwardingUrl(ControllerUtils.SELECT_CAMPAIGN);
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
-			return getForwardingUrl(asType);
+			return ControllerUtils.SELECT_CAMPAIGN;
 		}
 		
 		return ControllerUtils.VIEW_CAMPAIGN_INFO;
 	}
 
-	private String getForwardingUrl(String asType) {
-		if (ControllerUtils.GM_TYPE.equals(asType)) {
-			return ControllerUtils.SELECT_CAMPAIGN_GM;
-		} else {
-			return ControllerUtils.SELECT_CAMPAIGN_PLAYER;
-		}
-	}
-	
 	@RequestMapping(value = "/gamemaster/editCampaign", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
 	public String getCampaignDto(CampaignDto campaignDto, FeFeedback feFeedback,

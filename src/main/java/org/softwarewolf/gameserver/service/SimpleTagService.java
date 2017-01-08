@@ -3,6 +3,7 @@ package org.softwarewolf.gameserver.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.exception.NotImplementedException;
@@ -29,24 +30,30 @@ public class SimpleTagService {
 	}
 		
 	public SimpleTag save(String simpleTagName, String campaignId) throws Exception {
+		SimpleTag newTag = createAndVerifyTag(simpleTagName, campaignId);
+		
+		return save(newTag);
+	}
+
+	private SimpleTag createAndVerifyTag(String simpleTagName, String campaignId) {
 		simpleTagName = simpleTagName.trim();
 		if (simpleTagName.isEmpty()) {
-			throw new Exception("A tag must have a name");
+			String message = ControllerUtils.getI18nMessage("editFolio.error.noTagName");
+			throw new RuntimeException(message);
 		}
-		SimpleTag newTag = new SimpleTag();
-		newTag.setCampaignId(campaignId);
-		newTag.setName(simpleTagName);
-		return save(newTag);
+		SimpleTag oldTag = simpleTagRepository.findOneByNameAndCampaignId(simpleTagName, campaignId);
+		if (oldTag != null) {
+			String message = ControllerUtils.getI18nMessage("editFolio.error.duplicateTagName");
+			throw new RuntimeException(message);
+		}
+
+		return new SimpleTag(simpleTagName, campaignId); 
 	}
 	
 	public SimpleTag save(SimpleTag simpleTag) {
-		SimpleTag oldTag = simpleTagRepository.findOneByNameAndCampaignId(simpleTag.getName(), simpleTag.getCampaignId());
-		if (oldTag == null) {
-			simpleTag = simpleTagRepository.save(simpleTag);
-		} else {
-			simpleTag.setId(oldTag.getId());
-		}
-		return simpleTag;
+		SimpleTag newTag = createAndVerifyTag(simpleTag.getName(), simpleTag.getCampaignId());
+		
+		return simpleTagRepository.save(newTag);
 	}
 	
 	public void delete(SimpleTag simpleTag) {

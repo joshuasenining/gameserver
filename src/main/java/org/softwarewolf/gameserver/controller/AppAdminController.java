@@ -62,7 +62,7 @@ public class AppAdminController {
 	@RequestMapping(value="/deleteCampaign", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
 	public String deleteCampaign(final SelectCampaignDto selectCampaignDto, final FeFeedback feFeedback) {
-		campaignService.initSelectCampaignDto(selectCampaignDto, ControllerUtils.ADMIN_TYPE);
+		campaignService.initSelectAllCampaignsDto(selectCampaignDto);
 
 		return ControllerUtils.DELETE_CAMPAIGN;
 	}
@@ -81,7 +81,7 @@ public class AppAdminController {
 		} catch (RuntimeException e) {
 			feFeedback.setError(e.getMessage());
 		}
-		campaignService.initSelectCampaignDto(selectCampaignDto, ControllerUtils.ADMIN_TYPE);
+		campaignService.initSelectAllCampaignsDto(selectCampaignDto);
 		
 		return ControllerUtils.DELETE_CAMPAIGN;
 	}	

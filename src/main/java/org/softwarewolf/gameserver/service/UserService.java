@@ -387,4 +387,23 @@ public class UserService {
 	public List<User> findAll() {
 		return userRepository.findAll();
 	}
+	
+	public boolean hasRole(User user, String role) {
+		return user.getRoles().contains(role);
+	}
+	
+	public boolean currentUserHasRole(String role) {
+		User user = this.getCurrentUser();
+		return user.getRoles().contains(role);
+	}
+	
+	public boolean currentUserHasRole(List<String> roles) {
+		User user = this.getCurrentUser();
+		for (String role : roles) {
+			if (user.getRoles().contains(role)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

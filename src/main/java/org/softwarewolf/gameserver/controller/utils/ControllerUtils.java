@@ -38,8 +38,6 @@ public class ControllerUtils {
 	public static final String MESSAGE_BOARD = "/shared/messageBoard";
 	public static final String RESET_PASSWORD = "/shared/resetPassword";
 	public static final String SELECT_CAMPAIGN = "/shared/selectCampaign";
-	public static final String SELECT_CAMPAIGN_GM = "/shared/selectCampaign/gm";
-	public static final String SELECT_CAMPAIGN_PLAYER = "/shared/selectCampaign/player";
 	public static final String SELECT_FOLIO = "/shared/selectFolio";
 	public static final String SETTINGS = "/admin/settings";
 	public static final String EDIT_USER = "/admin/editUser";
