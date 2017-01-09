@@ -327,7 +327,10 @@ public class UserService {
 		User user = userAdminDto.getSelectedUser();
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-		User prevVersion = userRepository.findOne(user.getId());
+		User prevVersion = null;
+		if (user.getId() != null) {
+			prevVersion = userRepository.findOne(user.getId());
+		}
 		String newPassword = userAdminDto.getPassword();
 		String verifyPassword = userAdminDto.getVerifyPassword();
 		if (prevVersion != null) {

@@ -68,8 +68,8 @@
 			
 	        $("#copyBtn").click(function(e) {
 	        	var folioId = $("#folioId").val();
-	        	$("#viewFolioForm").attr("action", "/shared/copyFolio/"+folioId);
-	        	$("#viewFolioForm").submit();
+	        	$("#copyFolioForm").attr("action", "/shared/copyFolio/"+folioId);
+	        	$("#copyFolioForm").submit();
 	        });
 		});
 	});
@@ -93,6 +93,7 @@
 		</div>
 	</div>
 
+	<form id="copyFolioForm" action="#" th:action="@{/shared/copyFolio/}" method="get"></form>
 	<form id="viewFolioForm" th:object="${folioDto}" action="#" th:action="@{/shared/viewFolio}" method="get">
 		<input type="hidden" id="selectedTags" th:field="*{selectedTags}"></input>
 		<input type="hidden" id="displayTags"></input>
