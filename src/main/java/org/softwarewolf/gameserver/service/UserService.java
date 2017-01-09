@@ -334,7 +334,7 @@ public class UserService {
 		String newPassword = userAdminDto.getPassword();
 		String verifyPassword = userAdminDto.getVerifyPassword();
 		if (prevVersion != null) {
-			if (newPassword.isEmpty() && verifyPassword.isEmpty()) {
+			if (newPassword == null && verifyPassword == null) {
 				String prevEncodedPwd = prevVersion.getPassword();
 				user.setPassword(prevEncodedPwd);
 			} else if (newPassword.equals(verifyPassword)){
