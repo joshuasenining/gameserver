@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:fragment="header">
+    <meta charset="utf-8"></meta>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <link rel="icon" href="/werewolf-512.png"></link>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" th:href="@{/css/style.css}"></link>
+   	<link rel="stylesheet" type="text/css" href="/css/font-awesome.css" th:href="@{/css/font-awesome.css}"></link>
+    <!-- Bootstrap & JQuery -->
+	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"></link>
+	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css}"></link>
+    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js" th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
+    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
+	<script type="application/javascript" src="https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js" th:src="@{/webjars/jquery-ui/1.11.4/jquery-ui.min.js}"></script>
+    
+	<script type="application/javascript" src="/ckeditor/ckeditor.js"></script> <!--  th:src="@{/webjars/ckeditor/4.5.8/standard/ckeditor.js}"></script> -->
+	<script src="/ckeditor/gameserver/js/sample.js"></script>
+	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/css/samples.css"></link>
+	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/toolbarconfigurator/lib/codemirror/neo.css"></link>
+
+    <title th:text="#{viewMessageBoard.title}">Title</title>
+    
+	<script th:inline="javascript">
+	$(document).ready(function() {
+		$( window ).load(function() {		
+			// Placeholder
+        });
+     
+	});		
+	</script>   
+
+</head>
+<body>
+	<div th:include="/public/navbar :: navbar"></div>
+	
+	<br></br>
+	<br></br>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-11">
+			<h1 th:text="#{viewMessageBoard.title}">Updated</h1>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<span class="error-message" th:if="${feFeedback.error}" th:text="${feFeedback.error}">Error.</span>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<span class="info-message" th:if="${feFeedback.info}" th:text="${feFeedback.info}">Info.</span>
+		</div>
+	</div>
+ 
+	<form id="viewMessageBoardForm" th:object="${messageBoardDto}" action="#" th:action="@{/shared/postToMessageBoard}" method="post">
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-9">
+				<hr></hr>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="row">
+				<div class="col-md-1"></div>
+				<div class="col-md-11">
+					<button id="messageBoardStatus" type="button" class="input-margin btn btn-info dropdown-toggle" aria-expanded="false" th:text="${feFeedback.userStatus}"></button>
+				</div>
+			</div>
+		</div>
+		<br></br>
+		
+		<div id="selectBoardDiv" class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-11">
+				<div class="dropdown">
+				    <!--Default buttons with dropdown menu-->
+				    <div class="btn-group">
+		        		<button type="button" class="btn btn-default" th:text="#{viewMessageBoard.selectMessageBoard}">Action</button>
+				        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
+				        <ul class="dropdown-menu">
+		        		    <li th:each="descriptor : *{messageBoardDescriptorList}" th:value="${descriptor.messageBoardId}">
+		            			<a th:href="@{/shared/selectMessageBoard/}+${descriptor.messageBoardId}" th:text="${descriptor.messageBoardName}">test</a>
+				           	</li>
+				        </ul>
+		    		</div>
+				</div> 		    
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-2">
+				<label class="input-margin" th:text="#{editMessageBoard.name}">Name</label>
+			</div>
+			<div class="col-md-8">
+				<input id="pageTitle" class="input-margin fullWidth" th:field="*{messageBoard.name}"></input>
+			</div>
+		</div>
+	
+		<div id="editorContainer" class="folio-margin">
+			<div class="grid-container">
+				<div class="grid-width-100">
+					<textarea id="editor" th:field="*{messageBoard.description}"></textarea>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<div id="viewContainer" class="hide folio-margin"></div>
+			</div>
+		</div>
+		
+		<br></br>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-7">
+				<input id="submitBtn" class="basic-margin" type="submit" value="Submit" />
+			</div>
+		</div>
+
+	</form>
+
+	<script>
+	<!-- ckeditor js code -->
+		initSample();
+	</script>
+
+</body>
+</html>

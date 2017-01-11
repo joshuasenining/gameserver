@@ -39,11 +39,13 @@ public class ControllerUtils {
 	public static final String RESET_PASSWORD = "/shared/resetPassword";
 	public static final String SELECT_CAMPAIGN = "/shared/selectCampaign";
 	public static final String SELECT_FOLIO = "/shared/selectFolio";
+	public static final String SELECT_MESSAGE_BOARD = "/shared/selectMessageBoard";
 	public static final String SETTINGS = "/admin/settings";
 	public static final String EDIT_USER = "/admin/editUser";
 	public static final String USER_MENU = "/shared/menu";
 	public static final String VIEW_FOLIO = "/shared/viewFolio";
 	public static final String VIEW_CAMPAIGN_INFO = "/shared/viewCampaignInfo";
+	public static final String VIEW_MESSAGE_BOARD = "/shared/viewMessageBoard";
 	
 	public static final String CAMPAIGN_ID = "campaignId";
 	public static final String CAMPAIGN_NAME = "campaignName";
