@@ -46,6 +46,7 @@ public class ControllerUtils {
 	public static final String VIEW_CAMPAIGN_INFO = "/shared/viewCampaignInfo";
 	
 	public static final String CAMPAIGN_ID = "campaignId";
+	public static final String CAMPAIGN_NAME = "campaignName";
 	
 	public static final String ADMIN_TYPE = "admin";
 	public static final String GM_TYPE = "gm";

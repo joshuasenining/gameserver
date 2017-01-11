@@ -70,7 +70,7 @@ public class CampaignController {
 				return ControllerUtils.SELECT_CAMPAIGN;
 			} else {
 				session.setAttribute(ControllerUtils.CAMPAIGN_ID, campaignId);
-				session.setAttribute("campaignName", selectedCampaign.getName());
+				session.setAttribute(ControllerUtils.CAMPAIGN_NAME, selectedCampaign.getName());
 			}
 		}
 		return ControllerUtils.USER_MENU;
@@ -96,8 +96,11 @@ public class CampaignController {
 
 	@RequestMapping(value = "/gamemaster/editCampaign", method = RequestMethod.GET)
 	@Secured({"GAMEMASTER"})
-	public String getCampaignDto(CampaignDto campaignDto, FeFeedback feFeedback,
+	public String getCampaignDto(HttpSession session, CampaignDto campaignDto, FeFeedback feFeedback,
 			@RequestParam(value = "campaignId", required = false) String campaignId) {
+		if (campaignId == null) {
+			campaignId = (String) session.getAttribute(ControllerUtils.CAMPAIGN_ID);
+		}
 		campaignService.initCampaignDto(campaignId, campaignDto);
 		
 		return ControllerUtils.EDIT_CAMPAIGN;
