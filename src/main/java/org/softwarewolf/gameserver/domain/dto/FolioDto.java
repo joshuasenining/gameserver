@@ -14,6 +14,7 @@ public class FolioDto {
 	private String viewTagList;
 	private String operationType;
 	private Boolean isOwner;
+	private String owners;
 	
 	/**
 	 * Serialized form of List<CampaignUser> where we add an itemPermission to 
@@ -103,5 +104,12 @@ public class FolioDto {
 	}
 	public void setIsOwner(Boolean isOwner) {
 		this.isOwner = isOwner;
+	}
+	
+	public String getOwners() {
+		return owners;
+	}
+	public void setOwners(String owners) {
+		this.owners = owners;
 	}
 }

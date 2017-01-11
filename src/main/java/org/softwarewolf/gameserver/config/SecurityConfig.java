@@ -69,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/webjars/**").permitAll()
 				.anyRequest().authenticated().and()
 			.formLogin()
-				.defaultSuccessUrl("/user/menu")
+				.defaultSuccessUrl("/shared/menu")
 				.loginPage("/login").permitAll()
 				.failureUrl("/login?error").and()
 			.logout()

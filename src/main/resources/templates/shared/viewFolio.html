@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+	  xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head th:fragment="header">
     <meta charset="utf-8"></meta>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
     <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <link rel="icon" href="/werewolf-512.png"></link>
-   	<link rel="stylesheet" href="/css/style.css" type="text/css" th:href="@{/css/style.css}"></link>	
-	<link rel="stylesheet" href="/css/font-awesome.css" type="text/css" th:href="@{/css/font-awesome.css}"></link>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" th:href="@{/css/style.css}"></link>
+   	<link rel="stylesheet" type="text/css" href="/css/font-awesome.css" th:href="@{/css/font-awesome.css}"></link>
     <!-- Bootstrap & JQuery -->
 	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"></link>
 	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css}"></link>
     <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js" th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
     <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
+	<script type="application/javascript" src="https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js" th:src="@{/webjars/jquery-ui/1.11.4/jquery-ui.min.js}"></script>
 
 	<script type="application/javascript" src="/ckeditor/ckeditor.js"></script> <!--  th:src="@{/webjars/ckeditor/4.5.8/standard/ckeditor.js}"></script> -->
 	<script src="/ckeditor/gameserver/js/sample.js"></script>
 	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/css/samples.css"></link>
 	<link rel="stylesheet" type="text/css" href="/ckeditor/gameserver/toolbarconfigurator/lib/codemirror/neo.css"></link>
 
-	<title th:text="#{selectFolio.title}">Title</title>
+	<title th:text="#{viewFolio.title}">Title</title>
 
 	<script th:inline="javascript">
 	$(document).ready(function() {
@@ -86,6 +88,7 @@
 
 	<br></br>
 	<br></br>
+	<br></br>
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-10">
@@ -114,16 +117,6 @@
 			</div>
 		</div>
  
-		<div id="tagsDiv" class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-1">
-				<label class="input-margin" th:text="#{viewFolio.tags}">Ta</label>
-			</div>
-			<div class="col-md-8 input-margin">
-				<span id="tagList" th:field="*{selectedtags}"></span>
-			</div>
-		</div>
-
 		<div id="titleDiv" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
@@ -131,6 +124,26 @@
 			</div>
 			<div class="col-md-8">
 				<label class="input-margin fullWidth" th:text="*{folio.title}"></label>
+			</div>
+		</div>
+
+		<div th:if="*{owners}" id="titleDiv" class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="input-margin" th:text="#{viewFolio.folioOwners}">Ta</label>
+			</div>
+			<div class="col-md-8 input-margin">
+				<span id="owners" th:text="*{owners}"></span>
+			</div>
+		</div>
+
+		<div id="tagsDiv" class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="input-margin" th:text="#{viewFolio.tags}">Ta</label>
+			</div>
+			<div class="col-md-8 input-margin">
+				<span id="tagList" th:field="*{selectedtags}"></span>
 			</div>
 		</div>
 

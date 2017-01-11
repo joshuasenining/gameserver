@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
@@ -196,6 +197,19 @@ public class FolioService implements Serializable {
 		folio.setCampaignId(campaignId);
 		if (folio.getOwners().isEmpty()) {
 			folio.addOwner(userService.getCurrentUserId());
+		}
+		if (folio.getContent() != null) {
+			Iterator<String> ownerIter = folio.getOwners().iterator();
+			StringBuilder ownerBuilder = new StringBuilder();
+			while (ownerIter.hasNext()) {
+				String ownerId = ownerIter.next();
+				String username = userService.getUser(ownerId).getUsername();
+				ownerBuilder.append(username);
+				if (ownerIter.hasNext()) {
+					ownerBuilder.append(", ");
+				}
+			}
+			folioDto.setOwners(ownerBuilder.toString());
 		}
 		initFolioDtoTags(folioDto, campaignId, operationType);
 		

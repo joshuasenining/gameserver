@@ -1,16 +1,21 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-	<head th:fragment="header">
-	    <meta charset="utf-8"></meta>
-	    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
-	    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-	    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-	    <!-- Bootstrap & JQuery -->
-		<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.7/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"></link>
-		<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.7/css/bootstrap-theme.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css}"></link>
-	    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js" th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
-	    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.7/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
+	  xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:fragment="header">
+    <meta charset="utf-8"></meta>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <link rel="icon" href="/werewolf-512.png"></link>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" th:href="@{/css/style.css}"></link>
+   	<link rel="stylesheet" type="text/css" href="/css/font-awesome.css" th:href="@{/css/font-awesome.css}"></link>
+    <!-- Bootstrap & JQuery -->
+	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"></link>
+	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css}"></link>
+    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js" th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
+    <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
+	<script type="application/javascript" src="https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js" th:src="@{/webjars/jquery-ui/1.11.4/jquery-ui.min.js}"></script>
     
 	</head>      
 	<body>
@@ -24,7 +29,7 @@
 		            <span class="icon-bar"></span>
 		            <span class="icon-bar"></span>
 		          </button>
-		          <a class="navbar-brand" href="/user/menu" th:text="#{login.appnamne}">Project name</a>
+		          <a class="navbar-brand" href="/shared/menu" th:text="#{login.appnamne}">Project name</a>
 		        </div>
 		        <div id="navbar" class="navbar-collapse collapse">
 		          <div sec:authorize="hasRole('ROLE_ADMIN')">
@@ -34,9 +39,9 @@
 		                <ul class="dropdown-menu" role="menu">
 		                  <li><a href="/admin/getUserData" th:text="#{menu.item.editUsers}">Edit</a></li>
 		                  <li><a href="/admin/editMessageBoard" th:text="#{menu.item.editMessageBoard}">Msg</a></li>
-		                  <li><a href="/admin/createRole" th:text="#{menu.item.createRoles}">Create</a></li>
+		                  <!--  <li><a href="/admin/createRole" th:text="#{menu.item.createRoles}">Create</a></li>
+		                  <li><a href="/admin/deleteRole" th:text="#{menu.item.deleteRoles}">Delete Roles</a></li> -->
 		                  <li><a href="/admin/deleteCampaign" th:text="#{menu.item.deleteCampaign}">Delete</a></li>
-		                  <li><a href="/admin/deleteRole" th:text="#{menu.item.deleteRoles}">Delete Roles</a></li>
 		                  <li><a href="/admin/emailSettings" th:text="#{menu.item.emailSettings}">Email</a></li>
 		                  <li><a href="/admin/exportCampaign" th:text="#{exportCampaign.title}">Export</a></li>
 		                  <li><a href="/admin/importCampaign" th:text="#{importCampaign.title}">Import</a></li>
@@ -92,6 +97,10 @@
 		            <span sec:authorize="isAuthenticated()"><a class="login-logout" th:href="@{/logout}" th:text="#{logout.text}">Log out</a></span>
 		          </div>
 		        </div><!--/.navbar-collapse -->
+		      </div>
+		      <div class="nav-banner">
+			  	<span th:if="${session.campaignName != null}"  class="nav-banner" th:text="#{menu.item.selectedCampaign} + ${session.campaignName}">Campaign: </span>
+			  	<span th:if="${session.campaignName == null}"  class="nav-banner"></span>
 		      </div>
 		    </nav>
 		</div>		    

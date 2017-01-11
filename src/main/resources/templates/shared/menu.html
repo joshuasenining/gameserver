@@ -15,6 +15,7 @@
 	<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.min.css}"></link>
     <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js" th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
     <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
+	<script type="application/javascript" src="https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js" th:src="@{/webjars/jquery-ui/1.11.4/jquery-ui.min.js}"></script>
 
 	<title th:text="#{menu.title}">Title</title>
 </head>
@@ -28,10 +29,6 @@
       <div class="container">
 		<h1 th:text="#{menu.title}"></h1>
 		<br></br>
-		<div class="item-hide" th:text="${session.campaignId}"></div>
-		<div class="on-same-line">
-			<span th:if="${session.campaignName}" th:text="#{campaignLabel}"></span><span th:text="${session.campaignName}"></span>
-		</div>
       </div>
     </div>
 	

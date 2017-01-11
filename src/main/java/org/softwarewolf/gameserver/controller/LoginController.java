@@ -13,7 +13,7 @@ public class LoginController {
 		return ControllerUtils.LOGIN;
 	}
 
-	@RequestMapping(value = "/user/menu", method = RequestMethod.GET)
+	@RequestMapping(value = "/shared/menu", method = RequestMethod.GET)
 	public String getMenu() {
 		return ControllerUtils.USER_MENU;
 	}
