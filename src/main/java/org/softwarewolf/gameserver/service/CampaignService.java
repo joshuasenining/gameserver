@@ -44,8 +44,16 @@ public class CampaignService {
 	
 	public void initCampaignDto(String campaignId, CampaignDto campaignDto) {
 		Campaign campaign = null;
+		Folio folio = null;
 		if (campaignId != null) {
 			campaign = campaignRepository.findOne(campaignId);
+			// OK, this is infuriating. For some reason while the campaignFolioId is being stored
+			// correctly, it isn't being returned in the query result so I'm doing this for the
+			// time being.
+			if (campaign.getCampaignFolioId() == null) {
+				folio = folioService.findOneByCampaignIdAndTitle(campaignId, campaign.getName());
+				campaign.setCampaignFolioId(folio.getId());
+			}
 		} else {
 			campaign = new Campaign();
 		}
@@ -84,7 +92,9 @@ public class CampaignService {
 		campaignDto.setCampaignList(getCampaignList());
 		String folioId = campaign.getCampaignFolioId();
 		if (folioId != null) {
-			Folio folio = folioService.findOne(campaign.getCampaignFolioId());
+			if (folio != null) {
+				folio = folioService.findOne(campaign.getCampaignFolioId());
+			}
 			campaignDto.setCampaignFolio(folio);
 		} else {
 			campaignDto.setCampaignFolio(new Folio());

@@ -35,7 +35,7 @@
 		          <div sec:authorize="hasRole('ROLE_ADMIN')">
 		            <ul class="nav navbar-nav">
 		              <li class="dropdown">
-		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-cog"></i><span class="left-padding-5">Admin</span><span class="caret"></span></a>
+		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-cog"></i><span class="left-padding-5" th:text="#{menu.item.admin}">Ad</span><span class="caret"></span></a>
 		                <ul class="dropdown-menu" role="menu">
 		                  <li><a href="/admin/getUserData" th:text="#{menu.item.editUsers}">Edit</a></li>
 		                  <li><a href="/admin/editMessageBoard" th:text="#{menu.item.editMessageBoard}">Msg</a></li>
@@ -56,7 +56,7 @@
 		          <div sec:authorize="hasRole('ROLE_GAMEMASTER')">
 		            <ul class="nav navbar-nav">
 		              <li class="dropdown">
-		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-book"></i><span class="left-padding-5">Gamemaster</span><span class="caret"></span></a>
+		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-book"></i><span class="left-padding-5" th:text="#{menu.item.gamemaster}">Gm</span><span class="caret"></span></a>
 		                <ul class="dropdown-menu" role="menu">
 		                  <li><a href="/gamemaster/campaignHome" th:text="#{menu.item.campaignHome}">Camp Home</a></li>
 		                  <li><a href="#" th:text="#{menu.item.checkNotifications}">Notifications</a></li>
@@ -72,7 +72,7 @@
 		          <div sec:authorize="hasRole('ROLE_USER')">
 		            <ul class="nav navbar-nav">
 		              <li class="dropdown">
-		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-male"></i><span class="left-padding-5">Player</span><span class="caret"></span></a>
+		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-male"></i><span class="left-padding-5" th:text="#{menu.item.player}">Playa</span><span class="caret"></span></a>
 		                <ul class="dropdown-menu" role="menu">
 		                  <li><a href="/shared/selectCampaign" th:text="#{menu.item.joinCampaign}">Select Camp</a></li>
 		                  <li><a href="#">Select Character</a></li>
@@ -92,6 +92,16 @@
 		                </ul>
 		              </li>
 		            </ul>
+		          </div>
+		          <div sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_GAMEMASTER','ROLE_USER')">
+		          	<ul class="nav navbar-nav">
+		              <li class="dropdown">
+		          		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="glyphicon glyphicon-info-sign"></i><span class="left-padding-5" th:text="#{menu.item.about}">My Account</span><span class="caret"></span></a>
+		                <ul class="dropdown-menu" role="menu">
+		          	  	  <li><span th:text="#{menu.item.version} + #{versionNumber}"></span></li>
+		                </ul>
+					  </li>
+		          	</ul>
 		          </div>
 		          <div class="navbar-form navbar-right">
 		            <span sec:authorize="isAnonymous()"><a class="login-logout" data-toggle="modal" href="#myModal" th:text="#{login.text}">Login</a></span>
