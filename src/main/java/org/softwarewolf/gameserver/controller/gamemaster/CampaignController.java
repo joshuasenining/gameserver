@@ -98,9 +98,6 @@ public class CampaignController {
 	@Secured({"GAMEMASTER"})
 	public String getCampaignDto(HttpSession session, CampaignDto campaignDto, FeFeedback feFeedback,
 			@RequestParam(value = "campaignId", required = false) String campaignId) {
-		if (campaignId == null) {
-			campaignId = (String) session.getAttribute(ControllerUtils.CAMPAIGN_ID);
-		}
 		campaignService.initCampaignDto(campaignId, campaignDto);
 		
 		return ControllerUtils.EDIT_CAMPAIGN;

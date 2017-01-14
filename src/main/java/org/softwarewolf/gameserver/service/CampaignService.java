@@ -91,13 +91,15 @@ public class CampaignService {
 		campaignDto.setIsOwner(isCampaignOwner(campaign));
 		campaignDto.setCampaignList(getCampaignList());
 		String folioId = campaign.getCampaignFolioId();
-		if (folioId != null) {
-			if (folio != null) {
-				folio = folioService.findOne(campaign.getCampaignFolioId());
-			}
-			campaignDto.setCampaignFolio(folio);
-		} else {
+		if (folioId != null && folio == null) {
+			folio = folioService.findOne(campaign.getCampaignFolioId());
+		}
+		if (folio == null) {
 			campaignDto.setCampaignFolio(new Folio());
+		} else {
+			campaignDto.setCampaignFolio(folio);
+			campaignDto.setFolioId(folio.getId());
+			campaignDto.setFolioTitle(folio.getTitle());
 		}
 	}
 	
@@ -151,9 +153,12 @@ public class CampaignService {
 		if (campaignFolio.getCampaignId() == null) {
 			campaignFolio.setCampaignId(campaignId);
 		}
-		if (campaignFolio.getTitle() == null) {
+		if (campaignDto.getFolioTitle() != null) {
+			campaignFolio.setTitle(campaignDto.getFolioTitle());
+		} else {
 			campaignFolio.setTitle(campaignDto.getCampaign().getName());
 		}
+		campaignFolio.setId(campaignDto.getFolioId());
 		Campaign campaign = campaignDto.getCampaign();
 		campaignFolio.setOwners(campaign.getOwnerList());
 		campaignFolio.setWriters(campaign.getGameMasterList());
@@ -191,7 +196,8 @@ public class CampaignService {
 		String userId = userService.getCurrentUserId();
 		List<Campaign> allCampaigns = campaignRepository.findAll();
 		List<CampaignUser> inCampaignList = campaignUserRepository.findAllByUserId(userId);
-		inCampaignList = inCampaignList.stream().filter(c -> !c.getPermission().equals("NO_ACCESS")).collect(Collectors.toList());
+		inCampaignList = inCampaignList.stream().filter(c -> !(c.getPermission().equals("NO_ACCESS") || c.getPermission().equals(null)))
+				.collect(Collectors.toList());
 
 		List<String> campaignIdList = new ArrayList<>();
 		for (CampaignUser player : inCampaignList) {
