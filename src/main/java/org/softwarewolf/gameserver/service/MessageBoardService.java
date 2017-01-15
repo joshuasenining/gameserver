@@ -12,14 +12,13 @@ import org.softwarewolf.gameserver.domain.MessageBoard;
 import org.softwarewolf.gameserver.domain.MessageBoardUser;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.EditMessageBoardDto;
+import org.softwarewolf.gameserver.domain.dto.MessageBoardDto;
 import org.softwarewolf.gameserver.repository.MessageBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -34,6 +33,7 @@ public class MessageBoardService implements Serializable {
 
 	public MessageBoard saveMessageBoard(EditMessageBoardDto editMessageBoardDto) throws Exception {
 		MessageBoard messageBoard = editMessageBoardDto.getMessageBoard();
+		messageBoard.setId(editMessageBoardDto.getSelectedMessageBoardId());
 		// Put the values for the use permissions from the dto into the messageBoard
 		usersFromDtoIntoMessageBoard(editMessageBoardDto);
 		validateMessageBoard(messageBoard);
@@ -65,6 +65,12 @@ public class MessageBoardService implements Serializable {
 		if (messageBoard.getName() == null || messageBoard.getName().isEmpty()) {
 			errorList = ControllerUtils.getI18nMessage("editMessageBoard.error.emptyTitle");
 		}
+		List<MessageBoard> allBoards = messageBoardRepository.findAll();
+		List<String> allBoardsNameList = allBoards.stream().map(m -> m.getName()).collect(Collectors.toList());
+		if (messageBoard.getId() == null && allBoardsNameList.contains(messageBoard.getName())) {
+			String message = ControllerUtils.getI18nMessage("messageBoard.error.duplicateName");
+			throw new RuntimeException(message);
+		}
 		if (messageBoard.getDescription() == null || messageBoard.getDescription().isEmpty()) {
 			if (errorList.length() > 0) {
 				errorList += "\n";
@@ -78,25 +84,49 @@ public class MessageBoardService implements Serializable {
 		return messageBoardRepository.findAll();
 	}
 	
-	public EditMessageBoardDto initMessageBoardDto(EditMessageBoardDto editMessageBoardDto) {
-		String messageBoardId = editMessageBoardDto.getMessageBoard().getId();
-		MessageBoard messageBoard = initMessageBoard(messageBoardId);
-		editMessageBoardDto.setIsOwner(Boolean.TRUE);
+	public EditMessageBoardDto initEditMessageBoardDto(String selectedMessageBoardId, EditMessageBoardDto editMessageBoardDto, boolean fromDb) {
+		MessageBoard messageBoard = null;
+		String userId = userService.getCurrentUserId();
+		if (selectedMessageBoardId != null) {
+			if (fromDb) {
+				messageBoard = messageBoardRepository.findOne(selectedMessageBoardId);
+			} else {
+				messageBoard = editMessageBoardDto.getMessageBoard();
+			}
+			List<String> allUsers = messageBoard.getOwnerList();
+			allUsers.addAll(messageBoard.getWriterList());
+			allUsers.addAll(messageBoard.getReaderList());
+			if (!allUsers.contains(userId)) {
+				String message = ControllerUtils.getI18nMessage("messageBoard.error.cantViewmessageBoard.error.cantView");
+				throw new RuntimeException(message);
+			}
+			editMessageBoardDto.setSelectedMessageBoardId(selectedMessageBoardId);
+			List<String> ownerIdList = messageBoard.getOwnerList();
+			if (ownerIdList.contains(userService.getCurrentUserId())) {
+				editMessageBoardDto.setIsOwner(Boolean.TRUE);
+			} else {
+				editMessageBoardDto.setIsOwner(Boolean.FALSE);
+			}
+		}
+		if (messageBoard == null) {
+			messageBoard = new MessageBoard();
+			editMessageBoardDto.setIsOwner(Boolean.TRUE);
+			messageBoard.addOwner(userId);
+		}
+		
 		editMessageBoardDto.setMessageBoard(messageBoard);
 		editMessageBoardDto.setUsers(getMessageBoardUsers(messageBoard));
-		String userId = userService.getCurrentUserId();
 		editMessageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
 		return editMessageBoardDto;
 	}
 
-	public EditMessageBoardDto initMessageBoardDto(String messageBoardId, EditMessageBoardDto editMessageBoardDto) {
-		MessageBoard messageBoard = initMessageBoard(messageBoardId);
-		editMessageBoardDto.setMessageBoard(messageBoard);
+	public MessageBoardDto initMessageBoardDto(String selectedMessageBoardId, MessageBoardDto messageBoardDto) {
+		messageBoardDto.setMessageBoardId(selectedMessageBoardId);
 		String userId = userService.getCurrentUserId();
-		editMessageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
-		
-		return initMessageBoardDto(editMessageBoardDto);
+		messageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
+		return messageBoardDto;
 	}
+	
 	private String getMessageBoardUsers(MessageBoard messageBoard) {
 		List<User> userList = userService.findAll();
 		List<MessageBoardUser> messageBoardUsers = new ArrayList<>();

@@ -14,7 +14,7 @@ public class MessageBoardUser implements Serializable, Comparable<Object> {
 	private static final long serialVersionUID = 1L;
 	@Id
 	private String id;
-	// Permission on the board (PERMISSION_OWNER, PERMISSION_GAMEMASTER, PERMISSION_PLAYER)
+	// Permission on the board (PERMISSION_OWNER, PERMISSION_READ_WRITE, PERMISSION_READ)
 	private String permission;
 	private String userId;
 	private String userName;

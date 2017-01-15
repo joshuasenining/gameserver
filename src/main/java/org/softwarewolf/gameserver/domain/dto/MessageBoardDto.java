@@ -3,12 +3,11 @@ package org.softwarewolf.gameserver.domain.dto;
 import java.util.List;
 
 import org.softwarewolf.gameserver.domain.ItemSelector;
-import org.softwarewolf.gameserver.domain.MessageBoard;
 import org.softwarewolf.gameserver.domain.MessageBoardUser;
 
-public class EditMessageBoardDto {
-	private MessageBoard messageBoard;
-	private String selectedMessageBoardId;
+public class MessageBoardDto {
+	private String messageBoardId;
+	private String messageBoardName;
 	private List<MessageBoardUser> userList;
 	private Boolean isOwner;
 	private Boolean isFirstBoard;
@@ -17,24 +16,22 @@ public class EditMessageBoardDto {
 	private String users;
 	private String forwardingUrl;
 	
-	public EditMessageBoardDto() {
-		messageBoard = new MessageBoard();
+	public MessageBoardDto() {
 	}
 	
-	public String getSelectedMessageBoardId() {
-		return selectedMessageBoardId;
+	public String getMessageBoardId() {
+		 return messageBoardId;
 	}
-	public void setSelectedMessageBoardId(String selectedMessageBoardId) {
-		this.selectedMessageBoardId = selectedMessageBoardId;
-	}
-	
-	public MessageBoard getMessageBoard() {
-		 return messageBoard;
-	}
-	public void setMessageBoard(MessageBoard messageBoard) {
-		this.messageBoard = messageBoard;
+	public void setMessageBoardId(String messageBoardId) {
+		this.messageBoardId = messageBoardId;
 	}
 
+	public String getMessageBoardName() {
+		 return messageBoardName;
+	}
+	public void setMessageBoardName(String messageBoardName) {
+		this.messageBoardName = messageBoardName;
+	}
 	
 	public List<MessageBoardUser> getUserList() {
 		return userList;

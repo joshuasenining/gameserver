@@ -86,8 +86,8 @@
 		        		<button type="button" class="btn btn-default" th:text="#{viewMessageBoard.selectMessageBoard}">Action</button>
 				        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
 				        <ul class="dropdown-menu">
-		        		    <li th:each="descriptor : *{messageBoardDescriptorList}" th:value="${descriptor.messageBoardId}">
-		            			<a th:href="@{/shared/selectMessageBoard/}+${descriptor.messageBoardId}" th:text="${descriptor.messageBoardName}">test</a>
+		        		    <li th:each="descriptor : *{messageBoardList}" th:value="${descriptor.id}">
+		            			<a th:href="@{/shared/selectMessageBoard/}+${descriptor.id}" th:text="${descriptor.name}">test</a>
 				           	</li>
 				        </ul>
 		    		</div>
@@ -101,10 +101,10 @@
 				<label class="input-margin" th:text="#{editMessageBoard.name}">Name</label>
 			</div>
 			<div class="col-md-8">
-				<input id="pageTitle" class="input-margin fullWidth" th:field="*{messageBoard.name}"></input>
+				<input id="pageTitle" class="input-margin fullWidth" th:field="*{messageBoardName}"></input>
 			</div>
 		</div>
-	
+	<!-- 
 		<div id="editorContainer" class="folio-margin">
 			<div class="grid-container">
 				<div class="grid-width-100">
@@ -118,7 +118,7 @@
 				<div id="viewContainer" class="hide folio-margin"></div>
 			</div>
 		</div>
-		
+		 -->
 		<br></br>
 		<div class="row">
 			<div class="col-md-1"></div>

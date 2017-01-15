@@ -207,11 +207,11 @@
 				<div class="dropdown">
 				    <!--Default buttons with dropdown menu-->
 				    <div class="btn-group">
-		        		<button type="button" class="btn btn-default" th:text="#{editMessageBoard.selectMessageBoard}">Action</button>
+		        		<button type="button" class="btn btn-default" th:text="#{messageBoard.select}">Action</button>
 				        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
 				        <ul class="dropdown-menu">
-		        		    <li th:each="descriptor : *{messageBoardDescriptorList}" th:value="${descriptor.messageBoardId}">
-		            			<a th:href="@{/admin/editMessageBoard/}+${descriptor.messageBoardId}" th:text="${descriptor.messageBoardName}">test</a>
+		        		    <li th:each="descriptor : *{messageBoardList}" th:value="${descriptor.id}">
+		            			<a th:href="@{/admin/viewMessageBoard/}+${descriptor.id}" th:text="${descriptor.name}">test</a>
 				           	</li>
 				        </ul>
 		    		</div>

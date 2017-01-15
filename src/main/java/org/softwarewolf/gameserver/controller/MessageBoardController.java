@@ -11,6 +11,7 @@ import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
 import org.softwarewolf.gameserver.domain.MessageBoard;
 import org.softwarewolf.gameserver.domain.dto.EditMessageBoardDto;
+import org.softwarewolf.gameserver.domain.dto.MessageBoardDto;
 import org.softwarewolf.gameserver.service.MessageBoardService;
 
 @Controller
@@ -21,7 +22,8 @@ public class MessageBoardController {
 	@RequestMapping(value = "/admin/editMessageBoard", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
 	public String editMessageBoard(EditMessageBoardDto editMessageBoardDto, final FeFeedback feFeedback) {
-		editMessageBoardDto = messageBoardService.initMessageBoardDto(editMessageBoardDto);
+		boolean fromDb = true;
+		editMessageBoardDto = messageBoardService.initEditMessageBoardDto(null, editMessageBoardDto, fromDb);
 		editMessageBoardDto.setForwardingUrl(ControllerUtils.MESSAGE_BOARD);
 		String message = ControllerUtils.getI18nMessage("editMessageBoard.status.creatingNew");
 		feFeedback.setUserStatus(message);
@@ -32,7 +34,8 @@ public class MessageBoardController {
 	@Secured({"ADMIN"})
 	public String editMessageBoardWithId(final EditMessageBoardDto editMessageBoardDto, 
 			@PathVariable String messageBoardId, final FeFeedback feFeedback) {
-		messageBoardService.initMessageBoardDto(messageBoardId, editMessageBoardDto);
+		boolean fromDb = true;
+		messageBoardService.initEditMessageBoardDto(messageBoardId, editMessageBoardDto, fromDb);
 		editMessageBoardDto.setForwardingUrl(ControllerUtils.EDIT_MESSAGE_BOARD);
 		
 		String message = ControllerUtils.getI18nMessage("editMessageBoard.status.editing");
@@ -41,19 +44,21 @@ public class MessageBoardController {
 	}
 	
 	@RequestMapping(value = "/admin/editMessageBoard", method = RequestMethod.POST)
-	@Secured({"ADMIN"})
+	@Secured({"ADMIN","USER"})
 	public String postEditPage(EditMessageBoardDto editMessageBoardDto, 
 			final FeFeedback feFeedback) {
 		String editingMsg = ControllerUtils.getI18nMessage("editMessageBoard.status.editing");
 		MessageBoard messageBoard = null;
 		try {
 			messageBoard = messageBoardService.saveMessageBoard(editMessageBoardDto);
-			messageBoardService.initMessageBoardDto(messageBoard.getId(), editMessageBoardDto);
+			boolean fromDb = false;
+//			messageBoardService.initEditMessageBoardDto(messageBoard.getId(), editMessageBoardDto, fromDb);
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
 			feFeedback.setUserStatus(editingMsg + " " +(messageBoard == null ? "" : messageBoard.getName()));
-			editMessageBoardDto = messageBoardService.initMessageBoardDto(editMessageBoardDto);
+			boolean fromDb = true;
+			editMessageBoardDto = messageBoardService.initEditMessageBoardDto(editMessageBoardDto.getMessageBoard().getId(), editMessageBoardDto, fromDb);
 			return ControllerUtils.EDIT_MESSAGE_BOARD;
 		}
 		String modified = ControllerUtils.getI18nMessage("editMessageBoard.modified");
@@ -63,35 +68,32 @@ public class MessageBoardController {
 	}	
 	
 	@RequestMapping(value = "/shared/viewMessageBoard", method = RequestMethod.GET)
-	@Secured({"ADMIN"})
-	public String viewMessageBoard(EditMessageBoardDto editMessageBoardDto, 
+	@Secured({"ADMIN","USER"})
+	public String viewMessageBoard(MessageBoardDto messageBoardDto, 
 			final FeFeedback feFeedback) {
-		String editingMsg = ControllerUtils.getI18nMessage("editMessageBoard.status.editing");
-		MessageBoard messageBoard = null;
 		try {
-			messageBoard = messageBoardService.saveMessageBoard(editMessageBoardDto);
-			messageBoardService.initMessageBoardDto(messageBoard.getId(), editMessageBoardDto);
+			messageBoardService.initMessageBoardDto(null, messageBoardDto);
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
-			feFeedback.setUserStatus(editingMsg + " " +(messageBoard == null ? "" : messageBoard.getName()));
-			editMessageBoardDto = messageBoardService.initMessageBoardDto(editMessageBoardDto);
+			String editingMsg = ControllerUtils.getI18nMessage("messageBoard.select");
+			feFeedback.setUserStatus(editingMsg);
 			return ControllerUtils.VIEW_MESSAGE_BOARD;
 		}
-		String pick = ControllerUtils.getI18nMessage("messageboard.status.pick");
+		String pick = ControllerUtils.getI18nMessage("messageBoard.status.pick");
 		feFeedback.setUserStatus(pick);
 		return ControllerUtils.VIEW_MESSAGE_BOARD;
 	}
 	
 	@RequestMapping(value = "/shared/viewMessageBoard/{messageBoardId}", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
-	public String selectMessageBoard(final EditMessageBoardDto editMessageBoardDto, 
+	public String selectMessageBoard(MessageBoardDto messageBoardDto, 
 			@PathVariable String messageBoardId, final FeFeedback feFeedback) {
-		messageBoardService.initMessageBoardDto(messageBoardId, editMessageBoardDto);
-		editMessageBoardDto.setForwardingUrl(ControllerUtils.VIEW_MESSAGE_BOARD);
+		messageBoardService.initMessageBoardDto(messageBoardId, messageBoardDto);
+		messageBoardDto.setForwardingUrl(ControllerUtils.VIEW_MESSAGE_BOARD);
 		
 		String message = ControllerUtils.getI18nMessage("editMessageBoard.status.editing");
-		feFeedback.setUserStatus(message + " '" + editMessageBoardDto.getMessageBoard().getName() + "'");
+		feFeedback.setUserStatus(message + " '" + messageBoardDto.getMessageBoardName() + "'");
 		return ControllerUtils.VIEW_MESSAGE_BOARD;
 	}
 }
