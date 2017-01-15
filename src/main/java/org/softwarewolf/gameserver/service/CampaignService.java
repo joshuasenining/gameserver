@@ -47,13 +47,6 @@ public class CampaignService {
 		Folio folio = null;
 		if (campaignId != null) {
 			campaign = campaignRepository.findOne(campaignId);
-			// OK, this is infuriating. For some reason while the campaignFolioId is being stored
-			// correctly, it isn't being returned in the query result so I'm doing this for the
-			// time being.
-			if (campaign.getCampaignFolioId() == null) {
-				folio = folioService.findOneByCampaignIdAndTitle(campaignId, campaign.getName());
-				campaign.setCampaignFolioId(folio.getId());
-			}
 		} else {
 			campaign = new Campaign();
 		}

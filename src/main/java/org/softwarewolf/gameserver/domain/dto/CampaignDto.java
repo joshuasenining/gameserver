@@ -8,8 +8,6 @@ import org.softwarewolf.gameserver.domain.Folio;
 
 public class CampaignDto {
 	public String users;
-	public String folioTitle;
-	public String folioId;
 	public Folio campaignFolio;
 	public Campaign campaign;
 	public Boolean isOwner;
@@ -27,17 +25,17 @@ public class CampaignDto {
 	}
 	
 	public String getFolioTitle() {
-		return folioTitle;
+		return campaignFolio.getTitle();
 	}
 	public void setFolioTitle(String folioTitle) {
-		this.folioTitle = folioTitle;
+		this.campaignFolio.setTitle(folioTitle);
 	}
 	
 	public String getFolioId() {
-		return folioId;
+		return campaignFolio.getId();
 	}
 	public void setFolioId(String folioId) {
-		this.folioId = folioId;
+		this.campaignFolio.setId(folioId);
 	}
 	
 	public Campaign getCampaign() {

@@ -51,8 +51,6 @@ public class MessageBoardController {
 		MessageBoard messageBoard = null;
 		try {
 			messageBoard = messageBoardService.saveMessageBoard(editMessageBoardDto);
-			boolean fromDb = false;
-//			messageBoardService.initEditMessageBoardDto(messageBoard.getId(), editMessageBoardDto, fromDb);
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
