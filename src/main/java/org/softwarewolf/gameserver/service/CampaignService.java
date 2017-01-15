@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.Campaign;
-import org.softwarewolf.gameserver.domain.CampaignSelector;
+import org.softwarewolf.gameserver.domain.ItemSelector;
 import org.softwarewolf.gameserver.domain.CampaignUser;
 import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.SimpleTag;
@@ -373,9 +373,9 @@ public class CampaignService {
 		return campaignName;
 	}
 	
-	private List<CampaignSelector> getCampaignList() {
+	private List<ItemSelector> getCampaignList() {
 		List<Campaign> campaignList = campaignRepository.findAll();
-		List<CampaignSelector> selectorList = campaignList.stream().map(c -> c.getCampaignSelector()).collect(Collectors.toList());
+		List<ItemSelector> selectorList = campaignList.stream().map(c -> c.getItemSelector()).collect(Collectors.toList());
 
 		return selectorList;
 	}

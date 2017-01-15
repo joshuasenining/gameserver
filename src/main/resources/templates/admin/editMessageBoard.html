@@ -183,7 +183,7 @@
 		</div>
 	</div>
  
-	<form id="editMessageBoardForm" th:object="${messageBoardDto}" action="#" th:action="@{/admin/editMessageBoard}" method="post">
+	<form id="editMessageBoardForm" th:object="${editMessageBoardDto}" action="#" th:action="@{/admin/editMessageBoard}" method="post">
 		<input type="hidden" id="users" th:field="*{users}"></input>
 		<input type="hidden" id="isOwner" th:field="*{isOwner}"></input>
 		<input type="hidden" id="isFirstBoard" th:field="*{isFirstBoard}"></input>
@@ -195,7 +195,7 @@
 				<hr></hr>
 			</div>
 		</div>
-
+		
 		<div class="row">
 			<div class="row">
 				<div class="col-md-1"></div>
@@ -215,8 +215,8 @@
 		        		<button type="button" class="btn btn-default" th:text="#{editMessageBoard.selectMessageBoard}">Action</button>
 				        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
 				        <ul class="dropdown-menu">
-		        		    <li th:each="descriptor : *{messageBoardDescriptorList}" th:value="${descriptor.messageBoardId}">
-		            			<a th:href="@{/admin/editMessageBoard/}+${descriptor.messageBoardId}" th:text="${descriptor.messageBoardName}">test</a>
+		        		    <li th:each="descriptor : *{messageBoardList}" th:value="${descriptor.id}">
+		            			<a th:href="@{/admin/editMessageBoard/}+${descriptor.id}" th:text="${descriptor.name}">test</a>
 				           	</li>
 				        </ul>
 		    		</div>

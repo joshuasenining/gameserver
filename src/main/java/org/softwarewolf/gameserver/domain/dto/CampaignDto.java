@@ -3,7 +3,7 @@ package org.softwarewolf.gameserver.domain.dto;
 import java.util.List;
 
 import org.softwarewolf.gameserver.domain.Campaign;
-import org.softwarewolf.gameserver.domain.CampaignSelector;
+import org.softwarewolf.gameserver.domain.ItemSelector;
 import org.softwarewolf.gameserver.domain.Folio;
 
 public class CampaignDto {
@@ -13,7 +13,7 @@ public class CampaignDto {
 	public Folio campaignFolio;
 	public Campaign campaign;
 	public Boolean isOwner;
-	public List<CampaignSelector> campaignList;
+	public List<ItemSelector> campaignList;
 	
 	public CampaignDto() {
 		campaign = new Campaign();
@@ -61,10 +61,10 @@ public class CampaignDto {
 		this.isOwner = isOwner;
 	}
 	
-	public List<CampaignSelector> getCampaignList() {
+	public List<ItemSelector> getCampaignList() {
 		return campaignList;
 	}
-	public void setCampaignList(List<CampaignSelector> campaignList) {
+	public void setCampaignList(List<ItemSelector> campaignList) {
 		this.campaignList = campaignList;
 	}
 }

@@ -178,7 +178,7 @@ public class Campaign implements Serializable {
 	}
 
 	@JsonIgnore
-	public CampaignSelector getCampaignSelector() {
-		return new CampaignSelector(name, id);
+	public ItemSelector getItemSelector() {
+		return new ItemSelector(name, id);
 	}
 }

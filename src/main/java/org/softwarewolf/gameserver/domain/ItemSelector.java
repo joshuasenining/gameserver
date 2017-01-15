@@ -1,10 +1,10 @@
 package org.softwarewolf.gameserver.domain;
 
-public class CampaignSelector {
+public class ItemSelector {
 	String name;
 	String id;
 	
-	public CampaignSelector(String name, String id) {
+	public ItemSelector(String name, String id) {
 		this.name = name;
 		this.id = id;
 	}

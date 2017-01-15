@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
+import org.softwarewolf.gameserver.domain.ItemSelector;
 import org.softwarewolf.gameserver.domain.MessageBoard;
 import org.softwarewolf.gameserver.domain.MessageBoardUser;
 import org.softwarewolf.gameserver.domain.User;
-import org.softwarewolf.gameserver.domain.dto.MessageBoardDescriptor;
-import org.softwarewolf.gameserver.domain.dto.MessageBoardDto;
+import org.softwarewolf.gameserver.domain.dto.EditMessageBoardDto;
 import org.softwarewolf.gameserver.repository.MessageBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,10 +32,10 @@ public class MessageBoardService implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	public MessageBoard saveMessageBoard(MessageBoardDto messageBoardDto) throws Exception {
-		MessageBoard messageBoard = messageBoardDto.getMessageBoard();
+	public MessageBoard saveMessageBoard(EditMessageBoardDto editMessageBoardDto) throws Exception {
+		MessageBoard messageBoard = editMessageBoardDto.getMessageBoard();
 		// Put the values for the use permissions from the dto into the messageBoard
-		usersFromDtoIntoMessageBoard(messageBoardDto);
+		usersFromDtoIntoMessageBoard(editMessageBoardDto);
 		validateMessageBoard(messageBoard);
 				
 		return save(messageBoard);
@@ -78,22 +78,24 @@ public class MessageBoardService implements Serializable {
 		return messageBoardRepository.findAll();
 	}
 	
-	public MessageBoardDto initMessageBoardDto(MessageBoardDto messageBoardDto) {
-		String messageBoardId = messageBoardDto.getMessageBoard().getId();
+	public EditMessageBoardDto initMessageBoardDto(EditMessageBoardDto editMessageBoardDto) {
+		String messageBoardId = editMessageBoardDto.getMessageBoard().getId();
 		MessageBoard messageBoard = initMessageBoard(messageBoardId);
-		messageBoardDto.setIsOwner(Boolean.TRUE);
-		messageBoardDto.setMessageBoard(messageBoard);
-		messageBoardDto.setUsers(getMessageBoardUsers(messageBoard));
+		editMessageBoardDto.setIsOwner(Boolean.TRUE);
+		editMessageBoardDto.setMessageBoard(messageBoard);
+		editMessageBoardDto.setUsers(getMessageBoardUsers(messageBoard));
 		String userId = userService.getCurrentUserId();
-		messageBoardDto.setMessageBoardDescriptorList(this.getAllViewableMessageBoardDescritptorList(userId));
-		return messageBoardDto;
+		editMessageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
+		return editMessageBoardDto;
 	}
 
-	public MessageBoardDto initMessageBoardDto(String messageBoardId, MessageBoardDto messageBoardDto) {
+	public EditMessageBoardDto initMessageBoardDto(String messageBoardId, EditMessageBoardDto editMessageBoardDto) {
 		MessageBoard messageBoard = initMessageBoard(messageBoardId);
-		messageBoardDto.setMessageBoard(messageBoard);
+		editMessageBoardDto.setMessageBoard(messageBoard);
+		String userId = userService.getCurrentUserId();
+		editMessageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
 		
-		return initMessageBoardDto(messageBoardDto);
+		return initMessageBoardDto(editMessageBoardDto);
 	}
 	private String getMessageBoardUsers(MessageBoard messageBoard) {
 		List<User> userList = userService.findAll();
@@ -136,10 +138,10 @@ public class MessageBoardService implements Serializable {
 		return messageBoard;
 	}
 
-	// This method takes the values for user permissions from the MessageBoardDto and
+	// This method takes the values for user permissions from the EditMessageBoardDto and
 	// puts them into the MessageBoard
-	private void usersFromDtoIntoMessageBoard(MessageBoardDto messageBoardDto) {
-		String usersString = messageBoardDto.getUsers();
+	private void usersFromDtoIntoMessageBoard(EditMessageBoardDto editMessageBoardDto) {
+		String usersString = editMessageBoardDto.getUsers();
 		ObjectMapper mapper = new ObjectMapper();
 		List<MessageBoardUser> messageBoardUserList = null;
 		try {
@@ -147,11 +149,11 @@ public class MessageBoardService implements Serializable {
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
 		}
-		MessageBoard messageBoard = messageBoardDto.getMessageBoard();
+		MessageBoard messageBoard = editMessageBoardDto.getMessageBoard();
 		messageBoard.setOwnerList(null);
 		messageBoard.setWriterList(null);
 		messageBoard.setReaderList(null);
-		// put values from MessageBoardDto into messageBoard
+		// put values from EditMessageBoardDto into messageBoard
 		if (messageBoardUserList != null) {
 			for (MessageBoardUser mbu : messageBoardUserList) {
 				String id = mbu.getUserId();
@@ -175,15 +177,12 @@ public class MessageBoardService implements Serializable {
 		messageBoardRepository.deleteAll();
 	}
 	
-	public List<MessageBoardDescriptor> getAllViewableMessageBoardDescritptorList(String userId) {
+	public List<ItemSelector> getAllViewableMessageBoards(String userId) {
 		List<MessageBoard> allMessageBoards = messageBoardRepository.findAll();
-		List<MessageBoard> filteredBoards = allMessageBoards.stream().filter(m -> m.isOwner(userId)).collect(Collectors.toList());
-		List<MessageBoardDescriptor> descriptorList = new ArrayList<>();
-		for (MessageBoard board : filteredBoards) {
-			descriptorList.add(board.createDescriptor());
-		}
+		List<ItemSelector> filteredBoards = allMessageBoards.stream().filter(m -> m.isOwner(userId))
+				.map(m -> m.getItemSelector()).collect(Collectors.toList());
 		
-		return descriptorList;
+		return filteredBoards;
 	}
 	
 	public List<MessageBoard> getAllEditableMessageBoards(String userId) {
@@ -194,24 +193,6 @@ public class MessageBoardService implements Serializable {
 	
 	public MessageBoard findOne(String id) {
 		return messageBoardRepository.findOne(id);
-	}
-	
-	private String convertMessageBoardDescriptorListToString(List<MessageBoardDescriptor> messageBoardDescriptorList) {
-		String listAsString = "";
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			listAsString = mapper.writeValueAsString(messageBoardDescriptorList);
-		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return listAsString;
 	}
 	
 	public void deleteByName(String name) {

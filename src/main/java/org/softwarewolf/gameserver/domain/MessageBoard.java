@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.softwarewolf.gameserver.domain.dto.MessageBoardDescriptor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Document
 public class MessageBoard implements Serializable {
@@ -88,10 +89,6 @@ public class MessageBoard implements Serializable {
 		this.description = description;
 	}
 	
-	public MessageBoardDescriptor createDescriptor() {
-		return new MessageBoardDescriptor(name, id);
-	}
-	
 	public boolean isOwner(String userId) {
 		return getOwnerList().contains(userId);
 	}
@@ -99,6 +96,11 @@ public class MessageBoard implements Serializable {
 	public boolean canView(String userId) {
 		return (getOwnerList().contains(userId) || getWriterList().contains(userId) || 
 				getReaderList().contains(userId));
-	}	
+	}
+	
+	@JsonIgnore
+	public ItemSelector getItemSelector() {
+		return new ItemSelector(name, id);
+	}
 }
 

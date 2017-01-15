@@ -2,20 +2,21 @@ package org.softwarewolf.gameserver.domain.dto;
 
 import java.util.List;
 
+import org.softwarewolf.gameserver.domain.ItemSelector;
 import org.softwarewolf.gameserver.domain.MessageBoard;
 import org.softwarewolf.gameserver.domain.MessageBoardUser;
 
-public class MessageBoardDto {
+public class EditMessageBoardDto {
 	private MessageBoard messageBoard;
-	private List<MessageBoardDescriptor> messageBoardDescriptorList;
 	private List<MessageBoardUser> userList;
 	private Boolean isOwner;
 	private Boolean isFirstBoard;
+	public List<ItemSelector> messageBoardList;
 
 	private String users;
 	private String forwardingUrl;
 	
-	public MessageBoardDto() {
+	public EditMessageBoardDto() {
 		messageBoard = new MessageBoard();
 	}
 	
@@ -25,18 +26,7 @@ public class MessageBoardDto {
 	public void setMessageBoard(MessageBoard messageBoard) {
 		this.messageBoard = messageBoard;
 	}
-	
-	public List<MessageBoardDescriptor> getMessageBoardDescriptorList() {
-		return messageBoardDescriptorList;
-	}
-	public void setMessageBoardDescriptorList(List<MessageBoardDescriptor> messageBoardDescriptorList) {
-		this.messageBoardDescriptorList = messageBoardDescriptorList;
-		if (messageBoardDescriptorList == null || messageBoardDescriptorList.isEmpty()) {
-			setIsFirstBoard(Boolean.TRUE);
-		} else {
-			setIsFirstBoard(Boolean.FALSE);
-		}
-	}
+
 	
 	public List<MessageBoardUser> getUserList() {
 		return userList;
@@ -71,5 +61,12 @@ public class MessageBoardDto {
 	}
 	public void setIsFirstBoard(Boolean isFirstBoard) {
 		this.isFirstBoard = isFirstBoard;
+	}
+	
+	public List<ItemSelector> getMessageBoardList() {
+		return messageBoardList;
+	}
+	public void setMessageBoardList(List<ItemSelector> messageBoardList) {
+		this.messageBoardList = messageBoardList;
 	}
 }

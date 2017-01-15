@@ -1,4 +1,4 @@
-package org.softwarewolf.gameserver.controller.gamemaster;
+package org.softwarewolf.gameserver.controller;
 
 import javax.servlet.http.HttpSession;
 
