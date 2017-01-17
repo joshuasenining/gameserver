@@ -240,8 +240,8 @@ public class CampaignServiceTest {
 	/**
 	 * Conditions:
 	 * Two campaigns in list
-	 * One owner
-	 * Two players
+	 * One owner (firstUser)
+	 * Two players (secondUser, thirdUser)
 	 */
 	@Test
 	public void testInitFirstCampaignDto() {
@@ -270,9 +270,9 @@ public class CampaignServiceTest {
 	/**
 	 * Conditions:
 	 * Two campaigns in list
-	 * One owner
-	 * One GM
-	 * Two players
+	 * One owner (fourthUser)
+	 * One GM (firstUser)
+	 * Two players (secondUser, thirdUser)
 	 */
 	@Test
 	public void testInitSecondCampaignDto() {
