@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.DeleteableRole;
 import org.softwarewolf.gameserver.domain.User;
+import org.softwarewolf.gameserver.domain.dto.MyAccountDto;
 import org.softwarewolf.gameserver.domain.dto.ResetPasswordDto;
 import org.softwarewolf.gameserver.domain.dto.RoleLists;
 import org.softwarewolf.gameserver.domain.dto.RolesData;
@@ -262,14 +263,49 @@ public class UserService {
 	    gameMailService.adminResetPassword(user, tempPassword);
 	}
 	
-	public void changeEmail(String email) {
+	public void initMyAccountDto(MyAccountDto myAccountDto) {
 		User user = getCurrentUser();
-		Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-		Matcher matcher = pattern.matcher(email);
-		if(matcher.matches()) {
-			user.setEmail(email);
-		} else {
-			throw new RuntimeException("Invaild email.");
+		myAccountDto.setFirstName(user.getFirstName());
+		myAccountDto.setLastName(user.getLastName());
+		myAccountDto.setEmail(user.getEmail());
+	}
+	
+	public void editMyAccount(MyAccountDto myAccountDto) {
+		validateMyAccountInfo(myAccountDto);
+		User user = getCurrentUser();
+		user.setFirstName(myAccountDto.getFirstName());
+		user.setLastName(myAccountDto.getLastName());
+		user.setEmail(myAccountDto.getEmail());
+		userRepository.save(user);
+	}
+
+	private void validateMyAccountInfo(MyAccountDto myAccountDto) {
+		String nameRegex = "^[\\p{L} .'-]+$";
+		Pattern namePattern = Pattern.compile(nameRegex);
+		Matcher firstNameMatcher = namePattern.matcher(myAccountDto.getFirstName());
+		
+		StringBuilder errors = new StringBuilder();
+		if (!firstNameMatcher.matches()) {
+			String message = ControllerUtils.getI18nMessage("myAccount.error.invalidFirstName");
+			errors.append(message).append(" ");
+		}
+		
+		Matcher lastNameMatcher = namePattern.matcher(myAccountDto.getLastName());
+		if (!lastNameMatcher.matches()) {
+			String message = ControllerUtils.getI18nMessage("myAccount.error.invalidLastName");
+			errors.append(message).append(" ");			
+		}
+		
+		String email = myAccountDto.getEmail();
+		Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
+		Matcher emailMatcher = emailPattern.matcher(email);
+		if(!emailMatcher.matches()) {
+			String message = ControllerUtils.getI18nMessage("myAccount.error.invalidEmail");
+			errors.append(message);
+		}
+		
+		if (errors.length() > 0) {
+			throw new RuntimeException(errors.toString());
 		}
 	}
 	

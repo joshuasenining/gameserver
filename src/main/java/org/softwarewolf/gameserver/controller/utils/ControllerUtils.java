@@ -24,12 +24,12 @@ public class ControllerUtils {
 	public static final String CAMPAIGN_HOME = "/gamemaster/campaignHome";
 	public static final String CREATE_ACCOUNT = "/public/createAccount";
 	public static final String CREATE_ROLE = "/admin/createRole";
-	public static final String CHANGE_EMAIL = "/shared/changeEmail";
 	public static final String DELETE_CAMPAIGN = "/admin/deleteCampaign";
 	public static final String DELETE_ROLE = "/admin/deleteRole";
 	public static final String EDIT_CAMPAIGN = "/gamemaster/editCampaign";
 	public static final String EDIT_FOLIO = "/shared/editFolio";
 	public static final String EDIT_MESSAGE_BOARD = "/admin/editMessageBoard";
+	public static final String EDIT_MY_ACCOUNT = "/shared/myAccount";
 	public static final String EMAIL_SETTINGS = "/admin/emailSettings";
 	public static final String EXPORT_CAMPAIGN = "/admin/exportCampaign";
 	public static final String GET_FOLIO = "/shared/getFolio";

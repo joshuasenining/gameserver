@@ -25,6 +25,7 @@ public class User implements UserDetails, Serializable {
 	private String lastName;
 	private String password;
 	private String email;
+	// Not currently used
 	private Locale locale;
 	@JsonIgnore
 	private List<GrantedAuthority> authorities;

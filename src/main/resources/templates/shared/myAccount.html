@@ -17,7 +17,7 @@
     <script type="application/javascript" src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.js}"></script>
 	<script type="application/javascript" src="https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js" th:src="@{/webjars/jquery-ui/1.11.4/jquery-ui.min.js}"></script>
 
-	<title th:text="#{changeEmail.title}">Title</title>
+	<title th:text="#{myAccount.title}">Title</title>
 
 <script th:inline="javascript">
 	$(document).ready(function() {
@@ -32,7 +32,7 @@
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-11">
-			<h1 th:text="#{changeEmail.title}">Update</h1>
+			<h1 th:text="#{myAccount.title}"></h1>
 		</div>
 	</div>
 	
@@ -49,11 +49,31 @@
 		</div>
 	</div>
 	
-	<form id="changeEmailForm" th:object="${changeEmailDto}" action="#" th:action="@{/shared/changeEmail}" method="post">
+	<form id="editMyAccountForm" th:object="${myAccountDto}" action="#" th:action="@{/shared/myAccount}" method="post">
 		<div class="row">		        	
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
-				<label class="input-margin" th:text="#{changeEmail.email}">Pass</label>
+				<label class="input-margin" th:text="#{myAccount.firstName}"></label>
+			</div>
+			<div class="col-md-9">
+				<input id="email" class="input-margin" th:field="*{firstName}" ></input>
+			</div>
+		</div>
+
+		<div class="row">		        	
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="input-margin" th:text="#{myAccount.lastName}"></label>
+			</div>
+			<div class="col-md-9">
+				<input id="email" class="input-margin" th:field="*{lastName}" ></input>
+			</div>
+		</div>
+				
+		<div class="row">		        	
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="input-margin" th:text="#{myAccount.email}"></label>
 			</div>
 			<div class="col-md-9">
 				<input id="email" class="input-margin" th:field="*{email}" ></input>

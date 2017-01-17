@@ -2,7 +2,7 @@ package org.softwarewolf.gameserver.controller;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.FeFeedback;
-import org.softwarewolf.gameserver.domain.dto.ChangeEmailDto;
+import org.softwarewolf.gameserver.domain.dto.MyAccountDto;
 import org.softwarewolf.gameserver.domain.dto.ResetPasswordDto;
 import org.softwarewolf.gameserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,25 +55,25 @@ public class UserController {
 		return ControllerUtils.RESET_PASSWORD;
 	}
 	
-	@RequestMapping(value = "/changeEmail", method = RequestMethod.GET)
+	@RequestMapping(value = "/myAccount", method = RequestMethod.GET)
 	@Secured({"USER","GAMEMASTER","ADMIN"})
-	public String changeEmail(ChangeEmailDto changeEmailDto, FeFeedback feFeedback) {
-		changeEmailDto.setEmail(userService.getCurrentUserEmail());
-		return ControllerUtils.CHANGE_EMAIL;
+	public String editMyAccount(MyAccountDto myAccountDto, FeFeedback feFeedback) {
+		userService.initMyAccountDto(myAccountDto);
+		return ControllerUtils.EDIT_MY_ACCOUNT;
 	}
 	
-	@RequestMapping(value = "/changeEmail", method = RequestMethod.POST)
+	@RequestMapping(value = "/myAccount", method = RequestMethod.POST)
 	@Secured({"USER","GAMEMASTER","ADMIN"})
-	public String postChangeEmail(ChangeEmailDto changeEmailDto, FeFeedback feFeedback) {
+	public String postMyAccount(MyAccountDto myAccountDto, FeFeedback feFeedback) {
 		try {
-			userService.changeEmail(changeEmailDto.getEmail());
+			userService.editMyAccount(myAccountDto);
 		} catch (Exception e) {
 			feFeedback.setError(e.getMessage());
-			return ControllerUtils.CHANGE_EMAIL;
+			return ControllerUtils.EDIT_MY_ACCOUNT;
 		}
 		
-		String message = ControllerUtils.getI18nMessage("myAccount.changeEmail.success");
+		String message = ControllerUtils.getI18nMessage("myAccount.success");
 		feFeedback.setInfo(message);
-		return ControllerUtils.CHANGE_EMAIL;
+		return ControllerUtils.EDIT_MY_ACCOUNT;
 	}
 }
