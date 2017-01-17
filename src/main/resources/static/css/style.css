@@ -229,6 +229,22 @@ hr {
 	cursor: pointer;	
 }
 
+.permission {
+	min-width: 113px;	
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 85px;
+    overflow-x: hidden;
+}
+
+.scrollable-menu-long {
+    height: auto;
+    max-height: 170px;
+    overflow-x: hidden;
+}
+
 #selectable .ui-selecting {
 	background: #FECA40; 
 }
@@ -251,6 +267,12 @@ hr {
 	height: 20px; 
 	padding-left: 3px;
 	line-height: 14px;
+}
+
+.small-spacer {
+	width: 5px;
+	height: auto;
+	display: inline-block;	
 }
 
 .starter-template {

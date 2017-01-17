@@ -87,7 +87,7 @@
 				        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
 				        <ul class="dropdown-menu">
 		        		    <li th:each="descriptor : *{messageBoardList}" th:value="${descriptor.id}">
-		            			<a th:href="@{/shared/selectMessageBoard/}+${descriptor.id}" th:text="${descriptor.name}">test</a>
+		            			<a th:href="@{/shared/viewMessageBoard/}+${descriptor.id}" th:text="${descriptor.name}">test</a>
 				           	</li>
 				        </ul>
 		    		</div>

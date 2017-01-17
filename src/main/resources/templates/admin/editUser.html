@@ -174,7 +174,7 @@
 				    <div class="btn-group">
 		        		<button type="button" class="btn btn-default" th:text="#{editUser.selectUser}">Action</button>
 				        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
-				        <ul class="dropdown-menu">
+				        <ul class="dropdown-menu scrollable-menu-long">
 		        		    <li th:each="user : *{userList}" th:value="${user.id}">
 		            			<a th:href="@{/admin/getUserData(userId=${user.id})}" th:text="${user.displayName}">test</a>
 				           	</li>
