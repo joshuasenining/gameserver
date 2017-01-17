@@ -84,9 +84,9 @@ public class MessageBoardController {
 	}
 	
 	@RequestMapping(value = "/shared/viewMessageBoard/{messageBoardId}", method = RequestMethod.GET)
-	@Secured({"ADMIN"})
-	public String selectMessageBoard(MessageBoardDto messageBoardDto, 
-			@PathVariable String messageBoardId, final FeFeedback feFeedback) {
+	@Secured({"ADMIN", "GAMEMASTER", "USER"})
+	public String selectMessage(MessageBoardDto messageBoardDto, 
+			@PathVariable String messageBoardId, FeFeedback feFeedback) {
 		messageBoardService.initMessageBoardDto(messageBoardId, messageBoardDto);
 		messageBoardDto.setForwardingUrl(ControllerUtils.VIEW_MESSAGE_BOARD);
 		
@@ -94,4 +94,16 @@ public class MessageBoardController {
 		feFeedback.setUserStatus(message + " '" + messageBoardDto.getMessageBoardName() + "'");
 		return ControllerUtils.VIEW_MESSAGE_BOARD;
 	}
+	
+	
+	@RequestMapping(value = "/shared/postToMessageBoard", method = RequestMethod.POST)
+	@Secured({"ADMIN", "GAMEMASTER", "USER"})
+	public String postMessage(MessageBoardDto messageBoardDto, FeFeedback feFeedback) {
+		messageBoardService.initMessageBoardDto(messageBoardDto.getMessageBoardId(), messageBoardDto);
+		messageBoardDto.setForwardingUrl(ControllerUtils.VIEW_MESSAGE_BOARD);
+		
+		String message = ControllerUtils.getI18nMessage("messageBoard.status.success");
+		feFeedback.setUserStatus(message);
+		return ControllerUtils.VIEW_MESSAGE_BOARD;
+	}	
 }

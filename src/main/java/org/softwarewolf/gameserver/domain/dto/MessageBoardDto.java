@@ -8,6 +8,8 @@ import org.softwarewolf.gameserver.domain.MessageBoardUser;
 public class MessageBoardDto {
 	private String messageBoardId;
 	private String messageBoardName;
+	private String newMessageSubject;
+	private String newMessageContent;
 	private List<MessageBoardUser> userList;
 	private Boolean isOwner;
 	private Boolean isFirstBoard;
@@ -31,6 +33,20 @@ public class MessageBoardDto {
 	}
 	public void setMessageBoardName(String messageBoardName) {
 		this.messageBoardName = messageBoardName;
+	}
+	
+	public String getNewMessageSubject() {
+		return newMessageSubject;
+	}
+	public void setNewMessageSubject(String newMessageSubject) {
+		this.newMessageSubject = newMessageSubject;
+	}
+	
+	public String getNewMessageContent() {
+		return newMessageContent;
+	}
+	public void setNewMessageContent(String newMessageContent) {
+		this.newMessageContent = newMessageContent;
 	}
 	
 	public List<MessageBoardUser> getUserList() {

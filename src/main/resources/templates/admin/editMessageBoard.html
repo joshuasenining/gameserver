@@ -41,10 +41,7 @@
 				$.each(userList, function(i, item) {
 					var name = item["userName"];
 					var id = item["userId"];
-					var rowDiv = $('<div class="row"/>');
-					var spacerDiv = $('<div class="col-md-1"/>');
-					spacerDiv.appendTo(rowDiv);
-					var buttonDiv = $('<div class="col-md-2"/>');
+					var rowDiv = $('<div/>');
 					var access;
 					if (item["permission"] == "PERMISSION_OWNER") {
 						access = "Owner";
@@ -58,14 +55,12 @@
 					}
 					var button = $('<input id="'+id+'" type="button" class="permission" onclick="modifyPermission(&quot;'+id+'&quot;)"/>')
 						.prop("value", access);
-					button.appendTo(buttonDiv);
-					buttonDiv.appendTo(rowDiv);
-					var labelDiv = $('<div class="col-md-3"/>');
+					button.appendTo(rowDiv);
+					var spacerDiv = $('<div class="small-spacer"/>');
+					spacerDiv.appendTo(rowDiv);
 					var label = $('<label class="input-margin"/>')
 						.text(name);
-					label.appendTo(labelDiv);
-					labelDiv.appendTo(rowDiv);
-					
+					label.appendTo(rowDiv);
 					rowDiv.appendTo("#permissionList")
 				}); 			
 			} else {
@@ -264,7 +259,16 @@
 			</div>
 		</div>
 		
-		<span id="permissionList"></span>
+		<div id="permissionDiv" class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-3">
+				<div class="panel panel-primary">
+					<div class="panel-body" style="max-height: 175px;overflow-y: scroll;">
+						<span id="permissionList"></span>
+					</div>
+				</div>	
+			</div>
+		</div>				
 						
 		<br></br>
 		<div class="row">
