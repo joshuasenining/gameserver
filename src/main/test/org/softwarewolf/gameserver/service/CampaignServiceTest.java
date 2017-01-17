@@ -64,6 +64,12 @@ public class CampaignServiceTest {
 	private static String thirdUserLastName = "User";
 	private static String thirdUserName = "thriduser";
 	private static String thirdUserId = UUID.randomUUID().toString();
+	private static User fourthUser;
+	private static String fourthUserEmail = "fourthUser@gmail.com";
+	private static String fourthUserFirstName = "Fourth";
+	private static String fourthUserLastName = "User";
+	private static String fourthUserName = "fourthuser";
+	private static String fourthUserId = UUID.randomUUID().toString();
 	private static List<User> allUsers;
 	private static CampaignUser firstCampaignUser;
 	private static String firstCampaignUserId = UUID.randomUUID().toString();
@@ -71,16 +77,32 @@ public class CampaignServiceTest {
 	private static String secondCampaignUserId = UUID.randomUUID().toString();
 	private static CampaignUser thirdCampaignUser;
 	private static String thirdCampaignUserId = UUID.randomUUID().toString();
-	private static List<CampaignUser> allfirstCampaignUsers;
+	private static CampaignUser fourthCampaignUser;
+	private static String fourthCampaignUserId = UUID.randomUUID().toString();
+	private static CampaignUser fifthCampaignUser;
+	private static String fifthCampaignUserId = UUID.randomUUID().toString();
+	private static CampaignUser sixthCampaignUser;
+	private static String sixthCampaignUserId = UUID.randomUUID().toString();
+	private static CampaignUser seventhCampaignUser;
+	private static String seventhCampaignUserId = UUID.randomUUID().toString();
+	private static List<CampaignUser> allFirstCampaignUsers;
+	private static List<CampaignUser> allSecondCampaignUsers;
 	private static Folio firstCampaignFolio;
 	private static String firstCampaignFolioContent = "Some content";
 	private static String firstCampaignFolioId = UUID.randomUUID().toString();
+	private static Folio secondCampaignFolio;
+	private static String secondCampaignFolioContent = "Some other content";
+	private static String secondCampaignFolioId = UUID.randomUUID().toString();
 	private static Campaign firstCampaign;
 	private static String firstCampaignName = "First Campaign";
 	private static String firstCampaignId = UUID.randomUUID().toString();
+	private static Campaign secondCampaign;
+	private static String secondCampaignName = "Second Campaign";
+	private static String secondCampaignId = UUID.randomUUID().toString();
 	
 	@BeforeClass
 	public static void testPrep() {
+		// App users
 		firstUser = new User();
 		firstUser.setUsername(firstUserName);
 		firstUser.setEmail(firstUserEmail);
@@ -101,8 +123,16 @@ public class CampaignServiceTest {
 		thirdUser.setFirstName(thirdUserFirstName);
 		thirdUser.setLastName(thirdUserLastName);
 		thirdUser.setId(thirdUserId);
-		allUsers = new ArrayList<>(Arrays.asList(new User[] {firstUser, secondUser, thirdUser}));
 		
+		fourthUser = new User();
+		fourthUser.setUsername(fourthUserName);
+		fourthUser.setEmail(fourthUserEmail);
+		fourthUser.setFirstName(fourthUserFirstName);
+		fourthUser.setLastName(fourthUserLastName);
+		fourthUser.setId(fourthUserId);	
+		allUsers = new ArrayList<>(Arrays.asList(new User[] {firstUser, secondUser, thirdUser, fourthUser}));
+		
+		// First Campaign users
 		firstCampaignUser = new CampaignUser();
 		firstCampaignUser.setCampaignId(firstCampaignId);
 		firstCampaignUser.setId(firstCampaignUserId);
@@ -123,8 +153,38 @@ public class CampaignServiceTest {
 		thirdCampaignUser.setUserId(thirdUserId);
 		thirdCampaignUser.setUserName(thirdUserName);
 		thirdCampaignUser.setPermission(ControllerUtils.ROLE_USER);
-		allfirstCampaignUsers = new ArrayList<>(Arrays.asList(new CampaignUser[] {firstCampaignUser, secondCampaignUser, thirdCampaignUser}));
+		allFirstCampaignUsers = new ArrayList<>(Arrays.asList(new CampaignUser[] {firstCampaignUser, secondCampaignUser, thirdCampaignUser}));
 		
+		// Second Campaign users
+		fourthCampaignUser = new CampaignUser();
+		fourthCampaignUser.setCampaignId(secondCampaignId);
+		fourthCampaignUser.setId(fourthCampaignUserId);
+		fourthCampaignUser.setUserId(fourthUserId);
+		fourthCampaignUser.setUserName(fourthUserName);
+		fourthCampaignUser.setPermission(ControllerUtils.ROLE_OWNER);
+
+		fifthCampaignUser = new CampaignUser();
+		fifthCampaignUser.setCampaignId(secondCampaignId);
+		fifthCampaignUser.setId(fifthCampaignUserId);
+		fifthCampaignUser.setUserId(firstUserId);
+		fifthCampaignUser.setUserName(firstUserName);
+		fifthCampaignUser.setPermission(ControllerUtils.ROLE_GAMEMASTER);
+
+		sixthCampaignUser = new CampaignUser();
+		sixthCampaignUser.setCampaignId(secondCampaignId);
+		sixthCampaignUser.setId(sixthCampaignUserId);
+		sixthCampaignUser.setUserId(secondUserId);
+		sixthCampaignUser.setUserName(secondUserName);
+		sixthCampaignUser.setPermission(ControllerUtils.ROLE_USER);
+
+		seventhCampaignUser = new CampaignUser();
+		seventhCampaignUser.setCampaignId(secondCampaignId);
+		seventhCampaignUser.setId(seventhCampaignUserId);
+		seventhCampaignUser.setUserId(thirdUserId);
+		seventhCampaignUser.setUserName(thirdUserName);
+		seventhCampaignUser.setPermission(ControllerUtils.ROLE_USER);
+		allSecondCampaignUsers = new ArrayList<>(Arrays.asList(new CampaignUser[] {fourthCampaignUser, fifthCampaignUser, sixthCampaignUser, seventhCampaignUser}));
+
 		firstCampaignFolio = new Folio();
 		firstCampaignFolio.setCampaignId(firstCampaignId);
 		firstCampaignFolio.setTitle(firstCampaignName);
@@ -133,6 +193,16 @@ public class CampaignServiceTest {
 		firstCampaignFolio.addOwner(firstUserId);
 		firstCampaignFolio.addReader(secondUserId);
 		firstCampaignFolio.addReader(thirdUserId);
+		
+		secondCampaignFolio = new Folio();
+		secondCampaignFolio.setCampaignId(secondCampaignId);
+		secondCampaignFolio.setTitle(secondCampaignName);
+		secondCampaignFolio.setContent(secondCampaignFolioContent);
+		secondCampaignFolio.setId(secondCampaignFolioId);
+		secondCampaignFolio.addOwner(fourthUserId);
+		secondCampaignFolio.addOwner(firstUserId);
+		secondCampaignFolio.addReader(secondUserId);
+		secondCampaignFolio.addReader(thirdUserId);
 		
 		firstCampaign = new Campaign();
 		firstCampaign.setId(firstCampaignId);
@@ -145,6 +215,21 @@ public class CampaignServiceTest {
 		firstCampaignPlayerList.addAll(new ArrayList<>(Arrays.asList(new String[] {secondUser.getId(), thirdUser.getId()})));
 		firstCampaign.setPlayerList(firstCampaignPlayerList);
 		firstCampaign.setCampaignFolioId(firstCampaignFolioId);
+		
+		secondCampaign = new Campaign();
+		secondCampaign.setId(secondCampaignId);
+		secondCampaign.setCampaignFolioId(UUID.randomUUID().toString());
+		secondCampaign.setName(firstCampaignName);
+		List<String> secondCampaignOwnerList = new ArrayList<>();
+		secondCampaignOwnerList.add(fourthUser.getId());
+		secondCampaign.setOwnerList(secondCampaignOwnerList);
+		List<String> secondCampaignGmList = new ArrayList<>();
+		secondCampaignGmList.add(firstUserId);
+		secondCampaign.setGameMasterList(secondCampaignGmList);
+		List<String> secondCampaignPlayerList = new ArrayList<>();
+		secondCampaignPlayerList.addAll(new ArrayList<>(Arrays.asList(new String[] {secondUser.getId(), thirdUser.getId()})));
+		secondCampaign.setPlayerList(secondCampaignPlayerList);
+		secondCampaign.setCampaignFolioId(secondCampaignFolioId);
 	}
 	
 	@Before
@@ -152,15 +237,20 @@ public class CampaignServiceTest {
 		MockitoAnnotations.initMocks(this);
 	}
 	
+	/**
+	 * Conditions:
+	 * Two campaigns in list
+	 * One owner
+	 * Two players
+	 */
 	@Test
-	public void testInitCampaignDto() {
-		List<Campaign> allCampaigns = new ArrayList<>();
-		allCampaigns.add(firstCampaign);
+	public void testInitFirstCampaignDto() {
+		List<Campaign> allCampaigns = new ArrayList<>(Arrays.asList(new Campaign[] {firstCampaign, secondCampaign}));
 		doReturn(allCampaigns).when(campaignRepository).findAll();
 		doReturn(firstCampaign).when(campaignRepository).findOne(firstCampaignId);
 		doReturn(allUsers).when(userService).findAll();
 		doReturn(firstUserId).when(userService).getCurrentUserId();
-		doReturn(allfirstCampaignUsers).when(campaignUserService).findAllByCampaignId(firstCampaignId);
+		doReturn(allFirstCampaignUsers).when(campaignUserService).findAllByCampaignId(firstCampaignId);
 		doReturn(firstCampaignFolio).when(folioService).findOne(firstCampaignFolioId);
 		CampaignDto campaignDto = new CampaignDto();
 		campaignService.initCampaignDto(firstCampaignId, campaignDto);
@@ -174,6 +264,37 @@ public class CampaignServiceTest {
 		List<String> playerIdList = new ArrayList<>(Arrays.asList(new String[] {secondUserId, thirdUserId}));
 		assertTrue("Campaign user list was altered", campaign.getPlayerList().containsAll(playerIdList));
 		assertTrue("CampaignDto.isOwner is incorrect", campaignDto.getIsOwner().booleanValue());
-		assertEquals("CampaignDto.campaignList is incorrect", 1, campaignDto.getCampaignList().size());
+		assertEquals("CampaignDto.campaignList is incorrect", 2, campaignDto.getCampaignList().size());
+	}
+
+	/**
+	 * Conditions:
+	 * Two campaigns in list
+	 * One owner
+	 * One GM
+	 * Two players
+	 */
+	@Test
+	public void testInitSecondCampaignDto() {
+		List<Campaign> allCampaigns = new ArrayList<>(Arrays.asList(new Campaign[] {firstCampaign, secondCampaign}));
+		doReturn(allCampaigns).when(campaignRepository).findAll();
+		doReturn(secondCampaign).when(campaignRepository).findOne(secondCampaignId);
+		doReturn(allUsers).when(userService).findAll();
+		doReturn(fourthUserId).when(userService).getCurrentUserId();
+		doReturn(allSecondCampaignUsers).when(campaignUserService).findAllByCampaignId(secondCampaignId);
+		doReturn(secondCampaignFolio).when(folioService).findOne(secondCampaignFolioId);
+		CampaignDto campaignDto = new CampaignDto();
+		campaignService.initCampaignDto(secondCampaignId, campaignDto);
+		Campaign campaign = campaignDto.getCampaign();
+		assertEquals("Campaign id was altered", secondCampaignId, campaign.getId());
+		assertEquals("Campaign folioId was altered", secondCampaignFolioId, campaign.getCampaignFolioId());
+		assertEquals("Campaign owner list was altered", 1, campaign.getOwnerList().size());
+		assertTrue("Campaign owner was altered", campaign.getOwnerList().contains(fourthUserId));
+		assertEquals("Campaign gamemaster list was altered", 1, campaign.getGameMasterList().size());
+		assertEquals("Campaign user list was altered", 2, campaign.getPlayerList().size());
+		List<String> playerIdList = new ArrayList<>(Arrays.asList(new String[] {secondUserId, thirdUserId}));
+		assertTrue("Campaign user list was altered", campaign.getPlayerList().containsAll(playerIdList));
+		assertTrue("CampaignDto.isOwner is incorrect", campaignDto.getIsOwner().booleanValue());
+		assertEquals("CampaignDto.campaignList is incorrect", 2, campaignDto.getCampaignList().size());
 	}
 }
