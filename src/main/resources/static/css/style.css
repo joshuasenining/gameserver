@@ -192,6 +192,13 @@ hr {
 	margin-right: 5px;	
 }
 
+.message-snippet {
+	width: 100%;
+    height: 2em; 
+    line-height: 1em;
+    overflow: hidden;	
+}
+
 .nav-banner {
 	font-weight: bold;
 	display: inline-block;
@@ -223,6 +230,10 @@ hr {
 
 .padded-logout-text {
   padding-top: 15px;
+}
+
+.panel-border {
+	border: 1px solid black;
 }
 
 .pointer-cursor {
