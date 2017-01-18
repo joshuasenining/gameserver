@@ -230,7 +230,12 @@ hr {
 }
 
 .permission {
-	min-width: 113px;	
+	width: 113px;	
+}
+
+.permissionListPanel {
+	max-height: 175px;
+	overflow-y: scroll;	
 }
 
 .scrollable-menu {

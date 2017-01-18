@@ -14,6 +14,7 @@ public class MessageBoardDto {
 	private Boolean isOwner;
 	private Boolean isFirstBoard;
 	public List<ItemSelector> messageBoardList;
+	public String messageListPreview;
 
 	private String users;
 	private String forwardingUrl;
@@ -89,5 +90,12 @@ public class MessageBoardDto {
 	}
 	public void setMessageBoardList(List<ItemSelector> messageBoardList) {
 		this.messageBoardList = messageBoardList;
+	}
+	
+	public String getMessageListPreview() {
+		return messageListPreview;
+	}
+	public void setMessageListPreview(String messageListPreview) {
+		this.messageListPreview = messageListPreview;
 	}
 }

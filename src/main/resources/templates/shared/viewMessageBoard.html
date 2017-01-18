@@ -27,7 +27,7 @@
 	<script th:inline="javascript">
 	$(document).ready(function() {
 		$( window ).load(function() {		
-			if ($("#messageBoardId").val() == "") {
+			if ($("#editMessage").val() == "false") {
 				$("#editorContainer").hide();
 			}
         });
@@ -63,6 +63,7 @@
  
 	<form id="viewMessageBoardForm" th:object="${messageBoardDto}" action="#" th:action="@{/shared/postToMessageBoard}" method="post">
 	<input id="messageBoardId" type="hidden" th:field="*{messageBoardId}"></input>
+	<input id="editMessage" type="hidden" value="false"></input>
 	
 		<div class="row">
 			<div class="col-md-1"></div>
@@ -98,6 +99,17 @@
 				</div> 		    
 			</div>
 		</div>
+
+		<div id="messageListPreviewDiv" class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-8">
+				<div class="panel panel-primary">
+					<div class="panel-body" style="max-height: 175px;overflow-y: scroll;">
+						<span id="messagePreviewListSpan"></span>
+					</div>
+				</div>	
+			</div>
+		</div>	
 
 		<div class="row">
 			<div class="col-md-1"></div>
