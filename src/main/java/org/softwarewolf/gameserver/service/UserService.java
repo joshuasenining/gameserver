@@ -282,26 +282,39 @@ public class UserService {
 	private void validateMyAccountInfo(MyAccountDto myAccountDto) {
 		String nameRegex = "^[\\p{L} .'-]+$";
 		Pattern namePattern = Pattern.compile(nameRegex);
-		Matcher firstNameMatcher = namePattern.matcher(myAccountDto.getFirstName());
-		
+		String firstName = myAccountDto.getFirstName();
+		String invalidFirstName = ControllerUtils.getI18nMessage("myAccount.error.invalidFirstName");
 		StringBuilder errors = new StringBuilder();
-		if (!firstNameMatcher.matches()) {
-			String message = ControllerUtils.getI18nMessage("myAccount.error.invalidFirstName");
-			errors.append(message).append(" ");
+		if (firstName != null) {
+			Matcher firstNameMatcher = namePattern.matcher(firstName);
+			if (!firstNameMatcher.matches()) {
+				errors.append(invalidFirstName).append(" ");
+			}
+		} else {
+			errors.append(invalidFirstName).append(" ");
 		}
-		
-		Matcher lastNameMatcher = namePattern.matcher(myAccountDto.getLastName());
-		if (!lastNameMatcher.matches()) {
-			String message = ControllerUtils.getI18nMessage("myAccount.error.invalidLastName");
-			errors.append(message).append(" ");			
+
+		String lastName = myAccountDto.getLastName();
+		String invalidLastName = ControllerUtils.getI18nMessage("myAccount.error.invalidLastName");
+		if (lastName != null) {
+			Matcher lastNameMatcher = namePattern.matcher(lastName);
+			if (!lastNameMatcher.matches()) {
+				errors.append(invalidLastName).append(" ");			
+			}
+		} else {
+			errors.append(invalidLastName).append(" ");			
 		}
 		
 		String email = myAccountDto.getEmail();
-		Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
-		Matcher emailMatcher = emailPattern.matcher(email);
-		if(!emailMatcher.matches()) {
-			String message = ControllerUtils.getI18nMessage("myAccount.error.invalidEmail");
-			errors.append(message);
+		String invalidEmail = ControllerUtils.getI18nMessage("myAccount.error.invalidEmail");
+		if (email != null) {
+			Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
+			Matcher emailMatcher = emailPattern.matcher(email);
+			if(!emailMatcher.matches()) {
+				errors.append(invalidEmail);
+			}
+		} else {
+			errors.append(invalidEmail);
 		}
 		
 		if (errors.length() > 0) {
