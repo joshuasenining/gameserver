@@ -90,7 +90,7 @@ public class MessageBoardController {
 		messageBoardService.initMessageBoardDto(messageBoardId, messageBoardDto);
 		messageBoardDto.setForwardingUrl(ControllerUtils.VIEW_MESSAGE_BOARD);
 		
-		String message = ControllerUtils.getI18nMessage("editMessageBoard.status.editing");
+		String message = ControllerUtils.getI18nMessage("messageBoard");
 		feFeedback.setUserStatus(message + " '" + messageBoardDto.getMessageBoardName() + "'");
 		return ControllerUtils.VIEW_MESSAGE_BOARD;
 	}

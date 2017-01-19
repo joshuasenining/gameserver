@@ -98,4 +98,5 @@ public class MessageBoardDto {
 	public void setMessageListPreview(String messageListPreview) {
 		this.messageListPreview = messageListPreview;
 	}
+
 }

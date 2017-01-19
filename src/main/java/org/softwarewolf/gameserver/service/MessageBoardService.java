@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
+import org.softwarewolf.gameserver.domain.GsMessage;
 import org.softwarewolf.gameserver.domain.ItemSelector;
 import org.softwarewolf.gameserver.domain.MessageBoard;
 import org.softwarewolf.gameserver.domain.MessageBoardUser;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.EditMessageBoardDto;
 import org.softwarewolf.gameserver.domain.dto.MessageBoardDto;
+import org.softwarewolf.gameserver.domain.dto.MessagePreview;
+import org.softwarewolf.gameserver.repository.GsMessageRepository;
 import org.softwarewolf.gameserver.repository.MessageBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,9 @@ public class MessageBoardService implements Serializable {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private GsMessageRepository gsMessageRepository;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -250,4 +256,9 @@ public class MessageBoardService implements Serializable {
 		messageBoardRepository.delete(messageBoard);
 	}
 
+	public List<MessagePreview> getMessagePreviewList(String messageBoardId) {
+		List<GsMessage> messageList = gsMessageRepository.findAll();
+		List<MessagePreview> previewList = messageList.stream().map(m -> m.createPreview()).collect(Collectors.toList());
+		return previewList;
+	}
 }

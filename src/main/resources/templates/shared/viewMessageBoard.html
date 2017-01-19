@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
     <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <link rel="icon" href="/werewolf-512.png"></link>
+    <link rel="icon" href="/werewolf.png"></link>
     <link rel="stylesheet" type="text/css" href="/css/style.css" th:href="@{/css/style.css}"></link>
    	<link rel="stylesheet" type="text/css" href="/css/font-awesome.css" th:href="@{/css/font-awesome.css}"></link>
     <!-- Bootstrap & JQuery -->
@@ -76,19 +76,18 @@
 			<div class="row">
 				<div class="col-md-1"></div>
 				<div class="col-md-11">
-					<button id="messageBoardStatus" type="button" class="input-margin btn btn-info dropdown-toggle" aria-expanded="false" th:text="${feFeedback.userStatus}"></button>
+					<button id="messageBoardStatus" type="button" class="input-margin btn btn-info dropdown-toggle messageboard-status" aria-expanded="false" th:text="${feFeedback.userStatus}"></button>
 				</div>
 			</div>
 		</div>
-		<br></br>
-		
+
 		<div id="selectBoardDiv" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-11">
 				<div class="dropdown">
 				    <!--Default buttons with dropdown menu-->
 				    <div class="btn-group">
-		        		<button type="button" class="btn btn-default" th:text="#{viewMessageBoard.selectMessageBoard}">Action</button>
+		        		<button type="button" class="btn btn-default messageboard-selector" th:text="#{viewMessageBoard.selectMessageBoard}">Action</button>
 				        <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
 				        <ul class="dropdown-menu">
 		        		    <li th:each="descriptor : *{messageBoardList}" th:value="${descriptor.id}">
@@ -100,40 +99,33 @@
 			</div>
 		</div>
 
-		<div class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-10">
-				<input id="messageBoardName" class="input-margin fullWidth" disabled="disabled" th:field="*{messageBoardName}"></input>
-			</div>
-		</div>
-
 		<div id="messageListPreviewDiv" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-8">
 				<div class="panel panel-primary" style="max-height: 175px;overflow-y: scroll;">
 					<div class="panel-body panel-border">
 					<!-- 	<span id="messagePreviewListSpan"> </span>-->
-						<div style="width: 100%;">Subject</div>
+						<div class="message-header">Subject</div>
 						<div class="message-snippet">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.</div>
-						<div style="width: 100%;">by: Poster Name 17:20 UTC</div>
+						<div class="message-footer">by: Poster Name 17:20 UTC</div>
 					</div>
 					<div class="panel-body panel-border">
 					<!-- 	<span id="messagePreviewListSpan"> </span>-->
-						<div style="width: 100%;">Subject 2</div>
+						<div class="message-header">Subject 2</div>
 						<div class="message-snippet">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.</div>
-						<div style="width: 100%;">by: Poster Name 17:24 UTC</div>
+						<div class="message-footer">by: Poster Name 17:24 UTC</div>
 					</div>
 					<div class="panel-body panel-border">
 					<!-- 	<span id="messagePreviewListSpan"> </span>-->
-						<div style="width: 100%;">Subject 3</div>
+						<div class="message-header">Subject 3</div>
 						<div class="message-snippet">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.</div>
-						<div style="width: 100%;">by: Poster Name 18:01 UTC</div>
+						<div class="message-footer">by: Poster Name 18:01 UTC</div>
 					</div>
 					<div class="panel-body panel-border">
 					<!-- 	<span id="messagePreviewListSpan"> </span>-->
-						<div style="width: 100%;">Subject 4</div>
+						<div class="message-header">Subject 4</div>
 						<div class="message-snippet">This is a bunch of hooey.</div>
-						<div style="width: 100%;">by: Poster Name 18:11 UTC</div>
+						<div class="message-footer">by: Poster Name 18:11 UTC</div>
 					</div>
 				</div>	
 			</div>

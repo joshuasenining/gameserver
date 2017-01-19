@@ -192,6 +192,24 @@ hr {
 	margin-right: 5px;	
 }
 
+.messageboard-selector {
+	margin-bottom: 5px !important;	
+}
+
+.messageboard-status {
+	margin-left: 15px;	
+	margin-bottom: 5px !important;
+}
+
+.message-header {
+	width: 100%;
+}
+
+.message-footer {
+	width: 100%;
+	height: 1em;	
+}
+
 .message-snippet {
 	width: 100%;
     height: 2em; 
