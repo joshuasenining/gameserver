@@ -225,6 +225,10 @@ hr {
 	width: 100%;
 }
 
+.nav-banner-text {
+	padding-left: 10px;
+}
+
 .no-bullets {
 	list-style-type: none;
 }

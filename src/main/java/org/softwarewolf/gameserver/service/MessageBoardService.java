@@ -108,7 +108,7 @@ public class MessageBoardService implements Serializable {
 				editMessageBoardDto.setIsOwner(Boolean.TRUE);
 				messageBoard.addOwner(userId);
 			}
-			List<String> allUsers = messageBoard.getOwnerList();
+			List<String> allUsers = new ArrayList<String>(messageBoard.getOwnerList());
 			allUsers.addAll(messageBoard.getWriterList());
 			allUsers.addAll(messageBoard.getReaderList());
 			if (!allUsers.contains(userId)) {

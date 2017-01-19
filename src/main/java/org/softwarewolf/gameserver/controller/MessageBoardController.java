@@ -22,18 +22,22 @@ public class MessageBoardController {
 	@RequestMapping(value = "/admin/editMessageBoard", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
 	public String editMessageBoard(EditMessageBoardDto editMessageBoardDto, final FeFeedback feFeedback) {
+		/*
 		boolean fromDb = true;
 		editMessageBoardDto = messageBoardService.initEditMessageBoardDto(null, editMessageBoardDto, fromDb);
 		editMessageBoardDto.setForwardingUrl(ControllerUtils.MESSAGE_BOARD);
 		String message = ControllerUtils.getI18nMessage("editMessageBoard.status.creatingNew");
 		feFeedback.setUserStatus(message);
 		return ControllerUtils.EDIT_MESSAGE_BOARD;
+		*/
+		return editMessageBoardParent(editMessageBoardDto, null, feFeedback);
 	}
 	
 	@RequestMapping(value = "/admin/editMessageBoard/{messageBoardId}", method = RequestMethod.GET)
 	@Secured({"ADMIN"})
 	public String editMessageBoardWithId(final EditMessageBoardDto editMessageBoardDto, 
 			@PathVariable String messageBoardId, final FeFeedback feFeedback) {
+		/*
 		boolean fromDb = true;
 		messageBoardService.initEditMessageBoardDto(messageBoardId, editMessageBoardDto, fromDb);
 		editMessageBoardDto.setForwardingUrl(ControllerUtils.EDIT_MESSAGE_BOARD);
@@ -41,7 +45,29 @@ public class MessageBoardController {
 		String message = ControllerUtils.getI18nMessage("editMessageBoard.status.editing");
 		feFeedback.setUserStatus(message + " '" + editMessageBoardDto.getMessageBoard().getName() + "'");
 		return ControllerUtils.EDIT_MESSAGE_BOARD;
+		*/
+		return editMessageBoardParent(editMessageBoardDto, messageBoardId, feFeedback);
 	}
+	
+	private String editMessageBoardParent(EditMessageBoardDto editMessageBoardDto, String messageBoardId, FeFeedback feFeedback) {
+		boolean fromDb = true;
+		if (messageBoardId == null) {
+			fromDb = false;
+		}
+		messageBoardService.initEditMessageBoardDto(messageBoardId, editMessageBoardDto, fromDb);
+		editMessageBoardDto.setForwardingUrl(ControllerUtils.EDIT_MESSAGE_BOARD);
+		
+		String message = null;
+		if (messageBoardId == null) {
+			message = ControllerUtils.getI18nMessage("editMessageBoard.status.creatingNew");
+			feFeedback.setUserStatus(message);
+		} else {
+			message = ControllerUtils.getI18nMessage("editMessageBoard.status.editing");
+			feFeedback.setUserStatus(message + " '" + editMessageBoardDto.getMessageBoard().getName() + "'");
+		}
+		return editMessageBoardDto.getForwardingUrl();
+	}
+	
 	
 	@RequestMapping(value = "/admin/editMessageBoard", method = RequestMethod.POST)
 	@Secured({"ADMIN","USER"})
@@ -51,6 +77,8 @@ public class MessageBoardController {
 		MessageBoard messageBoard = null;
 		try {
 			messageBoard = messageBoardService.saveMessageBoard(editMessageBoardDto);
+			boolean fromDb = true;
+			messageBoardService.initEditMessageBoardDto(messageBoard.getId(), editMessageBoardDto, fromDb);
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);

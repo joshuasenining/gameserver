@@ -110,8 +110,8 @@
 		        </div><!--/.navbar-collapse -->
 		      </div>
 		      <div class="nav-banner">
-			  	<span th:if="${session.campaignName != null}"  class="nav-banner" th:text="#{menu.item.selectedCampaign} + ${session.campaignName}">Campaign: </span>
-			  	<span th:if="${session.campaignName == null}"  class="nav-banner"></span>
+			  	<span th:if="${session.campaignName != null}"  class="nav-banner-text" th:text="#{menu.item.selectedCampaign} + ${session.campaignName}">Campaign: </span>
+			  	<span th:if="${session.campaignName == null}"></span>
 		      </div>
 		    </nav>
 		</div>		    
