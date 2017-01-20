@@ -2,6 +2,7 @@ package org.softwarewolf.gameserver.service;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -135,16 +136,44 @@ public class MessageBoardService implements Serializable {
 	}
 
 	public MessageBoardDto initMessageBoardDto(String selectedMessageBoardId, MessageBoardDto messageBoardDto) {
+		Long boardCount = messageBoardRepository.count();
+		if (boardCount == 0L) {
+			messageBoardDto.setIsFirstBoard(Boolean.TRUE);
+		} else {
+			messageBoardDto.setIsFirstBoard(Boolean.FALSE);
+		}
 		if (selectedMessageBoardId != null) {
 			MessageBoard messageBoard = messageBoardRepository.findOne(selectedMessageBoardId);
 			if (messageBoard != null) {
 				messageBoardDto.setMessageBoardId(selectedMessageBoardId);
 				messageBoardDto.setMessageBoardName(messageBoard.getName());
+				if (messageBoard.getOwnerList().contains(userService.getCurrentUserId())) {
+					messageBoardDto.setIsOwner(Boolean.TRUE);
+				} else {
+					messageBoardDto.setIsOwner(Boolean.FALSE);
+				}
+				
+				List<MessagePreview> messagePreviewList = getMessagePreviewList(selectedMessageBoardId);
+				if (!messagePreviewList.isEmpty()) {
+					ObjectMapper mapper = new ObjectMapper();
+					try {
+						String preview = mapper.writeValueAsString(messagePreviewList);
+						if (preview != null) {
+							messageBoardDto.setMessagePreviewList(preview);
+						}
+					} catch (JsonProcessingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			} else {
 				messageBoardDto.setMessageBoardId(null);
 				messageBoardDto.setMessageBoardName(null);
+				messageBoardDto.setIsOwner(Boolean.TRUE);
 			}
 		}
+		String subjectString = ControllerUtils.getI18nMessage("messageBoard.subject");
+		messageBoardDto.setSubjectString(subjectString);
 		String userId = userService.getCurrentUserId();
 		messageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
 		return messageBoardDto;
@@ -257,8 +286,27 @@ public class MessageBoardService implements Serializable {
 	}
 
 	public List<MessagePreview> getMessagePreviewList(String messageBoardId) {
-		List<GsMessage> messageList = gsMessageRepository.findAll();
+		List<GsMessage> messageList = gsMessageRepository.findAllByMessageBoardId(messageBoardId);
 		List<MessagePreview> previewList = messageList.stream().map(m -> m.createPreview()).collect(Collectors.toList());
 		return previewList;
+	}
+	
+	public GsMessage saveGsMessage(MessageBoardDto messageBoardDto) {
+		GsMessage gsMessage = new GsMessage();
+		gsMessage.setId(messageBoardDto.getMessageId());
+		gsMessage.setThreadId(messageBoardDto.getThreadId());
+		gsMessage.setCreated(Instant.now());
+		gsMessage.setParentId(messageBoardDto.getMessageParentId());
+		gsMessage.setMessage(messageBoardDto.getMessageContent());
+		gsMessage.setMessageBoardId(messageBoardDto.getMessageBoardId());
+		gsMessage.setPosterId(userService.getCurrentUserId());
+		gsMessage.setPosterName(userService.getCurrentUserName());
+		gsMessage.setSubject(messageBoardDto.getMessageSubject());
+		gsMessage = gsMessageRepository.save(gsMessage);
+		if (gsMessage.getParentId() == null) { 
+			gsMessage.setThreadId(gsMessage.getId());
+		}
+		gsMessageRepository.save(gsMessage);
+		return gsMessage;
 	}
 }

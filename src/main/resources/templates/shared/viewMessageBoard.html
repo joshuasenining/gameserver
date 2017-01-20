@@ -26,10 +26,47 @@
     
 	<script th:inline="javascript">
 	$(document).ready(function() {
-		$( window ).load(function() {		
-			if ($("#editMessage").val() == "false") {
-				$("#editorContainer").hide();
+		$( window ).load(function() {
+		 	var messagePreviewListString = $("#messagePreviewList").val();
+			if (messagePreviewListString.length > 0) {
+				var messagePreviewList = jQuery.parseJSON(messagePreviewListString);
+				var listString = "";
+				$.each(messagePreviewList, function(i, item) {
+					var messageId = item["messageId"];
+					var threadId = item["threadId"];
+					var parentMessageId = item["parentMessageId"];
+					var subject = item["subject"];
+					var message = item["message"];
+					var posterName = item["posterName"];
+					var posterId = item["posterId"];
+					var created = item["created"];
+					
+					var messagePanelDiv = '<div class="panel-body panel-border">';
+					var subjectString = $("#subjectString").val();
+					var messageHeaderDiv = '<div class="message-header">'+subjectString+': '+subject+'</div>';
+					var messageSnippetDiv = '<div class="message-snippet">'+message+'</div>';
+					var messageFooterDiv = '<div class="message-footer">'+posterName+'   '+created+'</div>';
+					var panel = messagePanelDiv+messageHeaderDiv+messageSnippetDiv+messageFooterDiv+'</div>';
+					$("#messagePanelContainer").append(panel);
+				});
 			}
+			
+			if ($("#editMessage").val() == "false") {
+				$("#messageSubjectRow").hide();
+				$("#editorContainer").hide();
+				$("#submitBtn").hide();
+			}
+			
+			$("#newMessage").click(function() {
+				$("#messageListPreviewDiv").hide();
+				$("#messageSubjectRow").show();
+				$("#editorContainer").show();
+				$("#submitBtn").show();
+			});
+			
+			$("#submitBtn").click(function() {
+				$("#viewMessageBoardForm").submit();
+			});
         });
      
 	});		
@@ -63,11 +100,17 @@
  
 	<form id="viewMessageBoardForm" th:object="${messageBoardDto}" action="#" th:action="@{/shared/postToMessageBoard}" method="post">
 	<input id="messageBoardId" type="hidden" th:field="*{messageBoardId}"></input>
+	<input id="messageBoardName" type="hidden" th:field="*{messageBoardName}"></input>
+	<input id="messageId" type="hidden" th:field="*{messageId}"></input>
+	<input id="messageParentId" type="hidden" th:field="*{messageParentId}"></input>
+	<input id="threadId" type="hidden" th:field="*{threadId}"></input>
+	<input id="messagePreviewList" type="hidden" th:field="*{messagePreviewList}"></input>
+	<input id="subjectString" type="hidden" th:value="*{subjectString}"></input>
 	<input id="editMessage" type="hidden" value="false"></input>
 	
 		<div class="row">
 			<div class="col-md-1"></div>
-			<div class="col-md-9">
+			<div class="col-md-10">
 				<hr></hr>
 			</div>
 		</div>
@@ -83,7 +126,7 @@
 
 		<div id="selectBoardDiv" class="row">
 			<div class="col-md-1"></div>
-			<div class="col-md-11">
+			<div class="col-md-5">
 				<div class="dropdown">
 				    <!--Default buttons with dropdown menu-->
 				    <div class="btn-group">
@@ -97,44 +140,54 @@
 		    		</div>
 				</div> 		    
 			</div>
+			<div class="col-md-5">
+				<button id="newMessage" type="button" class="btn btn-default right">New Message</button>
+			</div>
 		</div>
 
 		<div id="messageListPreviewDiv" class="row">
 			<div class="col-md-1"></div>
-			<div class="col-md-8">
-				<div class="panel panel-primary" style="max-height: 175px;overflow-y: scroll;">
+			<div class="col-md-10">
+				<div id="messagePanelContainer" class="panel panel-primary message-panel-container" >
+				<!-- 
 					<div class="panel-body panel-border">
-					<!-- 	<span id="messagePreviewListSpan"> </span>-->
 						<div class="message-header">Subject</div>
 						<div class="message-snippet">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.</div>
 						<div class="message-footer">by: Poster Name 17:20 UTC</div>
 					</div>
 					<div class="panel-body panel-border">
-					<!-- 	<span id="messagePreviewListSpan"> </span>-->
 						<div class="message-header">Subject 2</div>
 						<div class="message-snippet">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.</div>
 						<div class="message-footer">by: Poster Name 17:24 UTC</div>
 					</div>
 					<div class="panel-body panel-border">
-					<!-- 	<span id="messagePreviewListSpan"> </span>-->
 						<div class="message-header">Subject 3</div>
 						<div class="message-snippet">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.</div>
 						<div class="message-footer">by: Poster Name 18:01 UTC</div>
 					</div>
 					<div class="panel-body panel-border">
-					<!-- 	<span id="messagePreviewListSpan"> </span>-->
 						<div class="message-header">Subject 4</div>
 						<div class="message-snippet">This is a bunch of hooey.</div>
 						<div class="message-footer">by: Poster Name 18:11 UTC</div>
 					</div>
+					 -->
 				</div>	
 			</div>
 		</div>	
 
+		<div id="messageSubjectRow" class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-1">
+				<label class="input-margin" th:text="#{messageBoard.subject}">Sub</label>
+			</div>
+			<div class="col-md-9">
+				<input class="input-margin fullWidth" th:field="*{messageSubject}"></input>
+			</div>
+		</div>
 		<div id="editorContainer" class="folio-margin">
 			<div class="grid-container">
 				<div class="grid-width-100">
-					<textarea id="editor" th:field="*{newMessageContent}"></textarea>
+					<textarea id="editor" th:field="*{messageContent}"></textarea>
 				</div>
 			</div>
 		</div>

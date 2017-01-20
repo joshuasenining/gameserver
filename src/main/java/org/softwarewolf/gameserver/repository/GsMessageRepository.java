@@ -10,4 +10,6 @@ public interface GsMessageRepository extends MongoRepository<GsMessage, String> 
 	List<GsMessage> findAllByThreadId(String threadId);
 	
 	List<GsMessage> findAllByParentId(String parentId);
+	
+	List<GsMessage> findAllByMessageBoardId(String messageBoardId);
 }

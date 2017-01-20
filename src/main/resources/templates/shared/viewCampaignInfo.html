@@ -24,7 +24,7 @@
 		$( window ).load(function() {
 			var selectedTagsString = $("#selectedTags")[0].value;
 			if (selectedTagsString.length > 0) {
-				selectedTagList = jQuery.parseJSON(selectedTagsString);
+				var selectedTagList = jQuery.parseJSON(selectedTagsString);
 				var listString = "";
 				$.each(selectedTagList, function(i, item) {
 					var name = item["name"];

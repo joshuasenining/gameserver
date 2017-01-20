@@ -1,12 +1,14 @@
 package org.softwarewolf.gameserver.domain.dto;
 
+import java.time.Instant;
+
 public class MessagePreview {
 	private String messageId;
 	private String subject;
 	private String message;
 	private String posterName;
 	private String posterId;
-	private String postedDateTime;
+	private String created;
 	private String parentMessageId;
 	private String threadId;
 	
@@ -40,11 +42,14 @@ public class MessagePreview {
 	public void setPosterId(String posterId) {
 		this.posterId = posterId;
 	}
-	public String getPostedDateTime() {
-		return postedDateTime;
+	public String getCreated() {
+		return created;
 	}
-	public void setPostedDateTime(String postedDateTime) {
-		this.postedDateTime = postedDateTime;
+	public void setCreated(String created) {
+		this.created = created;
+	}
+	public void setCreated(Instant created) {
+		this.created = created.toString();
 	}
 	public String getParentMessageId() {
 		return parentMessageId;

@@ -2,10 +2,7 @@ package org.softwarewolf.gameserver.domain;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.softwarewolf.gameserver.domain.dto.MessagePreview;
 import org.springframework.data.annotation.Id;
@@ -19,6 +16,7 @@ public class GsMessage implements Serializable {
 	
 	@Id
 	private String id;
+	private String messageBoardId;
 	private String subject;
 	private String message;
 	private String posterName;
@@ -37,6 +35,13 @@ public class GsMessage implements Serializable {
 	}
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public String getMessageBoardId() {
+		return messageBoardId;
+	}
+	public void setMessageBoardId(String messageBoardId) {
+		this.messageBoardId = messageBoardId;
 	}
 	
 	public String getSubject() {
@@ -98,15 +103,14 @@ public class GsMessage implements Serializable {
 	@JsonIgnore
 	public MessagePreview createPreview() {
 		MessagePreview preview = new MessagePreview();
-		preview.setMessage(message);
 		preview.setMessageId(id);
+		preview.setThreadId(threadId);
 		preview.setParentMessageId(parentId);
-		// TODO: Add the time info here
-		//preview.setPostedDateTime(postedDateTime);
+		preview.setSubject(subject);
+		preview.setMessage(message);
 		preview.setPosterName(posterName);
 		preview.setPosterId(posterId);
-		preview.setSubject(subject);
-		preview.setThreadId(threadId);
+		preview.setCreated(created);
 		return preview;
 	}
 }

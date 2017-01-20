@@ -8,13 +8,17 @@ import org.softwarewolf.gameserver.domain.MessageBoardUser;
 public class MessageBoardDto {
 	private String messageBoardId;
 	private String messageBoardName;
-	private String newMessageSubject;
-	private String newMessageContent;
+	private String messageId;
+	private String messageParentId;
+	private String threadId;
+	private String messageSubject;
+	private String messageContent;
 	private List<MessageBoardUser> userList;
 	private Boolean isOwner;
 	private Boolean isFirstBoard;
-	public List<ItemSelector> messageBoardList;
-	public String messageListPreview;
+	private List<ItemSelector> messageBoardList;
+	private String messagePreviewList;
+	private String subjectString;
 
 	private String users;
 	private String forwardingUrl;
@@ -29,6 +33,27 @@ public class MessageBoardDto {
 		this.messageBoardId = messageBoardId;
 	}
 
+	public String getMessageId() {
+		 return messageId;
+	}
+	public void setMessageId(String messageId) {
+		this.messageId = messageId;
+	}
+
+	public String getMessageParentId() {
+		 return messageParentId;
+	}
+	public void setMessageParentId(String messageParentId) {
+		this.messageParentId = messageParentId;
+	}
+
+	public String getThreadId() {
+		 return threadId;
+	}
+	public void setThreadId(String threadId) {
+		this.threadId = threadId;
+	}
+
 	public String getMessageBoardName() {
 		 return messageBoardName;
 	}
@@ -36,18 +61,18 @@ public class MessageBoardDto {
 		this.messageBoardName = messageBoardName;
 	}
 	
-	public String getNewMessageSubject() {
-		return newMessageSubject;
+	public String getMessageSubject() {
+		return messageSubject;
 	}
-	public void setNewMessageSubject(String newMessageSubject) {
-		this.newMessageSubject = newMessageSubject;
+	public void setMessageSubject(String messageSubject) {
+		this.messageSubject = messageSubject;
 	}
 	
-	public String getNewMessageContent() {
-		return newMessageContent;
+	public String getMessageContent() {
+		return messageContent;
 	}
-	public void setNewMessageContent(String newMessageContent) {
-		this.newMessageContent = newMessageContent;
+	public void setMessageContent(String messageContent) {
+		this.messageContent = messageContent;
 	}
 	
 	public List<MessageBoardUser> getUserList() {
@@ -92,11 +117,17 @@ public class MessageBoardDto {
 		this.messageBoardList = messageBoardList;
 	}
 	
-	public String getMessageListPreview() {
-		return messageListPreview;
+	public String getMessagePreviewList() {
+		return messagePreviewList;
 	}
-	public void setMessageListPreview(String messageListPreview) {
-		this.messageListPreview = messageListPreview;
+	public void setMessagePreviewList(String messagePreviewList) {
+		this.messagePreviewList = messagePreviewList;
 	}
 
+	public String getSubjectString() {
+		return subjectString;
+	}
+	public void setSubjectString(String subjectString) {
+		this.subjectString = subjectString;
+	}
 }

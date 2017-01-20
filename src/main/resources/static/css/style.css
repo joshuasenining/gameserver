@@ -201,6 +201,11 @@ hr {
 	margin-bottom: 5px !important;
 }
 
+.message-panel-container {
+	max-height: 350px;
+	overflow-y: scroll;
+}
+
 .message-header {
 	width: 100%;
 }
@@ -269,6 +274,10 @@ hr {
 .permissionListPanel {
 	max-height: 175px;
 	overflow-y: scroll;	
+}
+
+.right {
+	float: right;	
 }
 
 .scrollable-menu {
