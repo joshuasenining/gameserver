@@ -176,6 +176,12 @@ public class MessageBoardService implements Serializable {
 		messageBoardDto.setSubjectString(subjectString);
 		String userId = userService.getCurrentUserId();
 		messageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
+
+		messageBoardDto.setMessageId(null);
+		messageBoardDto.setMessageContent(null);
+		messageBoardDto.setMessageParentId(null);
+		messageBoardDto.setMessageSubject(null);
+
 		return messageBoardDto;
 	}
 	
@@ -288,6 +294,7 @@ public class MessageBoardService implements Serializable {
 	public List<MessagePreview> getMessagePreviewList(String messageBoardId) {
 		List<GsMessage> messageList = gsMessageRepository.findAllByMessageBoardId(messageBoardId);
 		List<MessagePreview> previewList = messageList.stream().map(m -> m.createPreview()).collect(Collectors.toList());
+
 		return previewList;
 	}
 	

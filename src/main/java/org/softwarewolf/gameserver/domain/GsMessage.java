@@ -108,6 +108,7 @@ public class GsMessage implements Serializable {
 		preview.setParentMessageId(parentId);
 		preview.setSubject(subject);
 		preview.setMessage(message);
+		preview.setCreated(created);
 		preview.setPosterName(posterName);
 		preview.setPosterId(posterId);
 		preview.setCreated(created);

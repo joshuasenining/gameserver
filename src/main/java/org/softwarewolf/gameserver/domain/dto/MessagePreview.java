@@ -1,6 +1,8 @@
 package org.softwarewolf.gameserver.domain.dto;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 public class MessagePreview {
 	private String messageId;
@@ -49,7 +51,8 @@ public class MessagePreview {
 		this.created = created;
 	}
 	public void setCreated(Instant created) {
-		this.created = created.toString();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy  hh:mm a").withZone(ZoneId.systemDefault());
+		this.created = formatter.format(created);
 	}
 	public String getParentMessageId() {
 		return parentMessageId;

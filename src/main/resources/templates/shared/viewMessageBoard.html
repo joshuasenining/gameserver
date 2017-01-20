@@ -57,6 +57,10 @@
 				$("#submitBtn").hide();
 			}
 			
+			if ($("#messageBoardId").val() == "") {
+				$("#newMessage").hide();
+			}
+			
 			$("#newMessage").click(function() {
 				$("#messageListPreviewDiv").hide();
 				$("#messageSubjectRow").show();
@@ -141,37 +145,14 @@
 				</div> 		    
 			</div>
 			<div class="col-md-5">
-				<button id="newMessage" type="button" class="btn btn-default right">New Message</button>
+				<button id="newMessage" type="button" class="btn btn-default right" th:text="#{messageBoard.newMessage}">New</button>
 			</div>
 		</div>
 
 		<div id="messageListPreviewDiv" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-10">
-				<div id="messagePanelContainer" class="panel panel-primary message-panel-container" >
-				<!-- 
-					<div class="panel-body panel-border">
-						<div class="message-header">Subject</div>
-						<div class="message-snippet">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.</div>
-						<div class="message-footer">by: Poster Name 17:20 UTC</div>
-					</div>
-					<div class="panel-body panel-border">
-						<div class="message-header">Subject 2</div>
-						<div class="message-snippet">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.</div>
-						<div class="message-footer">by: Poster Name 17:24 UTC</div>
-					</div>
-					<div class="panel-body panel-border">
-						<div class="message-header">Subject 3</div>
-						<div class="message-snippet">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.</div>
-						<div class="message-footer">by: Poster Name 18:01 UTC</div>
-					</div>
-					<div class="panel-body panel-border">
-						<div class="message-header">Subject 4</div>
-						<div class="message-snippet">This is a bunch of hooey.</div>
-						<div class="message-footer">by: Poster Name 18:11 UTC</div>
-					</div>
-					 -->
-				</div>	
+				<div id="messagePanelContainer" class="panel panel-primary message-panel-container" ></div>	
 			</div>
 		</div>	
 
