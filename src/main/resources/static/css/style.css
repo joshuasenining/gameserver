@@ -138,6 +138,10 @@ hr {
 	display: inline-block;
 }
 
+.icon-button {
+	padding-left: 5px;	
+}
+
 #importStatus {
 	margin-left: 10px;
 	margin-top: 5 px;

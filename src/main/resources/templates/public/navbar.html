@@ -48,7 +48,6 @@
 		                  <li><a href="/admin/seedData" th:text="#{menu.item.seedData}">Seed</a></li>
 		                  <li><a href="/admin/getSettings" th:text="#{menu.item.settings}">App Settings</a></li>
 		                  <li><a href="/test/testMail">Test Mail</a></li>		                  
-		                  <li><a href="/shared/viewMessageBoard" th:text="#{menu.item.viewMessageBoard}">Msg</a></li>
 		                </ul>
 		              </li>
 		            </ul>
@@ -63,7 +62,6 @@
 		                  <li><a th:if="${session.campaignName}" href="/shared/editBook" th:text="#{editBook.title}">edit b</a></li>
 		                  <li><a href="/gamemaster/editCampaign" th:text="#{menu.item.editCampaign}">Create Camp</a></li>
 		                  <li><a th:if="${session.campaignName}" href="/shared/editFolio" th:text="#{menu.item.editFolio}">Create T</a></li>
-		                  <li><a href="/shared/selectCampaign" th:text="#{menu.item.selectCampaign}">Select Camp</a></li>
 		                  <li><a th:if="${session.campaignName}" href="/shared/viewFolio" th:text="#{viewFolio.title}">view</a></li>
 		                </ul>
 		              </li>
@@ -74,13 +72,24 @@
 		              <li class="dropdown">
 		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-male"></i><span class="left-padding-5" th:text="#{menu.item.player}">Playa</span><span class="caret"></span></a>
 		                <ul class="dropdown-menu" role="menu">
-		                  <li><a href="/shared/selectCampaign" th:text="#{menu.item.joinCampaign}">Select Camp</a></li>
 		                  <li><a href="#">Select Character</a></li>
 		                  <li><a th:if="${session.campaignName}" href="/shared/editFolio" th:text="#{menu.item.editFolio}">Create T</a></li>
 		                  <li><a th:if="${session.campaignName}" href="/shared/viewFolio" th:text="#{viewFolio.title}">view</a></li>
 		                </ul>
 		              </li>
 		            </ul>
+		          </div>
+		          <div sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_GAMEMASTER','ROLE_USER')">
+		          	<ul class="nav navbar-nav">
+		              <li class="dropdown">
+		          		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="glyphicon glyphicon-option-vertical"></i><span class="left-padding-5" th:text="#{menu.item.shared}">S</span><span class="caret"></span></a>
+		                <ul class="dropdown-menu" role="menu">
+<!-- 		                  <li><a href="/shared/selectCampaign" th:text="#{menu.item.joinCampaign}">Select Camp</a></li> -->
+		                  <li><a href="/shared/selectCampaign" th:text="#{menu.item.selectCampaign}">Select Camp</a></li>
+		                  <li><a href="/shared/viewMessageBoard" th:text="#{menu.item.viewMessageBoard}">Msg</a></li>
+		                </ul>
+					  </li>
+		          	</ul>
 		          </div>
 		          <div sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_GAMEMASTER','ROLE_USER')">
 		            <ul class="nav navbar-nav">

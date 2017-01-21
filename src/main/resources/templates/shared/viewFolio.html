@@ -159,7 +159,7 @@
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
 				<button type="button" onclick="print('editor')">
-					<span class="glyphicon glyphicon-print"></span>&nbsp;Print
+					<span class="glyphicon glyphicon-print" th:utext="#{viewFolio.print}"></span>
 				</button>
 			</div>
 		</div>
@@ -180,7 +180,9 @@
 		<div id="copyBtnDiv" class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-7">
-				<input type="button" id="copyBtn" class="basic-margin" value="Copy"></input>
+				<button id="copyBtn" class="basic-margin">
+					<span class="glyphicon glyphicon-duplicate" th:utext="#{viewFolio.copy}"></span>
+				</button>
 			</div>
 		</div>
 	 
