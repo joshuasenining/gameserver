@@ -124,4 +124,33 @@ public class MessageBoardController {
 		feFeedback.setUserStatus(messageBoard + ": " + messageBoardDto.getMessageBoardName());
 		return ControllerUtils.VIEW_MESSAGE_BOARD;
 	}	
+
+	@RequestMapping(value = "/shared/readFullMessage/{messageId}", method = RequestMethod.GET)
+	@Secured({"ADMIN", "GAMEMASTER", "USER"})
+	public String readFullMessage(MessageBoardDto messageBoardDto, @PathVariable String messageId, FeFeedback feFeedback) {
+		messageBoardService.initMessage(messageId, messageBoardDto);
+		messageBoardDto.setForwardingUrl(ControllerUtils.VIEW_MESSAGE_BOARD);
+		
+		feFeedback.setInfo(null);
+		String messageBoard = ControllerUtils.getI18nMessage("messageBoard");
+		feFeedback.setUserStatus(messageBoard + ": " + messageBoardDto.getMessageBoardName());
+		return ControllerUtils.VIEW_MESSAGE_BOARD;
+	}	
+
+
+	@RequestMapping(value = "/shared/replyToMessage/{messageId}", method = RequestMethod.GET)
+	@Secured({"ADMIN", "GAMEMASTER", "USER"})
+	public String replyToMessage(MessageBoardDto messageBoardDto, @PathVariable String messageId, FeFeedback feFeedback) {
+/*
+		messageBoardService.initMessage(messageId, messageBoardDto);
+		messageBoardDto.setForwardingUrl(ControllerUtils.VIEW_MESSAGE_BOARD);
+		
+		String info = ControllerUtils.getI18nMessage(null);
+		feFeedback.setInfo(info);
+		String messageBoard = ControllerUtils.getI18nMessage("messageBoard");
+		feFeedback.setUserStatus(messageBoard + ": " + messageBoardDto.getMessageBoardName());
+	*/
+		return ControllerUtils.VIEW_MESSAGE_BOARD;
+	}	
+	
 }

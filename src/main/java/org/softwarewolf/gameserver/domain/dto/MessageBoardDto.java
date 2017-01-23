@@ -16,6 +16,8 @@ public class MessageBoardDto {
 	private List<MessageBoardUser> userList;
 	private Boolean isOwner;
 	private Boolean isFirstBoard;
+	private Boolean showPreviewList;
+	private Boolean editMessage;
 	private List<ItemSelector> messageBoardList;
 	private String messagePreviewList;
 	private String subjectString;
@@ -109,7 +111,21 @@ public class MessageBoardDto {
 	public void setIsFirstBoard(Boolean isFirstBoard) {
 		this.isFirstBoard = isFirstBoard;
 	}
-	
+
+	public Boolean getShowPreviewList() {
+		return showPreviewList;
+	}
+	public void setShowPreviewList(Boolean showPreviewList) {
+		this.showPreviewList = showPreviewList;
+	}
+
+	public Boolean getEditMessage() {
+		return editMessage;
+	}
+	public void setEditMessage(Boolean editMessage) {
+		this.editMessage = editMessage;
+	}
+
 	public List<ItemSelector> getMessageBoardList() {
 		return messageBoardList;
 	}

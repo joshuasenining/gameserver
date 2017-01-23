@@ -1,6 +1,5 @@
 package org.softwarewolf.gameserver.service;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -139,10 +138,17 @@ public class MessageBoardService implements Serializable {
 		Long boardCount = messageBoardRepository.count();
 		if (boardCount == 0L) {
 			messageBoardDto.setIsFirstBoard(Boolean.TRUE);
+			messageBoardDto.setShowPreviewList(Boolean.FALSE);
 		} else {
 			messageBoardDto.setIsFirstBoard(Boolean.FALSE);
+			messageBoardDto.setShowPreviewList(Boolean.TRUE);
+			getMessagePreviewList(messageBoardDto);
+			String userId = userService.getCurrentUserId();
+			messageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
 		}
-		if (selectedMessageBoardId != null) {
+		if (selectedMessageBoardId == null) {
+			messageBoardDto.setEditMessage(Boolean.FALSE);
+		} else {
 			MessageBoard messageBoard = messageBoardRepository.findOne(selectedMessageBoardId);
 			if (messageBoard != null) {
 				messageBoardDto.setMessageBoardId(selectedMessageBoardId);
@@ -152,36 +158,68 @@ public class MessageBoardService implements Serializable {
 				} else {
 					messageBoardDto.setIsOwner(Boolean.FALSE);
 				}
-				
-				List<MessagePreview> messagePreviewList = getMessagePreviewList(selectedMessageBoardId);
-				if (!messagePreviewList.isEmpty()) {
-					ObjectMapper mapper = new ObjectMapper();
-					try {
-						String preview = mapper.writeValueAsString(messagePreviewList);
-						if (preview != null) {
-							messageBoardDto.setMessagePreviewList(preview);
-						}
-					} catch (JsonProcessingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
 			} else {
 				messageBoardDto.setMessageBoardId(null);
 				messageBoardDto.setMessageBoardName(null);
 				messageBoardDto.setIsOwner(Boolean.TRUE);
 			}
+			messageBoardDto.setEditMessage(Boolean.TRUE);
 		}
+
 		String subjectString = ControllerUtils.getI18nMessage("messageBoard.subject");
 		messageBoardDto.setSubjectString(subjectString);
-		String userId = userService.getCurrentUserId();
-		messageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
-
 		messageBoardDto.setMessageId(null);
 		messageBoardDto.setMessageContent(null);
 		messageBoardDto.setMessageParentId(null);
 		messageBoardDto.setMessageSubject(null);
 
+		return messageBoardDto;
+	}
+	
+	private void getMessagePreviewList(MessageBoardDto messageBoardDto) {
+		String messageBoardId = messageBoardDto.getMessageBoardId();
+		List<MessagePreview> messagePreviewList = getMessagePreviewList(messageBoardId);
+		if (messagePreviewList.isEmpty()) {
+			messageBoardDto.setShowPreviewList(Boolean.FALSE);
+		} else {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				String preview = mapper.writeValueAsString(messagePreviewList);
+				if (preview != null) {
+					messageBoardDto.setMessagePreviewList(preview);
+				}
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} 
+	}
+	
+	public MessageBoardDto initMessage(String messageId, MessageBoardDto messageBoardDto) {
+		GsMessage message = gsMessageRepository.findOne(messageId);
+		if (message == null) {
+			throw new RuntimeException("No message found");
+		}
+		
+		MessageBoard messageBoard = messageBoardRepository.findOne(message.getMessageBoardId());
+		if (messageBoard == null) {
+			throw new RuntimeException("Could not find message board");
+		}
+		messageBoardDto.setIsFirstBoard(Boolean.FALSE);
+		Boolean isOwner = (messageBoard.getOwnerList().contains(userService.getCurrentUserId())) ? Boolean.TRUE : Boolean.FALSE;
+		messageBoardDto.setIsOwner(isOwner);
+		messageBoardDto.setMessageBoardId(messageBoard.getId());
+		messageBoardDto.setThreadId(message.getThreadId());
+		messageBoardDto.setMessageBoardName(messageBoard.getName());
+		messageBoardDto.setMessageContent(message.getMessage());
+		messageBoardDto.setMessageId(message.getId());
+		messageBoardDto.setMessageParentId(message.getParentId());
+		messageBoardDto.setMessageSubject(message.getSubject());
+		messageBoardDto.setEditMessage(Boolean.TRUE);
+		messageBoardDto.setShowPreviewList(Boolean.FALSE);
+		String userId = userService.getCurrentUserId();
+		messageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
+	
 		return messageBoardDto;
 	}
 	
@@ -211,19 +249,6 @@ public class MessageBoardService implements Serializable {
 			throw new RuntimeException(message);
 		}
 		return userString;
-	}
-	
-	private MessageBoard initMessageBoard(String messageBoardId) {
-		MessageBoard messageBoard = null;
-		if (messageBoardId != null) {
-			messageBoard = messageBoardRepository.findOne(messageBoardId);
-		}
-		if (messageBoard == null) {
-			messageBoard = new MessageBoard();
-			messageBoard.addOwner(userService.getCurrentUserId());
-		} 
-		
-		return messageBoard;
 	}
 
 	// This method takes the values for user permissions from the EditMessageBoardDto and

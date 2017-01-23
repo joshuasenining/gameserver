@@ -43,37 +43,59 @@
 					
 					var messagePanelDiv = '<div class="panel-body panel-border">';
 					var subjectString = $("#subjectString").val();
-					var messageHeaderDiv = '<div class="message-header">'+subjectString+': '+subject+'</div>';
-					var messageSnippetDiv = '<div class="message-snippet">'+message+'</div>';
+					var messageHeaderDiv = '<div class="message-header" onclick="getMessage(&apos;'+messageId+'&apos;);">'+subjectString+': '+subject+'</div>';
+					var messageSnippetDiv = '<div class="message-snippet" onclick="getMessage(&apos;'+messageId+'&apos;);">'+message+'</div>';
 					var messageFooterDiv = '<div class="message-footer">'+posterName+'   '+created+'</div>';
 					var panel = messagePanelDiv+messageHeaderDiv+messageSnippetDiv+messageFooterDiv+'</div>';
 					$("#messagePanelContainer").append(panel);
 				});
+			} else {
+				$("#messageListPreviewDiv").hide();	
 			}
 			
-			if ($("#editMessage").val() == "false") {
+
+			if ($("#editMessage").val() === "false") {
+				$("#submitBtn").hide();
+				$("#newMessage").hide();
+			} else {
+				$("#submitBtn").show();
+				$("#newMessage").show();
+			}
+			
+			if ($("#messageId").val().length > 0) {
+				$("#messageSubjectRow").show();
+				$("#editorContainer").show();
+			} else {
 				$("#messageSubjectRow").hide();
 				$("#editorContainer").hide();
-				$("#submitBtn").hide();
-			}
-			
-			if ($("#messageBoardId").val() == "") {
-				$("#newMessage").hide();
 			}
 			
 			$("#newMessage").click(function() {
-				$("#messageListPreviewDiv").hide();
-				$("#messageSubjectRow").show();
-				$("#editorContainer").show();
-				$("#submitBtn").show();
+				if ($("#editMessage").val() == "true") {
+					$("#editMessage").val("false");
+					$("#messageListPreviewDiv").hide();
+					$("#messageSubjectRow").show();
+					$("#editorContainer").show();
+					$("#submitBtn").show();
+				} else {
+					$("#editMessage").val("true");
+					$("#messageListPreviewDiv").show();
+					$("#messageSubjectRow").hide();
+					$("#editorContainer").hide();
+					$("#submitBtn").hide();
+				}
 			});
 			
 			$("#submitBtn").click(function() {
 				$("#viewMessageBoardForm").submit();
 			});
         });
-     
 	});		
+
+	function getMessage(messageId) {
+		$("#readMessageForm").attr("action", "/shared/readFullMessage/"+messageId);
+		$("#readMessageForm").submit();
+	}
 	</script>   
 
 </head>
@@ -102,6 +124,7 @@
 		</div>
 	</div>
  
+ 	<form id="readMessageForm" action="#" th:action="@{/shared/readFullMessage/}" method="get"></form>
 	<form id="viewMessageBoardForm" th:object="${messageBoardDto}" action="#" th:action="@{/shared/postToMessageBoard}" method="post">
 	<input id="messageBoardId" type="hidden" th:field="*{messageBoardId}"></input>
 	<input id="messageBoardName" type="hidden" th:field="*{messageBoardName}"></input>
@@ -110,7 +133,8 @@
 	<input id="threadId" type="hidden" th:field="*{threadId}"></input>
 	<input id="messagePreviewList" type="hidden" th:field="*{messagePreviewList}"></input>
 	<input id="subjectString" type="hidden" th:value="*{subjectString}"></input>
-	<input id="editMessage" type="hidden" value="false"></input>
+	<input id="editMessage" type="hidden" th:value="*{editMessage}"></input>
+	<input id="showPreviewList" type="hidden" th:value="*{showPreviewList}"></input>
 	
 		<div class="row">
 			<div class="col-md-1"></div>

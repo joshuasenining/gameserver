@@ -212,6 +212,7 @@ hr {
 
 .message-header {
 	width: 100%;
+	cursor: pointer;
 }
 
 .message-footer {
@@ -224,6 +225,7 @@ hr {
     height: 2em; 
     line-height: 1em;
     overflow: hidden;	
+    cursor: pointer;
 }
 
 .nav-banner {
