@@ -88,7 +88,7 @@ public class FolioService implements Serializable {
 		String selectedTagString = folioDto.getSelectedTags();
 		JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, SimpleTag.class);
 		List<SimpleTag> selectedTagList = null;
-		if (selectedTagString == null) { 
+		if (selectedTagString == null || selectedTagString.isEmpty()) { 
 			selectedTagList = new ArrayList<>();
 		} else { 
 			try {
@@ -115,10 +115,10 @@ public class FolioService implements Serializable {
 			} 
 		}		
 				
-		if ("add".equals(action)) {
+		if ("add".equals(action) && newTag != null) {
 			selectedTagList.add(newTag);
 			unselectedTagList.remove(newTag);
-		} else if ("remove".equals(action)){
+		} else if ("remove".equals(action) && newTag != null) {
 			selectedTagList.remove(newTag);
 			unselectedTagList.add(newTag);
 		}
@@ -235,7 +235,6 @@ public class FolioService implements Serializable {
 		}
 
 		List<SimpleTag> selectedTagList = folio.getTags();
-		selectedTagList = scrubNull(selectedTagList);
 		if (selectedTagList.size() > 0) {
 			Collections.sort(selectedTagList, new SimpleTagCompare());
 			String selectedTags = tagListToString(selectedTagList);
@@ -252,11 +251,7 @@ public class FolioService implements Serializable {
 		folioDto.setAddTag(null);
 		folioDto.setRemoveTag(null);
 	}
-	
-	private List<SimpleTag> scrubNull(List<SimpleTag> simpleTagList) {
-		return simpleTagList.stream().filter(t -> t != null).collect(Collectors.toList());
-	}
-	
+		
 	private List<SimpleTag> filterTagList(List<SimpleTag> tagList, String campaignId) {
 		// Don't allow the selection of this tag
 		SimpleTag campaignDescriptionTag = simpleTagService.findOneByNameAndCampaignId("Campaign Description", campaignId);
@@ -673,9 +668,9 @@ class SimpleTagCompare implements Comparator<SimpleTag> {
 	@Override
 	public int compare(SimpleTag o1, SimpleTag o2) {
 		if (o1 == null && o2 != null) {
-			return -1;
-		} else if (o1 == null && o2 != null) {
 			return 1;
+		} else if (o1 == null && o2 != null) {
+			return -1;
 		} else if (o1 == null && o2 == null) {
 			return 0;
 		}

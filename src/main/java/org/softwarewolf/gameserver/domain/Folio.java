@@ -83,14 +83,24 @@ public class Folio implements Serializable {
 	}
 	
 	public void setTags(List<SimpleTag> tags) {
-		this.tags = tags;
+		if (tags == null) {
+			this.tags = new ArrayList<>();
+			return;
+		}
+		List<SimpleTag> newTagList = new ArrayList<>();
+		for (SimpleTag st : tags) {
+			if (st != null) {
+				newTagList.add(st);
+			}
+		}
+		this.tags = newTagList;
 	}
 
 	public void addTag(SimpleTag tag) {
 		if (tags == null) {
 			tags = new ArrayList<>();
 		}
-		if (!tags.contains(tag)) {
+		if (tag != null && !tags.contains(tag)) {
 			tags.add(tag);
 		}
 	}
