@@ -69,6 +69,7 @@
 			});
 			
 	        $("#copyBtn").click(function(e) {
+	        	e.preventDefault();
 	        	var folioId = $("#folioId").val();
 	        	$("#copyFolioForm").attr("action", "/shared/copyFolio/"+folioId);
 	        	$("#copyFolioForm").submit();

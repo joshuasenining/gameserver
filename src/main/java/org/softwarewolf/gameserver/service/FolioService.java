@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.controller.utils.GetPermissionsFrom;
@@ -234,6 +235,7 @@ public class FolioService implements Serializable {
 		}
 
 		List<SimpleTag> selectedTagList = folio.getTags();
+		selectedTagList = scrubNull(selectedTagList);
 		if (selectedTagList.size() > 0) {
 			Collections.sort(selectedTagList, new SimpleTagCompare());
 			String selectedTags = tagListToString(selectedTagList);
@@ -249,6 +251,10 @@ public class FolioService implements Serializable {
 		folioDto.setOperationType(operationType);
 		folioDto.setAddTag(null);
 		folioDto.setRemoveTag(null);
+	}
+	
+	private List<SimpleTag> scrubNull(List<SimpleTag> simpleTagList) {
+		return simpleTagList.stream().filter(t -> t != null).collect(Collectors.toList());
 	}
 	
 	private List<SimpleTag> filterTagList(List<SimpleTag> tagList, String campaignId) {
@@ -666,6 +672,14 @@ public class FolioService implements Serializable {
 class SimpleTagCompare implements Comparator<SimpleTag> {
 	@Override
 	public int compare(SimpleTag o1, SimpleTag o2) {
+		if (o1 == null && o2 != null) {
+			return -1;
+		} else if (o1 == null && o2 != null) {
+			return 1;
+		} else if (o1 == null && o2 == null) {
+			return 0;
+		}
+
 		return o1.getName().compareTo(o2.getName());
 	}
 }

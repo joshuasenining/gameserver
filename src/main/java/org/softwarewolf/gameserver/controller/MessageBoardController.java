@@ -137,19 +137,17 @@ public class MessageBoardController {
 		return ControllerUtils.VIEW_MESSAGE_BOARD;
 	}	
 
-
 	@RequestMapping(value = "/shared/replyToMessage/{messageId}", method = RequestMethod.GET)
 	@Secured({"ADMIN", "GAMEMASTER", "USER"})
 	public String replyToMessage(MessageBoardDto messageBoardDto, @PathVariable String messageId, FeFeedback feFeedback) {
-/*
+		// TODO: fix for reply
 		messageBoardService.initMessage(messageId, messageBoardDto);
 		messageBoardDto.setForwardingUrl(ControllerUtils.VIEW_MESSAGE_BOARD);
 		
-		String info = ControllerUtils.getI18nMessage(null);
-		feFeedback.setInfo(info);
+		feFeedback.setInfo(null);
 		String messageBoard = ControllerUtils.getI18nMessage("messageBoard");
 		feFeedback.setUserStatus(messageBoard + ": " + messageBoardDto.getMessageBoardName());
-	*/
+		
 		return ControllerUtils.VIEW_MESSAGE_BOARD;
 	}	
 	

@@ -61,8 +61,6 @@
 		                  <li><a href="#" th:text="#{menu.item.checkNotifications}">Notifications</a></li>
 		                  <li><a th:if="${session.campaignName}" href="/shared/editBook" th:text="#{editBook.title}">edit b</a></li>
 		                  <li><a href="/gamemaster/editCampaign" th:text="#{menu.item.editCampaign}">Create Camp</a></li>
-		                  <li><a th:if="${session.campaignName}" href="/shared/editFolio" th:text="#{menu.item.editFolio}">Create T</a></li>
-		                  <li><a th:if="${session.campaignName}" href="/shared/viewFolio" th:text="#{viewFolio.title}">view</a></li>
 		                </ul>
 		              </li>
 		            </ul>
@@ -73,8 +71,6 @@
 		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-male"></i><span class="left-padding-5" th:text="#{menu.item.player}">Playa</span><span class="caret"></span></a>
 		                <ul class="dropdown-menu" role="menu">
 		                  <li><a href="#">Select Character</a></li>
-		                  <li><a th:if="${session.campaignName}" href="/shared/editFolio" th:text="#{menu.item.editFolio}">Create T</a></li>
-		                  <li><a th:if="${session.campaignName}" href="/shared/viewFolio" th:text="#{viewFolio.title}">view</a></li>
 		                </ul>
 		              </li>
 		            </ul>
@@ -87,6 +83,8 @@
 <!-- 		                  <li><a href="/shared/selectCampaign" th:text="#{menu.item.joinCampaign}">Select Camp</a></li> -->
 		                  <li><a href="/shared/selectCampaign" th:text="#{menu.item.selectCampaign}">Select Camp</a></li>
 		                  <li><a href="/shared/viewMessageBoard" th:text="#{menu.item.viewMessageBoard}">Msg</a></li>
+		                  <li><a th:if="${session.campaignName}" href="/shared/editFolio" th:text="#{menu.item.editFolio}">Create T</a></li>
+		                  <li><a th:if="${session.campaignName}" href="/shared/viewFolio" th:text="#{viewFolio.title}">view</a></li>
 		                </ul>
 					  </li>
 		          	</ul>
