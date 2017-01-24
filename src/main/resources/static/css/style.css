@@ -377,6 +377,15 @@ hr {
     left: 0px;
 }
 
+.ui-dialog {
+	border: 2px solid #000;
+    background-color: rgba(255,255,255,1.0);
+}
+
+.ui-dialog-title {
+	left-margin: 5px;
+}
+
 .ui-widget-header,.ui-state-default, ui-button {
      background:#b9cd6d;
      border: 1px solid #b9cd6d;
