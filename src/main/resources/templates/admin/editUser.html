@@ -186,7 +186,7 @@
 		<div class="row">		        	
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
-				<label class="input-margin">User Name</label>
+				<label class="input-margin" th:text="#{editUser.userName}">User</label>
 			</div>
 			<div class="col-md-9">
 				<input id="username" name="username" class="input-margin" th:field="*{selectedUser.username}" ></input>
@@ -195,7 +195,7 @@
 		<div class="row">		        	
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
-				<label class="input-margin">First Name</label>
+				<label class="input-margin" th:text="#{editUser.firstName}">First</label>
 			</div>
 			<div class="col-md-9">
 				<input id="firstName" class="input-margin" th:field="*{selectedUser.firstName}" ></input>
@@ -204,7 +204,7 @@
 		<div class="row">		        	
 			<div class="col-md-1"></div>
 			<div class="col-md-1">
-				<label class="input-margin">Last Name</label>
+				<label class="input-margin" th:text="#{editUser.lastName}">Last</label>
 			</div>
 			<div class="col-md-9">
 				<input id="lastName" class="input-margin" th:field="*{selectedUser.lastName}" ></input>
