@@ -67,7 +67,8 @@ public class MessageBoardController {
 			feFeedback.setError(errorMessage);
 			feFeedback.setUserStatus(editingMsg + " " +(messageBoard == null ? "" : messageBoard.getName()));
 			boolean fromDb = true;
-			editMessageBoardDto = messageBoardService.initEditMessageBoardDto(editMessageBoardDto.getMessageBoard().getId(), editMessageBoardDto, fromDb);
+			editMessageBoardDto = messageBoardService.initEditMessageBoardDto(editMessageBoardDto.getMessageBoard().getId(), 
+					editMessageBoardDto, fromDb);
 			return ControllerUtils.EDIT_MESSAGE_BOARD;
 		}
 		String modified = ControllerUtils.getI18nMessage("editMessageBoard.modified");
@@ -80,19 +81,20 @@ public class MessageBoardController {
 	@Secured({"ADMIN","USER"})
 	public String viewMessageBoard(MessageBoardDto messageBoardDto, 
 			final FeFeedback feFeedback) {
-		return viewMessageBoardParent(messageBoardDto, null, feFeedback);
+		return viewMessageBoardParent(messageBoardDto, null, feFeedback, MessageBoardDto.BoardState.NO_BOARD_SELECTED.toString());
 	}
 	
 	@RequestMapping(value = "/shared/viewMessageBoard/{messageBoardId}", method = RequestMethod.GET)
 	@Secured({"ADMIN", "GAMEMASTER", "USER"})
 	public String selectMessage(MessageBoardDto messageBoardDto, 
 			@PathVariable String messageBoardId, FeFeedback feFeedback) {
-		return viewMessageBoardParent(messageBoardDto, messageBoardId, feFeedback);
+		return viewMessageBoardParent(messageBoardDto, messageBoardId, feFeedback, MessageBoardDto.BoardState.PREVIEW.toString());
 	}
 	
-	private String viewMessageBoardParent(MessageBoardDto messageBoardDto, String messageBoardId, FeFeedback feFeedback) {
+	private String viewMessageBoardParent(MessageBoardDto messageBoardDto, String messageBoardId, FeFeedback feFeedback,
+			String boardState) {
 		try {
-			messageBoardService.initMessageBoardDto(messageBoardId, messageBoardDto);
+			messageBoardService.initMessageBoardDto(messageBoardId, messageBoardDto, MessageBoardDto.BoardState.fromString(boardState));
 		} catch (Exception e) {
 			String errorMessage = e.getMessage();
 			feFeedback.setError(errorMessage);
@@ -115,7 +117,8 @@ public class MessageBoardController {
 	@Secured({"ADMIN", "GAMEMASTER", "USER"})
 	public String postMessage(MessageBoardDto messageBoardDto, FeFeedback feFeedback) {
 		messageBoardService.saveGsMessage(messageBoardDto);
-		messageBoardService.initMessageBoardDto(messageBoardDto.getMessageBoardId(), messageBoardDto);
+		messageBoardService.initMessageBoardDto(messageBoardDto.getMessageBoardId(), messageBoardDto,
+				MessageBoardDto.BoardState.PREVIEW);
 		messageBoardDto.setForwardingUrl(ControllerUtils.VIEW_MESSAGE_BOARD);
 		
 		String info = ControllerUtils.getI18nMessage("messageBoard.status.success");
@@ -128,7 +131,7 @@ public class MessageBoardController {
 	@RequestMapping(value = "/shared/readFullMessage/{messageId}", method = RequestMethod.GET)
 	@Secured({"ADMIN", "GAMEMASTER", "USER"})
 	public String readFullMessage(MessageBoardDto messageBoardDto, @PathVariable String messageId, FeFeedback feFeedback) {
-		messageBoardService.initMessage(messageId, messageBoardDto);
+		messageBoardService.initMessage(messageId, messageBoardDto, MessageBoardDto.BoardState.READ);
 		messageBoardDto.setForwardingUrl(ControllerUtils.VIEW_MESSAGE_BOARD);
 		
 		feFeedback.setInfo(null);
@@ -141,7 +144,7 @@ public class MessageBoardController {
 	@Secured({"ADMIN", "GAMEMASTER", "USER"})
 	public String replyToMessage(MessageBoardDto messageBoardDto, @PathVariable String messageId, FeFeedback feFeedback) {
 		// TODO: fix for reply
-		messageBoardService.initMessage(messageId, messageBoardDto);
+		messageBoardService.initMessage(messageId, messageBoardDto, MessageBoardDto.BoardState.EDIT);
 		messageBoardDto.setForwardingUrl(ControllerUtils.VIEW_MESSAGE_BOARD);
 		
 		feFeedback.setInfo(null);

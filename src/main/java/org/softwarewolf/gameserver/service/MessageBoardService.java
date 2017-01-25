@@ -134,21 +134,18 @@ public class MessageBoardService implements Serializable {
 		return editMessageBoardDto;
 	}
 
-	public MessageBoardDto initMessageBoardDto(String selectedMessageBoardId, MessageBoardDto messageBoardDto) {
+	public MessageBoardDto initMessageBoardDto(String selectedMessageBoardId, MessageBoardDto messageBoardDto, 
+			MessageBoardDto.BoardState boardState) {
 		Long boardCount = messageBoardRepository.count();
 		if (boardCount == 0L) {
-			messageBoardDto.setIsFirstBoard(Boolean.TRUE);
-			messageBoardDto.setShowPreviewList(Boolean.FALSE);
+			messageBoardDto.setBoardState(MessageBoardDto.BoardState.FIRST_BOARD.toString());
 		} else {
-			messageBoardDto.setIsFirstBoard(Boolean.FALSE);
-			messageBoardDto.setShowPreviewList(Boolean.TRUE);
+			messageBoardDto.setBoardState(boardState);
 			getMessagePreviewList(messageBoardDto);
 			String userId = userService.getCurrentUserId();
 			messageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
 		}
-		if (selectedMessageBoardId == null) {
-			messageBoardDto.setEditMessage(Boolean.FALSE);
-		} else {
+		if (selectedMessageBoardId != null) {
 			MessageBoard messageBoard = messageBoardRepository.findOne(selectedMessageBoardId);
 			if (messageBoard != null) {
 				messageBoardDto.setMessageBoardId(selectedMessageBoardId);
@@ -163,15 +160,17 @@ public class MessageBoardService implements Serializable {
 				messageBoardDto.setMessageBoardName(null);
 				messageBoardDto.setIsOwner(Boolean.TRUE);
 			}
-			messageBoardDto.setEditMessage(Boolean.TRUE);
 		}
 
 		String subjectString = ControllerUtils.getI18nMessage("messageBoard.subject");
-		messageBoardDto.setSubjectString(subjectString);
-		messageBoardDto.setMessageId(null);
-		messageBoardDto.setMessageContent(null);
-		messageBoardDto.setMessageParentId(null);
-		messageBoardDto.setMessageSubject(null);
+
+		if (!(MessageBoardDto.BoardState.EDIT.equals(boardState) || MessageBoardDto.BoardState.READ.equals(boardState))) {
+			messageBoardDto.setSubjectString(subjectString);
+			messageBoardDto.setMessageId(null);
+			messageBoardDto.setMessageContent(null);
+			messageBoardDto.setMessageParentId(null);
+			messageBoardDto.setMessageSubject(null);
+		}
 
 		return messageBoardDto;
 	}
@@ -179,9 +178,7 @@ public class MessageBoardService implements Serializable {
 	private void getMessagePreviewList(MessageBoardDto messageBoardDto) {
 		String messageBoardId = messageBoardDto.getMessageBoardId();
 		List<MessagePreview> messagePreviewList = getMessagePreviewList(messageBoardId);
-		if (messagePreviewList.isEmpty()) {
-			messageBoardDto.setShowPreviewList(Boolean.FALSE);
-		} else {
+		if (!messagePreviewList.isEmpty()) {
 			ObjectMapper mapper = new ObjectMapper();
 			try {
 				String preview = mapper.writeValueAsString(messagePreviewList);
@@ -195,7 +192,7 @@ public class MessageBoardService implements Serializable {
 		} 
 	}
 	
-	public MessageBoardDto initMessage(String messageId, MessageBoardDto messageBoardDto) {
+	public MessageBoardDto initMessage(String messageId, MessageBoardDto messageBoardDto, MessageBoardDto.BoardState boardState) {
 		GsMessage message = gsMessageRepository.findOne(messageId);
 		if (message == null) {
 			throw new RuntimeException("No message found");
@@ -205,7 +202,6 @@ public class MessageBoardService implements Serializable {
 		if (messageBoard == null) {
 			throw new RuntimeException("Could not find message board");
 		}
-		messageBoardDto.setIsFirstBoard(Boolean.FALSE);
 		Boolean isOwner = (messageBoard.getOwnerList().contains(userService.getCurrentUserId())) ? Boolean.TRUE : Boolean.FALSE;
 		messageBoardDto.setIsOwner(isOwner);
 		messageBoardDto.setMessageBoardId(messageBoard.getId());
@@ -215,8 +211,7 @@ public class MessageBoardService implements Serializable {
 		messageBoardDto.setMessageId(message.getId());
 		messageBoardDto.setMessageParentId(message.getParentId());
 		messageBoardDto.setMessageSubject(message.getSubject());
-		messageBoardDto.setEditMessage(Boolean.TRUE);
-		messageBoardDto.setShowPreviewList(Boolean.FALSE);
+		messageBoardDto.setBoardState(boardState.toString());
 		String userId = userService.getCurrentUserId();
 		messageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
 	

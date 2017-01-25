@@ -53,37 +53,50 @@
 				$("#messageListPreviewDiv").hide();	
 			}
 			
-
-			if ($("#editMessage").val() === "false") {
-				$("#submitBtn").hide();
+			if ($("#boardState").val() === "NO_BOARD_SELECTED") {
+				$("#messageListPreviewDiv").hide();
 				$("#newMessage").hide();
-			} else {
-				$("#submitBtn").show();
-				$("#newMessage").show();
-			}
-			
-			if ($("#messageId").val().length > 0) {
-				$("#messageSubjectRow").show();
-				$("#editorContainer").show();
-			} else {
 				$("#messageSubjectRow").hide();
 				$("#editorContainer").hide();
+				$("#viewContainer").hide();
+				$("#submitBtn").hide();
+			}
+			
+			if ($("#boardState").val() === "EDIT") {
+				$("#messageListPreviewDiv").hide();
+				$("#newMessage").show();
+				$("#messageSubjectRow").show();
+				$("#editorContainer").show();
+				$("#viewContainer").hide();
+				$("#submitBtn").show();
+			} 
+
+			if ($("#boardState").val() === "READ") {
+				$("#messageListPreviewDiv").hide();
+				$("#newMessage").hide();
+				$("#messageSubjectRow").show();
+				$("#messageSubjectInput").prop("disabled", "true");
+				$("#editorContainer").hide();
+        		var data = $("#messageContent").val();
+        		$("#viewContainer").html(data);
+				$("#viewContainer").show();
+				$("#submitBtn").hide();
+			} 
+			
+			if ($("#boardState").val() === "PREVIEW") {
+				$("#messageListPreviewDiv").show();
+				$("#newMessage").show();
+				$("#messageSubjectRow").hide();
+				$("#editorContainer").hide();
+				$("#viewContainer").hide();
+				$("#submitBtn").hide();
 			}
 			
 			$("#newMessage").click(function() {
-				if ($("#editMessage").val() == "true") {
-					$("#editMessage").val("false");
-					$("#messageListPreviewDiv").hide();
-					$("#messageSubjectRow").show();
-					$("#editorContainer").show();
-					$("#submitBtn").show();
-				} else {
-					$("#editMessage").val("true");
-					$("#messageListPreviewDiv").show();
-					$("#messageSubjectRow").hide();
-					$("#editorContainer").hide();
-					$("#submitBtn").hide();
-				}
+				$("#messageListPreviewDiv").hide();
+				$("#messageSubjectRow").show();
+				$("#editorContainer").show();
+				$("#submitBtn").show();
 			});
 			
 			$("#submitBtn").click(function() {
@@ -133,8 +146,8 @@
 	<input id="threadId" type="hidden" th:field="*{threadId}"></input>
 	<input id="messagePreviewList" type="hidden" th:field="*{messagePreviewList}"></input>
 	<input id="subjectString" type="hidden" th:value="*{subjectString}"></input>
-	<input id="editMessage" type="hidden" th:value="*{editMessage}"></input>
-	<input id="showPreviewList" type="hidden" th:value="*{showPreviewList}"></input>
+	<input id="boardState" type="hidden" th:value="*{boardState}"></input>
+	<input id="messageContent" type="hidden" th:value="*{messageContent}"></input>
 	
 		<div class="row">
 			<div class="col-md-1"></div>
@@ -186,7 +199,7 @@
 				<label class="input-margin" th:text="#{messageBoard.subject}">Sub</label>
 			</div>
 			<div class="col-md-9">
-				<input class="input-margin fullWidth" th:field="*{messageSubject}"></input>
+				<input id="messageSubjectInput" class="input-margin fullWidth" th:field="*{messageSubject}"></input>
 			</div>
 		</div>
 		<div id="editorContainer" class="folio-margin">
@@ -196,10 +209,11 @@
 				</div>
 			</div>
 		</div>
+		
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-10">
-				<div id="viewContainer" class="hide folio-margin"></div>
+				<div id="viewContainer" class="folio-margin"></div>
 			</div>
 		</div>
 

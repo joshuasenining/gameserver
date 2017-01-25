@@ -6,6 +6,18 @@ import org.softwarewolf.gameserver.domain.ItemSelector;
 import org.softwarewolf.gameserver.domain.MessageBoardUser;
 
 public class MessageBoardDto {
+	public enum BoardState {
+		NO_BOARD_SELECTED, FIRST_BOARD, PREVIEW, READ, EDIT;
+		
+		public static BoardState fromString(String boardStateName) {
+			for (BoardState bs : BoardState.values()) {
+				if (boardStateName.equals(bs.toString())) {
+					return bs;
+				}
+			}
+			return null;
+		}
+	}
 	private String messageBoardId;
 	private String messageBoardName;
 	private String messageId;
@@ -15,9 +27,7 @@ public class MessageBoardDto {
 	private String messageContent;
 	private List<MessageBoardUser> userList;
 	private Boolean isOwner;
-	private Boolean isFirstBoard;
-	private Boolean showPreviewList;
-	private Boolean editMessage;
+	private String boardState;
 	private List<ItemSelector> messageBoardList;
 	private String messagePreviewList;
 	private String subjectString;
@@ -105,27 +115,16 @@ public class MessageBoardDto {
 		this.isOwner = isOwner;
 	}
 
-	public Boolean getIsFirstBoard() {
-		return isFirstBoard;
+	public void setBoardState(String boardState) {
+		this.boardState = boardState;
 	}
-	public void setIsFirstBoard(Boolean isFirstBoard) {
-		this.isFirstBoard = isFirstBoard;
+	public void setBoardState(BoardState boardState) {
+		this.boardState = boardState.toString();
 	}
-
-	public Boolean getShowPreviewList() {
-		return showPreviewList;
+	public String getBoardState() {
+		return boardState;
 	}
-	public void setShowPreviewList(Boolean showPreviewList) {
-		this.showPreviewList = showPreviewList;
-	}
-
-	public Boolean getEditMessage() {
-		return editMessage;
-	}
-	public void setEditMessage(Boolean editMessage) {
-		this.editMessage = editMessage;
-	}
-
+	
 	public List<ItemSelector> getMessageBoardList() {
 		return messageBoardList;
 	}
