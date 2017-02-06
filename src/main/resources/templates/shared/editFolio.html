@@ -32,6 +32,8 @@
 	<script th:inline="javascript">
 	$(document).ready(function() {
 		$( window ).load(function() {
+			$("#viewContainer").hide();
+			
 			var unselectedList = $("#unselectedTags")[0].value;
 			var unselectedTagList = null;
 			if (unselectedList.length > 0) {
@@ -172,10 +174,11 @@
         	var cvValue = $("#changeView").attr("value");
         	if (cvValue == "View as HTML") {
         		var data = CKEDITOR.instances.editor.getData();
+        		$("#viewContainer").show();
         		$("#viewContainer").html(data);
-        		$("#viewContainer").removeClass("hide");
-        		$("#editorContainer").addClass("hide");
+        		$("#editorContainer").hide();
         		$("#changeView").attr("value", "Edit");
+        		$(".tools-container").hide();
         		if ($("#isOwner").val() == "true") {
         			$("#permissionLabel").hide();
         			$("#permissionDiv").hide();
@@ -185,6 +188,7 @@
         		$("#viewContainer").hide();
         		$("#editorContainer").show();
         		$("#changeView").attr("value", "View as HTML");
+        		$(".tools-container").show();
         		if ($("#isOwner").val() == "true") {
         			$("#permissionLabel").show();
 	        		$("#permissionDiv").show();
@@ -372,7 +376,7 @@
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-10">
-				<div id="viewContainer" class="hide folio-margin"></div>
+				<div id="viewContainer" class="folio-margin"></div>
 			</div>
 		</div>
 		
