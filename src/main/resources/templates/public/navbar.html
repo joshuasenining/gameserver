@@ -37,7 +37,7 @@
 		          <a class="navbar-brand" href="/shared/menu" th:text="#{login.appnamne}">Project name</a>
 		        </div>
 		        <div id="navbar" class="navbar-collapse collapse">
-		          <div sec:authorize="hasRole('ROLE_ADMIN')">
+		          <div sec:authorize="hasRole('ROLE_ADMIN')"> 
 		            <ul class="nav navbar-nav">
 		              <li class="dropdown">
 		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-cog"></i><span class="left-padding-5" th:text="#{menu.item.admin}">Ad</span><span class="caret"></span></a>
@@ -62,9 +62,9 @@
 		              <li class="dropdown">
 		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-book"></i><span class="left-padding-5" th:text="#{menu.item.gamemaster}">Gm</span><span class="caret"></span></a>
 		                <ul class="dropdown-menu" role="menu">
-		                  <li><a href="/gamemaster/campaignHome" th:text="#{menu.item.campaignHome}">Camp Home</a></li>
+		                  <li th:if="${session.campaignName != null}"><a href="/gamemaster/campaignHome" th:text="#{menu.item.campaignHome}">Camp Home</a></li>
 		                  <li><a href="#" th:text="#{menu.item.checkNotifications}">Notifications</a></li>
-		                  <li><a th:if="${session.campaignName}" href="/shared/editBook" th:text="#{editBook.title}">edit b</a></li>
+		                  <li th:if="${session.campaignName != null}"><a th:if="${session.campaignName}" href="/shared/editBook" th:text="#{editBook.title}">edit b</a></li>
 		                  <li><a href="/gamemaster/editCampaign" th:text="#{menu.item.editCampaign}">Create Camp</a></li>
 		                </ul>
 		              </li>
@@ -74,7 +74,7 @@
 		            <ul class="nav navbar-nav">
 		              <li class="dropdown">
 		                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-male"></i><span class="left-padding-5" th:text="#{menu.item.player}">Playa</span><span class="caret"></span></a>
-		                <ul class="dropdown-menu" role="menu">
+		                <ul th:if="${session.campaignName != null}" class="dropdown-menu" role="menu">
 		                  <li><a href="#">Select Character</a></li>
 		                </ul>
 		              </li>
