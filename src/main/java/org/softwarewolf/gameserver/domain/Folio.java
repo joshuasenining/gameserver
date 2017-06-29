@@ -11,6 +11,7 @@ import org.softwarewolf.gameserver.controller.utils.ControllerUtils;
 import org.softwarewolf.gameserver.domain.SimpleTag;
 import org.softwarewolf.gameserver.domain.dto.FolioDescriptor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -25,6 +26,7 @@ public class Folio implements Serializable {
 	@Id
 	private String id;
 	private String title;
+	@Indexed
 	private String campaignId;
 	private String content;
 	private List<SimpleTag> tags;

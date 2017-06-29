@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -18,6 +19,7 @@ public class CampaignUser implements Serializable, Comparable<Object> {
 	private static final long serialVersionUID = 1L;
 	@Id
 	private String id;
+	@Indexed
 	private String campaignId;
 	// Permission in the campaign (PERMISSION_OWNER, PERMISSION_GAMEMASTER, PERMISSION_PLAYER)
 	private String permission;
