@@ -46,7 +46,7 @@ public class CampaignService {
 		Campaign campaign = null;
 		Folio folio = null;
 		if (campaignId != null) {
-			campaign = campaignRepository.findOne(campaignId);
+			campaign = campaignRepository.findOneById(campaignId);
 		} else {
 			campaign = new Campaign();
 		}
@@ -114,13 +114,13 @@ public class CampaignService {
 				cu.setCampaignId(campaign.getId());
 			}
 			List<CampaignUser> trimmedCampaignUserList = campaignUserList.stream().filter(c -> !c.getPermission().equals("NO_ACCESS")).collect(Collectors.toList());
-			campaignUserList = campaignUserRepository.save(trimmedCampaignUserList);
+			campaignUserList = campaignUserRepository.saveAll(trimmedCampaignUserList);
 			campaign = campaignRepository.save(campaign);
 			campaignId = campaign.getId();
 		} else {
 			// We need to update the CampaignUsers
 			campaignUserService.deleteByCampaignId(campaignId);
-			campaignUserRepository.save(campaignUserList);
+			campaignUserRepository.saveAll(campaignUserList);
 		}
 		List<CampaignUser> ownerList = campaignUserService.findAllByCampaignIdAndPermission(campaignId, ControllerUtils.PERMISSION_OWNER);
 		// We can't have 0 owners
@@ -226,7 +226,7 @@ public class CampaignService {
 	}
 	
 	public String getCampaignName(String campaignId) {
-		Campaign campaign = campaignRepository.findOne(campaignId);
+		Campaign campaign = campaignRepository.findOneById(campaignId);
 		if (campaign == null) {
 			String message = ControllerUtils.getI18nMessage("editCampaign.error.noCampaignName");
 			throw new IllegalArgumentException(message + " " + campaignId);
@@ -235,7 +235,7 @@ public class CampaignService {
 	}
 	
 	public Campaign findOne(String id) {
-		return campaignRepository.findOne(id);
+		return campaignRepository.findOneById(id);
 	}
 	
 	public Campaign findOneByName(String name) {

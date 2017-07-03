@@ -95,7 +95,7 @@ public class MessageBoardService implements Serializable {
 		String userId = userService.getCurrentUserId();
 		if (selectedMessageBoardId != null) {
 			if (fromDb) {
-				messageBoard = messageBoardRepository.findOne(selectedMessageBoardId);
+				messageBoard = messageBoardRepository.findOneById(selectedMessageBoardId);
 				if (messageBoard == null) {
 					String message = ControllerUtils.getI18nMessage("messageBoard.error.cantView");
 					throw new RuntimeException(message);
@@ -146,7 +146,7 @@ public class MessageBoardService implements Serializable {
 			messageBoardDto.setMessageBoardList(getAllViewableMessageBoards(userId));
 		}
 		if (selectedMessageBoardId != null) {
-			MessageBoard messageBoard = messageBoardRepository.findOne(selectedMessageBoardId);
+			MessageBoard messageBoard = messageBoardRepository.findOneById(selectedMessageBoardId);
 			if (messageBoard != null) {
 				messageBoardDto.setMessageBoardId(selectedMessageBoardId);
 				messageBoardDto.setMessageBoardName(messageBoard.getName());
@@ -193,12 +193,12 @@ public class MessageBoardService implements Serializable {
 	}
 	
 	public MessageBoardDto initMessage(String messageId, MessageBoardDto messageBoardDto, MessageBoardDto.BoardState boardState) {
-		GsMessage message = gsMessageRepository.findOne(messageId);
+		GsMessage message = gsMessageRepository.findOneById(messageId);
 		if (message == null) {
 			throw new RuntimeException("No message found");
 		}
 		
-		MessageBoard messageBoard = messageBoardRepository.findOne(message.getMessageBoardId());
+		MessageBoard messageBoard = messageBoardRepository.findOneById(message.getMessageBoardId());
 		if (messageBoard == null) {
 			throw new RuntimeException("Could not find message board");
 		}
@@ -300,7 +300,7 @@ public class MessageBoardService implements Serializable {
 	}
 	
 	public MessageBoard findOne(String id) {
-		return messageBoardRepository.findOne(id);
+		return messageBoardRepository.findOneById(id);
 	}
 	
 	public void deleteByName(String name) {

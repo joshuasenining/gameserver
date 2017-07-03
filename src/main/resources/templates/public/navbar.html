@@ -89,7 +89,7 @@
 		                  <li><a href="/shared/selectCampaign" th:text="#{menu.item.selectCampaign}">Select Camp</a></li>
 		                  <li><a href="/shared/viewMessageBoard" th:text="#{menu.item.viewMessageBoard}">Msg</a></li>
 		                  <li><a th:if="${session.campaignName}" href="/shared/editFolio" th:text="#{menu.item.editFolio}">Create T</a></li>
-		                  <li><a th:if="${session.campaignName}" href="/shared/viewFolio" th:text="#{viewFolio.title}">view</a></li>
+		                  <li><a th:if="${session.campaignName}" href="/shared/selectFolio?operation=view" th:text="#{viewFolio.title}">view</a></li>
 		                </ul>
 					  </li>
 		          	</ul>

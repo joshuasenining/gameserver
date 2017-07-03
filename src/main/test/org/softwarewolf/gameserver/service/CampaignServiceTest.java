@@ -247,7 +247,7 @@ public class CampaignServiceTest {
 	public void testInitFirstCampaignDto() {
 		List<Campaign> allCampaigns = new ArrayList<>(Arrays.asList(new Campaign[] {firstCampaign, secondCampaign}));
 		doReturn(allCampaigns).when(campaignRepository).findAll();
-		doReturn(firstCampaign).when(campaignRepository).findOne(firstCampaignId);
+		doReturn(firstCampaign).when(campaignRepository).findOneById(firstCampaignId);
 		doReturn(allUsers).when(userService).findAll();
 		doReturn(firstUserId).when(userService).getCurrentUserId();
 		doReturn(allFirstCampaignUsers).when(campaignUserService).findAllByCampaignId(firstCampaignId);
@@ -278,7 +278,7 @@ public class CampaignServiceTest {
 	public void testInitSecondCampaignDto() {
 		List<Campaign> allCampaigns = new ArrayList<>(Arrays.asList(new Campaign[] {firstCampaign, secondCampaign}));
 		doReturn(allCampaigns).when(campaignRepository).findAll();
-		doReturn(secondCampaign).when(campaignRepository).findOne(secondCampaignId);
+		doReturn(secondCampaign).when(campaignRepository).findOneById(secondCampaignId);
 		doReturn(allUsers).when(userService).findAll();
 		doReturn(fourthUserId).when(userService).getCurrentUserId();
 		doReturn(allSecondCampaignUsers).when(campaignUserService).findAllByCampaignId(secondCampaignId);

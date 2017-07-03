@@ -18,7 +18,7 @@ public class SimpleTagService {
 	private SimpleTagRepository simpleTagRepository;
 	
 	public SimpleTag findOne(String id) {
-		return simpleTagRepository.findOne(id);
+		return simpleTagRepository.findOneById(id);
 	}
 	
 	public List<SimpleTag> getTagList(String campaignId, List<SimpleTag> excludeTags) {
@@ -93,6 +93,6 @@ public class SimpleTagService {
 	}
 	
 	public List<SimpleTag> save(List<SimpleTag> tagList) {
-		return simpleTagRepository.save(tagList);
+		return simpleTagRepository.saveAll(tagList);
 	}
 }

@@ -7,7 +7,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 public interface SimpleTagRepository extends MongoRepository<SimpleTag, String> {
-
+	SimpleTag findOneById(String id);
+	
 	SimpleTag findOneByName(String arg0);
 	
 	SimpleTag findOneByNameAndCampaignId(String arg0, String arg1);

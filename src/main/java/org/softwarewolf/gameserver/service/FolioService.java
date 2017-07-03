@@ -263,7 +263,7 @@ public class FolioService implements Serializable {
 	private Folio initFolio(String folioId, String campaignId) {
 		Folio folio = null;
 		if (folioId != null) {
-			folio = folioRepository.findOne(folioId);
+			folio = folioRepository.findOneById(folioId);
 		}
 		if (folio == null) {
 			folio = new Folio();
@@ -400,7 +400,7 @@ public class FolioService implements Serializable {
 	}
 	
 	public Folio addTagToFolio(String folioId, SimpleTag tag) throws Exception {
-		Folio folio = folioRepository.findOne(folioId);
+		Folio folio = folioRepository.findOneById(folioId);
 		if (folio != null) {
 			return addTagToFolio(folio, tag);
 		}
@@ -462,7 +462,7 @@ public class FolioService implements Serializable {
 	}
 	
 	public Folio findOne(String id) {
-		return folioRepository.findOne(id);
+		return folioRepository.findOneById(id);
 	}
 	
 	/**
@@ -639,7 +639,7 @@ public class FolioService implements Serializable {
 	}
 
 	public Folio getCampaignDescription(String campaignId) {
-		Campaign campaign = campaignRepository.findOne(campaignId);
+		Campaign campaign = campaignRepository.findOneById(campaignId);
 		return folioRepository.findOneByCampaignIdAndTitle(campaignId, campaign.getName());
 	}
 
@@ -660,7 +660,7 @@ public class FolioService implements Serializable {
 	}	
 
 	public List<Folio> save(List<Folio> folioList) {
-		return folioRepository.save(folioList);
+		return folioRepository.saveAll(folioList);
 	}
 }
 

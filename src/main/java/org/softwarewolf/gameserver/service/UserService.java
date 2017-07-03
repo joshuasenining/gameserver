@@ -108,7 +108,7 @@ public class UserService {
 		Map<String, String> allRoles = getAllRoles();
 
 		if (userId != null) {
-			User user = userRepository.findOne(userId);
+			User user = userRepository.findOneById(userId);
 			List<String> userRoles = user.getRoles();
 			Map<String, String> selectedRoles = new HashMap<>();
 			for (String userRole : userRoles) {
@@ -135,7 +135,7 @@ public class UserService {
 	}
 	
 	public User getUser(String userID) {
-		return userRepository.findOne(userID);
+		return userRepository.findOneById(userID);
 	}
 
 	public String roleToString(String role) {
@@ -148,7 +148,7 @@ public class UserService {
 	}
 	
 	public Map<String, String> makeIdUsernameMap(String userId) {
-		User user = userRepository.findOne(userId);
+		User user = userRepository.findOneById(userId);
 		Map<String, String> userMap = new HashMap<String, String>();
 		userMap.put(user.getId(), user.getUsername());
 		
@@ -378,7 +378,7 @@ public class UserService {
 
 		User prevVersion = null;
 		if (user.getId() != null) {
-			prevVersion = userRepository.findOne(user.getId());
+			prevVersion = userRepository.findOneById(user.getId());
 		}
 		String newPassword = userAdminDto.getPassword();
 		String verifyPassword = userAdminDto.getVerifyPassword();
@@ -411,7 +411,7 @@ public class UserService {
 		if (userId == null) {
 			user = new User();
 		} else {
-			user = userRepository.findOne(userId);
+			user = userRepository.findOneById(userId);
 			if (user == null) {
 				user = new User();
 			}
@@ -468,6 +468,6 @@ public class UserService {
 	}
 	
 	public List<User> save(List<User> userList) {
-		return userRepository.save(userList);
+		return userRepository.saveAll(userList);
 	}
 }

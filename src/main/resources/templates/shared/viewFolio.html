@@ -32,6 +32,10 @@
 	<script th:inline="javascript">
 	$(document).ready(function() {
 		$( window ).load(function() {
+			var selectedTags = $("#selectedTags")[0];
+			if (selectedTags == null) {
+				alert("no selected tags");
+			}
 			var selectedTagsString = $("#selectedTags")[0].value;
 			if (selectedTagsString.length > 0) {
 				selectedTagList = jQuery.parseJSON(selectedTagsString);
@@ -149,7 +153,7 @@
 				<label class="input-margin" th:text="#{viewFolio.tags}">Ta</label>
 			</div>
 			<div class="col-md-8 input-margin">
-				<span id="tagList" th:field="*{selectedtags}"></span>
+				<span id="tagList" th:field="*{selectedTags}"></span>
 			</div>
 		</div>
 

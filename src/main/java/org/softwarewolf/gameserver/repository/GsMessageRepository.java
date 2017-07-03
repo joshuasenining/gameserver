@@ -6,6 +6,7 @@ import org.softwarewolf.gameserver.domain.GsMessage;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface GsMessageRepository extends MongoRepository<GsMessage, String> {
+	GsMessage findOneById(String id);
 	
 	List<GsMessage> findAllByThreadId(String threadId);
 	

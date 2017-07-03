@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface CampaignRepository extends MongoRepository<Campaign, String> {
 
+	Campaign findOneById(String id);
+	
 	Campaign findOneByName(String arg0);
 
 	@Query("{'ownerId' : ?1}")

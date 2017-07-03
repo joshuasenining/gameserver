@@ -34,7 +34,7 @@ public class CampaignUserService {
 	}
 	
 	public List<CampaignUser> save(List<CampaignUser> campaignUserList) {
-		return campaignUserRepository.save(campaignUserList);
+		return campaignUserRepository.saveAll(campaignUserList);
 	}
 	
 	public void delete(CampaignUser campaignUser) {
