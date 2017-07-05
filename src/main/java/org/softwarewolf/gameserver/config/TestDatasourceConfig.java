@@ -5,10 +5,8 @@ import java.util.Collections;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
-import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventListener;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -19,8 +17,6 @@ import com.mongodb.ServerAddress;
 
 @Configuration
 @EnableMongoRepositories(basePackages = "org.softwarewolf.gameserver.repository")
-//@EnableMongoAuditing(auditorAwareRef = "springSecurityAuditorAware")
-//@ImportResource({"classpath*:/db.xml"})
 @Profile("test")
 public class TestDatasourceConfig extends AbstractMongoConfiguration {
 //    private final Logger log = LoggerFactory.getLogger(DatabaseConfiguration.class);
@@ -30,7 +26,7 @@ public class TestDatasourceConfig extends AbstractMongoConfiguration {
     private Integer port;
     @Value("${spring.data.mongodb.testusername}")
     private String username;
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.data.mongodb.testdatabase}")
     private String database;
     @Value("${spring.data.mongodb.testpassword}")
     private String password;

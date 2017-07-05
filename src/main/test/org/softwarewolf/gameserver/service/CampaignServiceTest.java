@@ -23,6 +23,7 @@ import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.CampaignDto;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
+import org.softwarewolf.gameserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
@@ -51,6 +52,9 @@ public class CampaignServiceTest {
 	
 	@Autowired
 	private DataSeeder dataSeeder;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	private static User firstUser;
 	private static String firstUserEmail = "firstUser@gmail.com";
@@ -236,8 +240,6 @@ public class CampaignServiceTest {
 		secondCampaignPlayerList.addAll(new ArrayList<>(Arrays.asList(new String[] {secondUser.getId(), thirdUser.getId()})));
 		secondCampaign.setPlayerList(secondCampaignPlayerList);
 		secondCampaign.setCampaignFolioId(secondCampaignFolioId);
-		
-		
 	}
 	
 	@Before
@@ -245,6 +247,9 @@ public class CampaignServiceTest {
 		MockitoAnnotations.initMocks(this);
 		dataSeeder.cleanRepos();
 		dataSeeder.seedData();
+		User dm_tim = userRepository.findOneByUsername("dm_tim");
+		assertNull(dm_tim);
+		
 	}
 	
 	/**
