@@ -23,28 +23,34 @@ import org.softwarewolf.gameserver.domain.Folio;
 import org.softwarewolf.gameserver.domain.User;
 import org.softwarewolf.gameserver.domain.dto.CampaignDto;
 import org.softwarewolf.gameserver.repository.CampaignRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @ContextConfiguration(classes = {AppConfig.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ComponentScan(basePackages = {"org.softwarewolf.gameserver"})
+@ActiveProfiles("test")
 public class CampaignServiceTest {
 	@InjectMocks
-	private CampaignService campaignService;
+	private CampaignService mockCampaignService;
 
 	@Mock
-	private CampaignRepository campaignRepository;
+	private CampaignRepository mockCampaignRepository;
 	
 	@Mock
-	private UserService userService;
+	private UserService mockUserService;
 	
 	@Mock 
-	private CampaignUserService campaignUserService;
+	private CampaignUserService mockCampaignUserService;
 	
 	@Mock
-	private FolioService folioService;
+	private FolioService mockFolioService;
+	
+	@Autowired
+	private DataSeeder dataSeeder;
 	
 	private static User firstUser;
 	private static String firstUserEmail = "firstUser@gmail.com";
@@ -230,11 +236,15 @@ public class CampaignServiceTest {
 		secondCampaignPlayerList.addAll(new ArrayList<>(Arrays.asList(new String[] {secondUser.getId(), thirdUser.getId()})));
 		secondCampaign.setPlayerList(secondCampaignPlayerList);
 		secondCampaign.setCampaignFolioId(secondCampaignFolioId);
+		
+		
 	}
 	
 	@Before
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
+		dataSeeder.cleanRepos();
+		dataSeeder.seedData();
 	}
 	
 	/**
@@ -246,14 +256,14 @@ public class CampaignServiceTest {
 	@Test
 	public void testInitFirstCampaignDto() {
 		List<Campaign> allCampaigns = new ArrayList<>(Arrays.asList(new Campaign[] {firstCampaign, secondCampaign}));
-		doReturn(allCampaigns).when(campaignRepository).findAll();
-		doReturn(firstCampaign).when(campaignRepository).findOneById(firstCampaignId);
-		doReturn(allUsers).when(userService).findAll();
-		doReturn(firstUserId).when(userService).getCurrentUserId();
-		doReturn(allFirstCampaignUsers).when(campaignUserService).findAllByCampaignId(firstCampaignId);
-		doReturn(firstCampaignFolio).when(folioService).findOne(firstCampaignFolioId);
+		doReturn(allCampaigns).when(mockCampaignRepository).findAll();
+		doReturn(firstCampaign).when(mockCampaignRepository).findOneById(firstCampaignId);
+		doReturn(allUsers).when(mockUserService).findAll();
+		doReturn(firstUserId).when(mockUserService).getCurrentUserId();
+		doReturn(allFirstCampaignUsers).when(mockCampaignUserService).findAllByCampaignId(firstCampaignId);
+		doReturn(firstCampaignFolio).when(mockFolioService).findOne(firstCampaignFolioId);
 		CampaignDto campaignDto = new CampaignDto();
-		campaignService.initCampaignDto(firstCampaignId, campaignDto);
+		mockCampaignService.initCampaignDto(firstCampaignId, campaignDto);
 		Campaign campaign = campaignDto.getCampaign();
 		assertEquals("Campaign id was altered", firstCampaignId, campaign.getId());
 		assertEquals("Campaign folioId was altered", firstCampaignFolioId, campaign.getCampaignFolioId());
@@ -277,14 +287,14 @@ public class CampaignServiceTest {
 	@Test
 	public void testInitSecondCampaignDto() {
 		List<Campaign> allCampaigns = new ArrayList<>(Arrays.asList(new Campaign[] {firstCampaign, secondCampaign}));
-		doReturn(allCampaigns).when(campaignRepository).findAll();
-		doReturn(secondCampaign).when(campaignRepository).findOneById(secondCampaignId);
-		doReturn(allUsers).when(userService).findAll();
-		doReturn(fourthUserId).when(userService).getCurrentUserId();
-		doReturn(allSecondCampaignUsers).when(campaignUserService).findAllByCampaignId(secondCampaignId);
-		doReturn(secondCampaignFolio).when(folioService).findOne(secondCampaignFolioId);
+		doReturn(allCampaigns).when(mockCampaignRepository).findAll();
+		doReturn(secondCampaign).when(mockCampaignRepository).findOneById(secondCampaignId);
+		doReturn(allUsers).when(mockUserService).findAll();
+		doReturn(fourthUserId).when(mockUserService).getCurrentUserId();
+		doReturn(allSecondCampaignUsers).when(mockCampaignUserService).findAllByCampaignId(secondCampaignId);
+		doReturn(secondCampaignFolio).when(mockFolioService).findOne(secondCampaignFolioId);
 		CampaignDto campaignDto = new CampaignDto();
-		campaignService.initCampaignDto(secondCampaignId, campaignDto);
+		mockCampaignService.initCampaignDto(secondCampaignId, campaignDto);
 		Campaign campaign = campaignDto.getCampaign();
 		assertEquals("Campaign id was altered", secondCampaignId, campaign.getId());
 		assertEquals("Campaign folioId was altered", secondCampaignFolioId, campaign.getCampaignFolioId());

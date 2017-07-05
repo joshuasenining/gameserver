@@ -21,18 +21,18 @@ import com.mongodb.ServerAddress;
 @EnableMongoRepositories(basePackages = "org.softwarewolf.gameserver.repository")
 //@EnableMongoAuditing(auditorAwareRef = "springSecurityAuditorAware")
 //@ImportResource({"classpath*:/db.xml"})
-@Profile("default")
-public class DatasourceConfig extends AbstractMongoConfiguration {
+@Profile("test")
+public class TestDatasourceConfig extends AbstractMongoConfiguration {
 //    private final Logger log = LoggerFactory.getLogger(DatabaseConfiguration.class);
     @Value("${spring.data.mongodb.host}")
     private String host;
     @Value("${spring.data.mongodb.port}")
     private Integer port;
-    @Value("${spring.data.mongodb.username}")
+    @Value("${spring.data.mongodb.testusername}")
     private String username;
     @Value("${spring.data.mongodb.database}")
     private String database;
-    @Value("${spring.data.mongodb.password}")
+    @Value("${spring.data.mongodb.testpassword}")
     private String password;
     @Bean
     public ValidatingMongoEventListener validatingMongoEventListener() {
